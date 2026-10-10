@@ -37,7 +37,7 @@ describe('marker lab state', () => {
   it('defines the approved Chilly Village Burst proportions', () => {
     expect(ICE_BOUQUET.name).toBe('Chilly Village Burst')
     expect(ICE_BOUQUET.heights).toEqual({ mountain: 32, pines: 28, lighthouse: 28, houses: 24 })
-    expect(ICE_BOUQUET.mountain).toEqual({ peaks: 3, snowCaps: 3, rockFaces: 3, capHeightRatio: 0.48, spread: 13.2 })
+    expect(ICE_BOUQUET.mountain).toEqual({ peaks: 3, snowCaps: 3, rockFaces: 3, capHeightRatio: 0.62, spread: 17, backPeakRise: 4 })
     expect(ICE_BOUQUET.houses).toEqual({ count: 2, gablePanels: 2, windows: 2, chimney: true })
     expect(ICE_BOUQUET.base.visibleRim).toBeGreaterThanOrEqual(2.5)
   })

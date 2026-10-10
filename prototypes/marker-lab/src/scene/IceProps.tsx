@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { ICE_BOUQUET } from '../iceBouquet'
 import { Glow, Surf } from '../render/materials'
 import type { PropCount } from '../state'
 import { BOUQUET_PLACEMENTS, outwardRotation } from './bouquetGeometry'
@@ -21,37 +22,47 @@ const P = {
 
 const placement = (id: (typeof BOUQUET_PLACEMENTS)[number]['id']) => BOUQUET_PLACEMENTS.find((entry) => entry.id === id)!
 
+const MOUNTAIN = ICE_BOUQUET.mountain
+/** Wide enough that the back peak reads as a cone, not a needle, now that it is 36 m tall. */
+const BACK_PEAK_RADIUS = 10.5
+
 function BouquetMountain() {
   const place = placement('hero')
-  const snowHeight = place.height * 0.48
-  const sidePeakHeight = place.height * 0.72
-  const rightPeakHeight = place.height * 0.62
+  const backPeakHeight = place.height + MOUNTAIN.backPeakRise
+  const snowHeight = backPeakHeight * MOUNTAIN.capHeightRatio
+  // The cap sits proud of the back cone's surface at the height where it starts.
+  const snowRadius = BACK_PEAK_RADIUS * MOUNTAIN.capHeightRatio + 0.3
+  // Side peaks rise above the 28 m lighthouse and pines in front of them; otherwise, at the
+  // 80 % review framing, only the back peak's tip shows and the range reads as a needle.
+  const sidePeakHeight = place.height * 0.94
+  const rightPeakHeight = place.height * 0.9
   const sideCapHeight = sidePeakHeight * 0.42
   const rightCapHeight = rightPeakHeight * 0.42
+  const half = MOUNTAIN.spread / 2
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <mesh position={[0, place.height / 2, 0]} scale={[1, 1, 0.82]} castShadow>
-        <coneGeometry args={[8, place.height, 7]} />
+      <mesh position={[0, backPeakHeight / 2, 0]} scale={[1, 1, 0.82]} castShadow>
+        <coneGeometry args={[BACK_PEAK_RADIUS, backPeakHeight, 7]} />
         <Surf color={P.rock} />
       </mesh>
-      <mesh position={[-0.9, place.height - snowHeight / 2, -1.2]} scale={[1, 1, 0.84]} castShadow>
-        <coneGeometry args={[5.25, snowHeight, 7]} />
+      <mesh position={[-0.9, backPeakHeight - snowHeight / 2, -1.2]} scale={[1, 1, 0.84]} castShadow>
+        <coneGeometry args={[snowRadius, snowHeight, 7]} />
         <Surf color={P.snow} />
       </mesh>
-      <mesh position={[-6.6, sidePeakHeight / 2, -1.3]} rotation={[0, 0.18, -0.18]} scale={[0.78, 1, 0.76]} castShadow>
-        <coneGeometry args={[5.4, sidePeakHeight, 6]} />
+      <mesh position={[-half, sidePeakHeight / 2, -1.3]} rotation={[0, 0.18, -0.18]} scale={[0.78, 1, 0.76]} castShadow>
+        <coneGeometry args={[6.6, sidePeakHeight, 6]} />
         <Surf color={P.cliff} />
       </mesh>
-      <mesh position={[-6.85, sidePeakHeight - sideCapHeight / 2, -1.55]} rotation={[0, 0.18, -0.18]} scale={[0.72, 1, 0.72]} castShadow>
-        <coneGeometry args={[3.45, sideCapHeight, 6]} />
+      <mesh position={[-half - 0.25, sidePeakHeight - sideCapHeight / 2, -1.55]} rotation={[0, 0.18, -0.18]} scale={[0.72, 1, 0.72]} castShadow>
+        <coneGeometry args={[4.2, sideCapHeight, 6]} />
         <Surf color={P.white} />
       </mesh>
-      <mesh position={[6.6, rightPeakHeight / 2, -2.4]} rotation={[0, -0.16, 0.14]} scale={[0.84, 1, 0.8]} castShadow>
-        <coneGeometry args={[5.1, rightPeakHeight, 6]} />
+      <mesh position={[half, rightPeakHeight / 2, -2.4]} rotation={[0, -0.16, 0.14]} scale={[0.84, 1, 0.8]} castShadow>
+        <coneGeometry args={[6.2, rightPeakHeight, 6]} />
         <Surf color={P.rock} />
       </mesh>
-      <mesh position={[6.85, rightPeakHeight - rightCapHeight / 2, -2.7]} rotation={[0, -0.16, 0.14]} scale={[0.77, 1, 0.76]} castShadow>
-        <coneGeometry args={[3.2, rightCapHeight, 6]} />
+      <mesh position={[half + 0.25, rightPeakHeight - rightCapHeight / 2, -2.7]} rotation={[0, -0.16, 0.14]} scale={[0.77, 1, 0.76]} castShadow>
+        <coneGeometry args={[3.9, rightCapHeight, 6]} />
         <Surf color={P.snow} />
       </mesh>
       <mesh position={[4.2, 4.2, 4.7]} scale={[2.5, 3.7, 1.1]} rotation={[0.1, -0.55, -0.16]} castShadow>
@@ -220,11 +231,21 @@ function House({
   )
 }
 
+/** Houses sit 2 m further toward the front-right than the shared slot, at 0.9 scale, so they stop competing with the range. */
+const HOUSE_SCALE = 0.9
+const HOUSE_SHIFT = 2
+
 function BouquetHouses({ night }: { night: boolean }) {
   const place = placement('front-right')
-  const scale = place.height / 11
+  const scale = (place.height / 11) * HOUSE_SCALE
+  const radius = Math.hypot(place.position[0], place.position[2])
+  const position: [number, number, number] = [
+    place.position[0] + (place.position[0] / radius) * HOUSE_SHIFT,
+    place.position[1],
+    place.position[2] + (place.position[2] / radius) * HOUSE_SHIFT,
+  ]
   return (
-    <group position={place.position} rotation={outwardRotation(place)}>
+    <group position={position} rotation={outwardRotation(place)}>
       <group scale={scale}>
       <House position={[0, 0, 0]} height={11} color={P.red} night={night} lean={-0.07} />
       <House position={[-4.8, 0, 1.4]} height={8.8} color={P.teal} night={night} lean={0.1} />

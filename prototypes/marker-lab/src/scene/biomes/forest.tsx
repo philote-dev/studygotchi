@@ -54,15 +54,18 @@ function GreatRoundTree() {
   )
 }
 
+/** Review scale: +15 % so the pair out-bulks the log at its feet. */
+const PAIR_SCALE = 1.15
+
 /**
- * P2 round-tree pair, 28 m. Exaggerated feature: the size gap, a 28 m lollipop
- * with a 16 m companion tucked at its foot; both are plain balls on long trunks.
+ * P2 round-tree pair, 28 m slot. Exaggerated feature: the size gap, a tall
+ * lollipop with a half-height companion tucked at its foot; plain balls on long trunks.
  */
 function RoundTreePair() {
   const place = placementFor('front-left')
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / 28}>
+      <group scale={(place.height / 28) * PAIR_SCALE}>
         <mesh position={[0, 9.1, 0]} castShadow>
           <cylinderGeometry args={[1.15, 1.75, 18.2, 7]} />
           <Surf color={P.bark} />
@@ -138,12 +141,12 @@ function MushroomCottage({ night }: { night: boolean }) {
         </group>
         <group position={[-3.4, 9.6, 3.4]} rotation={[0, -Math.PI / 4, 0]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[1.75, 1.75, 0.4, 8]} />
+            <cylinderGeometry args={[2, 2, 0.4, 8]} />
             <Surf color={P.ink} />
           </mesh>
           <mesh position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[1.25, 1.25, 0.3, 8]} />
-            <Glow color={P.light} on={night} />
+            <cylinderGeometry args={[1.5, 1.5, 0.3, 8]} />
+            <Glow color={P.light} on={night} intensity={2.56} />
           </mesh>
         </group>
       </group>
@@ -151,25 +154,33 @@ function MushroomCottage({ night }: { night: boolean }) {
   )
 }
 
-/** [yaw, outward tilt, blade length, colour] for the fern fronds; they fan front and left so the cottage door stays open. */
+/**
+ * [yaw, outward tilt, blade length, colour] for the fern fronds. They fan toward
+ * the camera only, so from the review camera the clump sits in the gap between
+ * the cottage window (left) and door (right) without crossing either.
+ */
 const FRONDS = [
-  [0.15, 0.06, 23, P.canopy],
-  [-1.1, 0.46, 20, P.canopy],
-  [0.3, 0.44, 18.5, P.leaf],
-  [-2.2, 0.5, 17, P.leaf],
-  [2.8, 0.42, 15, P.canopy],
+  [0.1, 0.05, 23, P.canopy],
+  [-0.4, 0.5, 19, P.canopy],
+  [0.2, 0.65, 20, P.leaf],
+  [-0.15, 0.4, 17, P.leaf],
+  [0, 0.8, 15, P.canopy],
 ] as const
 
+/** Review scale: the fern read as an agave at 1.0 and the log out-bulked the tree pair. */
+const FERN_SCALE = 0.6
+const LOG_SCALE = 0.75
+
 /**
- * P4 log + fern clump, 24 m. Exaggerated feature: fern blades as tall as the
- * trees, fanning out over the plinth edge from behind a house-thick log.
+ * P4 log + fern clump, 24 m slot. Exaggerated feature: a fallen log as thick as
+ * a cottage door is tall, with a fern clump fanning over the plinth's front edge.
  */
 function LogFern() {
   const place = placementFor('front-right')
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / 24}>
-        <group position={[-5.8, 3.1, 2.4]} rotation={[0, -0.6, 0]}>
+        <group position={[-5.8, 3.1 * LOG_SCALE, 2.4]} rotation={[0, -0.6, 0]} scale={LOG_SCALE}>
           <mesh rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[3.4, 3, 13, 8]} />
             <Surf color={P.bark} />
@@ -183,7 +194,7 @@ function LogFern() {
             <Surf color={P.bark} />
           </mesh>
         </group>
-        <group position={[-0.2, 0, -2.2]}>
+        <group position={[2.4, 0, -0.6]} scale={FERN_SCALE}>
           <mesh position={[0, 1.6, 0]} scale={[1.8, 0.9, 1.5]} castShadow>
             <dodecahedronGeometry args={[2.4, 0]} />
             <Surf color={P.leaf} />

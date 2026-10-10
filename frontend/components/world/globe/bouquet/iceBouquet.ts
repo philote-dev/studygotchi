@@ -17,8 +17,12 @@ export const ICE_BOUQUET = {
     peaks: 3,
     snowCaps: 3,
     rockFaces: 3,
-    capHeightRatio: 0.48,
-    spread: 13.2,
+    /** Snow cap height as a fraction of the back peak; 0.62 so the range reads white at 48 px. */
+    capHeightRatio: 0.62,
+    /** Distance between the two side-peak axes, metres; the range must out-span the house pair. */
+    spread: 17,
+    /** Extra height on the back peak over the 32 m hero slot so the mountain, not the houses, is P1 at 48 px. */
+    backPeakRise: 4,
   },
   houses: {
     count: 2,

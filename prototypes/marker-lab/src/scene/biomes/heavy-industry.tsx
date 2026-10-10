@@ -48,31 +48,33 @@ function GantryCrane({ night, trolley }: { night: boolean; trolley: GroupRef }) 
       <group scale={scale}>
         {legs.map((side) => (
           <group key={side}>
-            <mesh position={[side * 3.9, 0.55, 0]} castShadow>
-              <boxGeometry args={[2.6, 1.1, 2.6]} />
+            <mesh position={[side * 3.3, 0.55, 0]} castShadow>
+              <boxGeometry args={[3, 1.1, 3]} />
               <Surf color={P.slab} />
             </mesh>
-            <mesh position={[side * 2.75, 7.1, 0]} rotation={[0, 0, side * 0.19]} castShadow>
-              <boxGeometry args={[1.5, 12.6, 1.5]} />
+            <mesh position={[side * 2.4, 6.9, 0]} rotation={[0, 0, side * 0.1]} castShadow>
+              <boxGeometry args={[2.1, 12.4, 2.1]} />
               <Surf color={P.steel} />
             </mesh>
           </group>
         ))}
-        <mesh position={[0, 5.6, 0]} castShadow>
-          <boxGeometry args={[5.8, 0.8, 0.8]} />
-          <Surf color={P.steel} />
-        </mesh>
+        {[3.6, 8.6].map((y) => (
+          <mesh key={y} position={[0, y, 0]} castShadow>
+            <boxGeometry args={[5.4, 1, 1]} />
+            <Surf color={P.steel} />
+          </mesh>
+        ))}
         <mesh position={[0, 14.2, 0]} castShadow>
-          <boxGeometry args={[20, 2, 2]} />
+          <boxGeometry args={[20, 2.6, 2.4]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[0, 15.6, 0]} castShadow>
-          <boxGeometry args={[7, 0.8, 1.2]} />
+        <mesh position={[0, 15.8, 0]} castShadow>
+          <boxGeometry args={[8, 0.6, 1.4]} />
           <Surf color={P.steel} />
         </mesh>
         <group ref={trolley} position={[3.2, 0, 0]}>
-          <mesh position={[0, 12.8, 0]} castShadow>
-            <boxGeometry args={[1.9, 0.8, 2.4]} />
+          <mesh position={[0, 12.5, 0]} castShadow>
+            <boxGeometry args={[1.9, 0.8, 2.8]} />
             <Surf color={P.ink} />
           </mesh>
           <mesh position={[0, 9.9, 0]}>
@@ -84,17 +86,13 @@ function GantryCrane({ night, trolley }: { night: boolean; trolley: GroupRef }) 
             <Surf color={P.ink} />
           </mesh>
         </group>
-        <mesh position={[-7.6, 11.5, 1.4]} castShadow>
-          <boxGeometry args={[4.4, 3.4, 3.4]} />
+        <mesh position={[-8.3, 11.65, 1.1]} castShadow>
+          <boxGeometry args={[3, 2.5, 2.5]} />
           <Surf color={P.orange} />
         </mesh>
-        <mesh position={[-7.6, 11.8, 3.15]}>
-          <boxGeometry args={[3.2, 1.6, 0.12]} />
-          <Glow color={P.window} on={night} />
-        </mesh>
-        <mesh position={[-7.6, 9.8, 1.4]} castShadow>
-          <boxGeometry args={[4.7, 0.4, 3.7]} />
-          <Surf color={P.ink} />
+        <mesh position={[-8.3, 11.9, 2.38]}>
+          <boxGeometry args={[1.3, 0.9, 0.12]} />
+          <Glow color={P.window} on={night} offColor={P.ink} />
         </mesh>
       </group>
     </group>
@@ -118,15 +116,15 @@ function ChimneyPair() {
           <boxGeometry args={[6, 0.6, 4.4]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[-0.5, 7.8, 0.2]} castShadow>
-          <cylinderGeometry args={[0.95, 1.35, 9.8, 8]} />
+        <mesh position={[-0.5, 7.2, 0.2]} castShadow>
+          <cylinderGeometry args={[0.95, 1.35, 8.6, 8]} />
           <Surf color={P.cream} />
         </mesh>
-        <mesh position={[-0.5, 13.35, 0.2]} castShadow>
+        <mesh position={[-0.5, 11.9, 0.2]} castShadow>
           <cylinderGeometry args={[1.2, 1.0, 1.3, 8]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[-0.5, 14.02, 0.2]}>
+        <mesh position={[-0.5, 12.57, 0.2]}>
           <cylinderGeometry args={[0.8, 0.8, 0.1, 8]} />
           <Surf color={P.ink} />
         </mesh>
@@ -138,11 +136,11 @@ function ChimneyPair() {
           <cylinderGeometry args={[1.08, 0.9, 1.1, 8]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[0.2, 15.1, -0.9]} scale={[1.9, 1.45, 1.7]} castShadow>
+        <mesh position={[-0.3, 13.0, 3.4]} scale={[2.85, 2.2, 2.55]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.smoke} />
         </mesh>
-        <mesh position={[2.0, 16.2, -2.1]} scale={[1.15, 0.95, 1.05]} castShadow>
+        <mesh position={[1.8, 15.2, 1.4]} scale={[1.3, 1.1, 1.2]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.smoke} />
         </mesh>
@@ -198,7 +196,7 @@ function PistonPress({ ram }: { ram: GroupRef }) {
 }
 
 /* ------------------------------------------------------------------------ */
-/* P4 · pipe elbow run: three fat knuckles, the top run spouts past the edge. */
+/* P4 · pipe elbow run: steel pipe with three fat knuckles; the single blue valve wheel is the only pipe-blue. */
 
 function PipeRun() {
   const place = placementFor('front-right', PLACEMENTS)
@@ -208,35 +206,35 @@ function PipeRun() {
       <group scale={scale}>
         <mesh position={[-2.2, 2.4, 0]} castShadow>
           <cylinderGeometry args={[0.8, 0.8, 4.8, 8]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[-2.2, 4.8, 0]} castShadow>
           <sphereGeometry args={[1.15, 7, 5]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[0, 4.8, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
           <cylinderGeometry args={[0.8, 0.8, 4.4, 8]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[2.2, 4.8, 0]} castShadow>
           <sphereGeometry args={[1.15, 7, 5]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[2.2, 8.1, 0]} castShadow>
           <cylinderGeometry args={[0.8, 0.8, 6.6, 8]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[2.2, 11.4, 0]} castShadow>
           <sphereGeometry args={[1.15, 7, 5]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[4.3, 11.4, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
           <cylinderGeometry args={[0.8, 0.8, 4.2, 8]} />
-          <Surf color={P.pipe} />
+          <Surf color={P.steel} />
         </mesh>
         <mesh position={[6.5, 11.4, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
           <cylinderGeometry args={[1.1, 1.1, 0.5, 8]} />
-          <Surf color={P.steel} />
+          <Surf color={P.ink} />
         </mesh>
         <mesh position={[6.78, 11.4, 0]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.6, 0.6, 0.1, 8]} />
@@ -247,8 +245,8 @@ function PipeRun() {
           <Surf color={P.concrete} />
         </mesh>
         <mesh position={[2.2, 7.4, 0.95]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-          <torusGeometry args={[1.05, 0.18, 6, 12]} />
-          <Surf color={P.steel} />
+          <torusGeometry args={[1.25, 0.22, 6, 12]} />
+          <Surf color={P.pipe} />
         </mesh>
         <mesh position={[2.2, 7.4, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.22, 0.22, 1.1, 6]} />
@@ -283,14 +281,17 @@ function Props({ propCount, night }: BouquetPropsProps) {
   )
 }
 
-/** Riveted steel edge band: thin plum ring, 12 rivet studs, 12 orange chevrons (one per 30°). */
+/**
+ * Riveted steel edge band: a 0.9 m plum lip ring overhanging the slab by 0.7 m, 12 rivet
+ * studs, and 12 orange chevrons 1.5 m long (one per 30°). The plinth itself stays 2.4 m.
+ */
 function Rim({ color }: { color: string }) {
-  const radius = BASE_RADIUS + 0.15
-  const y = BASE_TOP - 0.3
+  const radius = BASE_RADIUS + 0.7
+  const y = BASE_TOP - 0.45
   return (
     <group>
       <mesh position={[0, y, 0]} rotation={[0, Math.PI / 12, 0]} castShadow>
-        <cylinderGeometry args={[radius + 0.22, radius + 0.1, 0.62, 12]} />
+        <cylinderGeometry args={[radius, radius - 0.2, 0.9, 12]} />
         <Surf color={color} />
       </mesh>
       {Array.from({ length: 12 }, (_, index) => {
@@ -299,19 +300,20 @@ function Rim({ color }: { color: string }) {
         return (
           <group key={index}>
             <mesh
-              position={[Math.sin(rivet) * (radius + 0.34), y, Math.cos(rivet) * (radius + 0.34)]}
+              position={[Math.sin(rivet) * (radius + 0.1), y + 0.1, Math.cos(rivet) * (radius + 0.1)]}
               rotation={[Math.PI / 2, 0, -rivet]}
               castShadow
             >
-              <cylinderGeometry args={[0.24, 0.3, 0.3, 6]} />
+              <cylinderGeometry args={[0.3, 0.36, 0.36, 6]} />
               <Surf color={color} />
             </mesh>
             <mesh
-              position={[Math.sin(chevron) * (radius + 0.36), y, Math.cos(chevron) * (radius + 0.36)]}
+              position={[Math.sin(chevron) * (radius + 0.08), y + 0.08, Math.cos(chevron) * (radius + 0.08)]}
               rotation={[Math.PI / 2, 0, -chevron]}
+              scale={[1, 1, 0.6]}
               castShadow
             >
-              <cylinderGeometry args={[0.62, 0.62, 0.3, 3]} />
+              <cylinderGeometry args={[0.87, 0.87, 0.34, 3]} />
               <Surf color={P.orange} />
             </mesh>
           </group>

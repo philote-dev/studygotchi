@@ -4,9 +4,21 @@ import type { MarkerDefinition } from '../markers'
 import { PixelComposer } from '../render/PixelComposer'
 import { BouquetBase } from './BouquetBase'
 
+/**
+ * Review pose for every fixed-size viewport: the whole bouquet (plinth to tallest crown) fills
+ * ~80 % of the frame height per globe-markers.md §4, so a 48 px cell shows a ~38 px marker.
+ */
+export const MARKER_CAMERA = {
+  position: [0, 57, 93] as [number, number, number],
+  lookAt: [0, 14, 0] as [number, number, number],
+  fov: 30,
+  near: 0.1,
+  far: 260,
+} as const
+
 function CameraAim() {
   const camera = useThree((state) => state.camera)
-  camera.lookAt(0, 14, 0)
+  camera.lookAt(...MARKER_CAMERA.lookAt)
   camera.updateProjectionMatrix()
   return null
 }

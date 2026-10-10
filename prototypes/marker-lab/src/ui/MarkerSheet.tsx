@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MARKERS, type MarkerDefinition } from '../markers'
 import type { MarkerRenderState } from '../state'
 import { Creature } from '../scene/Creature'
-import { MarkerScene } from '../scene/MarkerScene'
+import { MARKER_CAMERA, MarkerScene } from '../scene/MarkerScene'
 import { WorldProps } from '../scene/WorldProps'
 
 const CELL = 96
@@ -123,7 +123,7 @@ export function MarkerSheet({
           <Canvas
             shadows
             dpr={1}
-            camera={{ position: [0, 72, 118], fov: 30, near: 0.1, far: 260 }}
+            camera={{ position: MARKER_CAMERA.position, fov: MARKER_CAMERA.fov, near: MARKER_CAMERA.near, far: MARKER_CAMERA.far }}
             gl={{ antialias: false, preserveDrawingBuffer: true }}
           >
             <SheetCapture key={current.id} marker={current} state={state} onCapture={handleCapture} />

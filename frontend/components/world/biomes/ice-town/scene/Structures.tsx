@@ -4,7 +4,6 @@ import * as THREE from 'three'
 import {
   ICE_TOWN_PALETTE as P,
   type BiomeLayout,
-  type BuildingKind,
   type DistrictDef,
   type DistrictProgress,
   populationFor,
@@ -21,10 +20,12 @@ import {
   sampleTerrain,
   type LocalPath,
   type Placement,
-  type PropKind,
   type Slot,
 } from '../layout/terrain'
 import { Surf } from '../render/materials'
+import { useCollider } from '../../collision/ColliderRegistry'
+// The visual scale tables live with the collider footprints so the two can never drift apart.
+import { BUILDING_SCALE, PROP_SCALE, districtColliders, dockColliders } from '../../collision/ice-town-footprints'
 import {
   Building,
   CrystalSpire,
@@ -41,40 +42,6 @@ import {
 
 /** Ruin state shared with the props so knock-over animates without React churn. */
 export const ruin = { districtId: null as string | null, amount: 0 }
-
-/**
- * The older building kinds were modelled at toy scale; the forest and harbour houses are metres.
- * Scaled so every house lands in the 4.5–6 m band of the pass-3 scale rethink.
- */
-const BUILDING_SCALE: Record<BuildingKind, number> = {
-  'forest-house': 1,
-  'stilt-house': 1,
-  'timber-house': 1.9,
-  'fishing-hut': 1.8,
-  tent: 1.9,
-  quonset: 1.9,
-}
-
-/** Props were modelled around 1 m; the big timber structures are already metres. */
-const PROP_SCALE: Partial<Record<PropKind, number>> = {
-  watchtower: 1,
-  windmill: 1,
-  'fenced-plot': 1,
-  footbridge: 1,
-  lamp: 1,
-  helicopter: 1.6,
-  boat: 1.8,
-  'log-pile': 1.6,
-  cart: 1.5,
-  barrel: 1.4,
-  crate: 1.4,
-  bench: 1.4,
-  fence: 1.5,
-  stump: 1.5,
-  sled: 1.5,
-  'string-lights': 1.6,
-  snowman: 1.5,
-}
 
 /* ---------- local paths ---------- */
 
@@ -167,6 +134,8 @@ function Dock({ path, seaLevel }: { path: LocalPath; seaLevel: number }) {
 export function Paths({ layout, progress }: { layout: BiomeLayout; progress: DistrictProgress }) {
   const paths = useMemo(() => localPaths(layout), [layout])
   const bands = useMemo(() => new Map<string, number>(layout.districts.map((c) => [c.id, populationFor(c, progress[c.id] ?? 0).band])), [layout, progress])
+  // Docks are 1 m plank decks over the water: a body walks into their edge.
+  useCollider(useMemo(() => dockColliders(layout, progress), [layout, progress]))
   const ribbons = useMemo(
     () => paths.filter((p) => p.kind !== 'dock').map((p) => ({ path: p, geometry: ribbonGeometry(p.points, p.width) })),
     [paths],
@@ -300,6 +269,8 @@ export function Districts({
 }) {
   const slotsById = useMemo(() => new Map<string, Slot[]>(layout.districts.map((c) => [c.id, districtSlots(layout, c)])), [layout])
   const placements = useMemo(() => propPlacements(layout, seed), [layout, seed])
+  // Houses, anchors and props as XZ colliders, derived from the same slots / placements / fixtures.
+  useCollider(useMemo(() => districtColliders(layout, seed, progress), [layout, seed, progress]))
   return (
     <group>
       {layout.districts.map((district) => {

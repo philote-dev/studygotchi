@@ -6,14 +6,16 @@ import { BASE_RADIUS, BASE_TOP, BOUQUET_PLACEMENTS, outwardRotation, placementFo
 import type { BiomeBouquet, BouquetPropsProps } from './types'
 
 /**
- * Granite Gondola Crest. Roster row `alpine`: sharp grey twin peaks across the
- * back, a cable pylon front-left with one fat cable up to a peak-shoulder
- * station and an oversized orange gondola on it, a wide-roof chalet on a turf
- * knoll back-right, a fir pair front-right, on a split-granite ledge plinth.
+ * Granite Gondola Crest. Roster row `alpine`: sharp dark-grey twin peaks across
+ * the back (the second one leaning away to the right), a cable pylon front-right
+ * with one fat ink cable up across the sky to a station on the main spike's
+ * shoulder and an oversized orange gondola on it, a wide-roof chalet on a turf
+ * knoll back-left, a fir pair front-left, on a split-granite ledge plinth.
  */
 const P = {
-  granite: '#8d9299',
-  ledge: '#a9aeb5',
+  // Granite is authored dark so the toon-lit face lands near #6f757d (the roster's #8d9299 reads near-white lit).
+  granite: '#565b62',
+  ledge: '#6e747c',
   turf: '#86b26e',
   snow: '#eef4f7',
   pylon: '#6d7f96',
@@ -26,12 +28,14 @@ const P = {
 } as const
 
 /**
- * Shared slots, except: the pylon is yawed so its cross-arm sits square to the
- * cable, and the firs step outward so they frame the chalet instead of hiding it.
+ * Shared slots re-aimed for this family: the pylon moves front-right (cross-arm
+ * square to the cable) so the cable climbs across open sky to the main spike,
+ * the chalet takes the back-left and the firs the front-left.
  */
 const PLACEMENTS: readonly BouquetPlacement[] = BOUQUET_PLACEMENTS.map((entry) => {
-  if (entry.id === 'front-left') return { ...entry, position: [-8.8, BASE_TOP, 5.2], yaw: -0.52 }
-  if (entry.id === 'front-right') return { ...entry, position: [8.6, BASE_TOP, 6.2], yaw: 0.1 }
+  if (entry.id === 'front-left') return { ...entry, position: [9.5, BASE_TOP, 8.5], yaw: 0.57 }
+  if (entry.id === 'back-right') return { ...entry, position: [-9, BASE_TOP, -3], yaw: 0.3 }
+  if (entry.id === 'front-right') return { ...entry, position: [-4.5, BASE_TOP, 7.5], yaw: -0.1 }
   return entry
 })
 
@@ -39,8 +43,9 @@ const HERO = placementFor('hero', PLACEMENTS)
 const PYLON = placementFor('front-left', PLACEMENTS)
 const PYLON_AUTHORED = 14
 const PYLON_HEAD: readonly [number, number, number] = [0, 14.2, 0]
-/** Top of the station block on the main spike's flank, in hero-local metres. */
-const STATION: readonly [number, number, number] = [-1.3, 22.9, 1.1]
+/** Main spike axis in hero-local metres, and the top of the station block on its front-right shoulder. */
+const MAIN_SPIKE_X = -1.5
+const STATION: readonly [number, number, number] = [MAIN_SPIKE_X + 2.3, 25.9, 1.2]
 
 function toWorld(place: BouquetPlacement, local: readonly [number, number, number], scale: number): THREE.Vector3 {
   const rotation = outwardRotation(place)
@@ -96,19 +101,22 @@ function Spike({
   )
 }
 
-/** Jagged grey twin peak: two fat sharp five-sided spikes with small caps, a tooth, a saddle, scree. */
+/**
+ * Jagged grey twin peak: a fat sharp five-sided 32 m spike with a 20 % snow cap,
+ * a second spike leaning hard to the right so the cable crosses sky above its
+ * flank, a saddle between them, scree boulders.
+ */
 function TwinPeak() {
   return (
     <group position={HERO.position} rotation={outwardRotation(HERO)}>
-      <Spike position={[1.5, 0, 0]} rotation={[0, 0.3, 0]} height={32} radius={8} capHeight={6.6} capRadius={1.85} segments={5} color={P.granite} squash={0.85} />
-      <Spike position={[-8.4, 0, -0.6]} rotation={[0.04, 0.5, 0.14]} height={27} radius={6.2} capHeight={6} capRadius={1.6} segments={5} color={P.granite} squash={0.85} />
-      <Spike position={[9.2, 0, 1.6]} rotation={[0.06, -0.2, -0.24]} height={15} radius={2.6} capHeight={3.2} capRadius={0.7} segments={4} color={P.ledge} squash={0.85} />
-      <Spike position={[-3.8, 0, 2.6]} rotation={[0, 0.5, 0]} height={13} radius={4.8} segments={4} color={P.ledge} squash={0.9} />
-      <mesh position={[-4.2, 2.4, 6.4]} rotation={[0.2, 0.6, -0.1]} scale={[1.5, 0.95, 1.15]} castShadow>
+      <Spike position={[MAIN_SPIKE_X, 0, 0]} rotation={[0, 0.3, 0]} height={32} radius={8} capHeight={6.4} capRadius={1.75} segments={5} color={P.granite} squash={0.85} />
+      <Spike position={[9.5, 0, -2.5]} rotation={[0.04, -0.4, -0.3]} height={25} radius={5.6} capHeight={5} capRadius={1.3} segments={5} color={P.granite} squash={0.85} />
+      <Spike position={[4.8, 0, 1.8]} rotation={[0, 0.5, -0.08]} height={14} radius={4.6} segments={4} color={P.ledge} squash={0.9} />
+      <mesh position={[-6.8, 2.4, 6.0]} rotation={[0.2, 0.6, -0.1]} scale={[1.5, 0.95, 1.15]} castShadow>
         <dodecahedronGeometry args={[2.2, 0]} />
-        <Surf color={P.granite} />
+        <Surf color={P.ledge} />
       </mesh>
-      <mesh position={[5.4, 2.0, 7.0]} rotation={[-0.1, 1.3, 0.15]} scale={[1.15, 0.8, 1]} castShadow>
+      <mesh position={[4.0, 2.0, 7.2]} rotation={[-0.1, 1.3, 0.15]} scale={[1.15, 0.8, 1]} castShadow>
         <dodecahedronGeometry args={[2.0, 0]} />
         <Surf color={P.granite} />
       </mesh>
@@ -173,24 +181,24 @@ function CableAndGondola() {
   return (
     <group>
       <mesh position={CABLE_MID} quaternion={CABLE_QUAT} castShadow>
-        <cylinderGeometry args={[0.5, 0.5, CABLE_LENGTH, 6]} />
+        <cylinderGeometry args={[0.6, 0.6, CABLE_LENGTH, 6]} />
         <Surf color={P.ink} />
       </mesh>
       <group ref={gondola} position={GONDOLA_HOME} rotation={[0, CABLE_YAW, 0]}>
         <mesh position={[0, 0, 0]} castShadow>
-          <boxGeometry args={[1.3, 1.0, 1.1]} />
+          <boxGeometry args={[1.6, 1.2, 1.3]} />
           <Surf color={P.ink} />
         </mesh>
-        <mesh position={[0, -1.6, 0]} castShadow>
-          <cylinderGeometry args={[0.24, 0.3, 2.4, 6]} />
+        <mesh position={[0, -1.9, 0]} castShadow>
+          <cylinderGeometry args={[0.28, 0.36, 2.9, 6]} />
           <Surf color={P.ink} />
         </mesh>
-        <mesh position={[0, -5.0, 0]} castShadow>
-          <boxGeometry args={[5.6, 4.4, 3.4]} />
+        <mesh position={[0, -6.0, 0]} castShadow>
+          <boxGeometry args={[6.7, 5.3, 4.1]} />
           <Surf color={P.gondola} />
         </mesh>
-        <mesh position={[0, -4.3, 0]}>
-          <boxGeometry args={[5.75, 1.4, 3.55]} />
+        <mesh position={[0, -5.2, 0]}>
+          <boxGeometry args={[6.9, 1.7, 4.3]} />
           <Surf color={P.cream} />
         </mesh>
       </group>
@@ -324,7 +332,10 @@ function Props({ propCount, night }: BouquetPropsProps) {
   )
 }
 
-/** Split-granite ledge: 12 blocks on the facets, turf tufts in 6 notches, snow dusting in the other 6. */
+/**
+ * Split-granite ledge: 12 local-granite blocks on the facets, turf tufts in 6
+ * notches, snow dusting (the roster lip colour) in the other 6.
+ */
 function Rim({ color }: { color: string }) {
   return (
     <group>
@@ -340,7 +351,7 @@ function Rim({ color }: { color: string }) {
               castShadow
             >
               <boxGeometry args={[index % 4 === 0 ? 7.4 : 6.8, 0.9, 1.4]} />
-              <Surf color={color} />
+              <Surf color={P.ledge} />
             </mesh>
             <mesh
               position={[Math.sin(notch) * (BASE_RADIUS + 0.1), BASE_TOP + (snowy ? 0.02 : 0.08), Math.cos(notch) * (BASE_RADIUS + 0.1)]}
@@ -349,7 +360,7 @@ function Rim({ color }: { color: string }) {
               castShadow
             >
               <dodecahedronGeometry args={[0.9, 0]} />
-              <Surf color={snowy ? P.snow : P.turf} />
+              <Surf color={snowy ? color : P.turf} />
             </mesh>
           </group>
         )
@@ -363,7 +374,7 @@ export const alpine: BiomeBouquet = {
     id: 'alpine',
     name: 'Granite Gondola Crest',
     silhouette:
-      'Two jagged grey spikes with small white caps over a green disc, one thin diagonal cable from the left pylon up to the peak shoulder, an orange gondola dot hanging on it.',
+      'Two jagged dark-grey spikes with small white caps over a green disc, one fat ink cable climbing diagonally from the right-hand pylon across the sky to the main peak, an orange gondola dot hanging on it.',
     hero: 'twin-peak',
     elements: [
       { id: 'twin-peak', height: 32, slot: 'hero' },
@@ -371,7 +382,7 @@ export const alpine: BiomeBouquet = {
       { id: 'chalet', height: 28, slot: 'back-right' },
       { id: 'fir-pair', height: 24, slot: 'front-right' },
     ],
-    rim: 'Split-granite ledge: 12 chunky grey blocks around the plinth edge, turf tufts #86b26e in the gaps, snow dusting #eef4f7 on 6 of the notches.',
+    rim: 'Split-granite ledge: 12 chunky dark granite blocks around the plinth edge, turf tufts #86b26e in the gaps, snow dusting (the #eef4f7 lip) on 6 of the notches.',
     exaggeration: 'The gondola is bigger than the pylon head that carries it: an orange cabin the size of a chalet hanging from one cable.',
     closestProtected:
       'Kirby W3 (pines on soft dough) and Ice-town (soft white snow cone). Ours is two sharp grey granite spikes joined by a cable and gondola, a wide-roof chalet and a fir pair on a granite-ledge plinth.',

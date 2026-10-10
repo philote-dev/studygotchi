@@ -7,6 +7,8 @@ import { Surf, toonRamp } from '../render/materials'
 import { IceArch, IceCave, Pine } from './Props'
 import { useStormWind } from './StormWind'
 import { treeSwayPose } from './storm-weather'
+import { useCollider } from '../../collision/ColliderRegistry'
+import { forestColliders, landformColliders, scatterColliders } from '../../collision/ice-town-footprints'
 
 /** Generic-world materials never occur on the Ice terrain; the world terrain mesh colours them from its palette. */
 const WORLD_UNUSED = { ground: P.snow, groundAlt: P.snowShadow, lawn: P.snow, paving: P.paleIce, water: P.openWater, bank: P.riverBank, shore: P.rock, plinth: P.paleIce } as const
@@ -193,6 +195,8 @@ const FOREST_TIERS: Array<{ color: string; y: number; r: number; h: number }> = 
  */
 export function Forest({ layout, seed, night }: { layout: BiomeLayout; seed: number; night: boolean }) {
   const trees = useMemo(() => forestPines(layout, seed), [layout, seed])
+  // One trunk circle per instanced pine (bulk registration; the spatial hash takes the hundreds).
+  useCollider(useMemo(() => forestColliders(trees), [trees]))
   const trunk = useRef<THREE.InstancedMesh>(null)
   const tiers = [useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null)]
   const dummy = useMemo(() => new THREE.Object3D(), [])
@@ -261,6 +265,7 @@ export function Forest({ layout, seed, night }: { layout: BiomeLayout; seed: num
 /** Ambient scatter in the empty snow: pine groves and lavender rock outcrops. Never progress. */
 export function Scatter({ layout, seed }: { layout: BiomeLayout; seed: number }) {
   const items = useMemo(() => ambientScatter(layout, seed), [layout, seed])
+  useCollider(useMemo(() => scatterColliders(items), [items]))
   return (
     <group>
       {items.map((s, i) => (
@@ -297,6 +302,7 @@ export function Landforms({ layout, night }: { layout: BiomeLayout; night: boole
   const cx = oc[0] + Math.sin(caveYaw) * orad * 0.62
   const cz = oc[1] + Math.cos(caveYaw) * orad * 0.62
   const caveY = sampleTerrain(layout, cx, cz).height
+  useCollider(useMemo(() => landformColliders(layout), [layout]))
   return (
     <group>
       <group position={[arch.center[0], Math.max(layout.seaLevel, archY) - 0.2, arch.center[1]]} rotation={[0, arch.yaw, 0]}>

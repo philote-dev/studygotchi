@@ -54,9 +54,14 @@ function Gable({
   )
 }
 
+/** Authored scale unit (16 → the slot's 32 m); the masthead itself is authored at 17.6 (≈ 35 m, the review's taller mast, kept inside the 80 % frame). */
 const SHIP_HEIGHT = 16
+const MAST_X = 0
 
-/** P1: tall ship, broadside, mainsail wider than the hull is long; one marigold stripe. */
+/**
+ * P1: tall ship moored diagonally, bow (−x) swung toward the front-left so the prow and
+ * bowsprit clear the warehouse row; mainsail wider than the hull is long; one marigold stripe.
+ */
 function TallShip() {
   const place = placementFor('hero')
   const bob = useRef<Group>(null)
@@ -69,61 +74,57 @@ function TallShip() {
   })
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group ref={bob} rotation={[0, 0.32, 0]}>
-        <group scale={place.height / SHIP_HEIGHT} position={[-1.6, 0, 0]}>
+      <group ref={bob} rotation={[0, 0.6, 0]}>
+        <group scale={place.height / SHIP_HEIGHT} position={[-1.2, 0, 0]}>
           <mesh position={[0, 1.15, 0]} scale={[4.2, 1.15, 1.55]} castShadow>
             <dodecahedronGeometry args={[1, 0]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.2, 2.25, 0]} castShadow>
+          <mesh position={[-0.2, 2.25, 0]} castShadow>
             <boxGeometry args={[6.8, 0.3, 2.5]} />
             <Surf color={P.cream} />
           </mesh>
-          <mesh position={[-2.6, 2.95, 0]} castShadow>
+          <mesh position={[2.6, 2.95, 0]} castShadow>
             <boxGeometry args={[1.9, 1.2, 2.3]} />
             <Surf color={P.sail} />
           </mesh>
-          <mesh position={[-2.6, 3.65, 0]} castShadow>
+          <mesh position={[2.6, 3.65, 0]} castShadow>
             <boxGeometry args={[2.2, 0.26, 2.6]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.6, 9.2, 0]} castShadow>
-            <cylinderGeometry args={[0.24, 0.4, 13.6, 8]} />
+          <mesh position={[MAST_X, 10, 0]} castShadow>
+            <cylinderGeometry args={[0.24, 0.42, 15.2, 8]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.6, 6.7, 0.35]} castShadow>
+          <mesh position={[MAST_X, 6.7, 0.35]} castShadow>
             <boxGeometry args={[9.6, 5.2, 0.22]} />
             <Surf color={P.sail} />
           </mesh>
-          <mesh position={[0.6, 6.9, 0.42]} castShadow>
+          <mesh position={[MAST_X, 6.9, 0.42]} castShadow>
             <boxGeometry args={[9.7, 1.3, 0.26]} />
             <Surf color={P.marigold} />
           </mesh>
-          <mesh position={[0.6, 9.45, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <mesh position={[MAST_X, 9.45, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[0.26, 0.26, 10.6, 6]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.6, 4.0, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <mesh position={[MAST_X, 4, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[0.22, 0.22, 10, 6]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.6, 12, 0.35]} castShadow>
-            <boxGeometry args={[7.6, 3.6, 0.22]} />
+          <mesh position={[MAST_X, 12.7, 0.35]} castShadow>
+            <boxGeometry args={[7.6, 3.8, 0.22]} />
             <Surf color={P.sail} />
           </mesh>
-          <mesh position={[0.6, 12.2, 0.42]} castShadow>
-            <boxGeometry args={[7.7, 0.9, 0.26]} />
-            <Surf color={P.marigold} />
-          </mesh>
-          <mesh position={[0.6, 13.95, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <mesh position={[MAST_X, 14.75, 0.3]} rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[0.24, 0.24, 8.4, 6]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[0.6, 14.5, 0]} castShadow>
+          <mesh position={[MAST_X, 15.5, 0]} castShadow>
             <cylinderGeometry args={[0.7, 0.5, 0.6, 8]} />
             <Surf color={P.hull} />
           </mesh>
-          <mesh position={[5.9, 3.4, 0]} rotation={[0, 0, -1.15]} castShadow>
+          <mesh position={[-5.9, 3.4, 0]} rotation={[0, 0, 1.15]} castShadow>
             <cylinderGeometry args={[0.1, 0.2, 4.2, 6]} />
             <Surf color={P.hull} />
           </mesh>
@@ -144,6 +145,7 @@ function Warehouse({
   color,
   night,
   window,
+  attic,
   hoist = false,
 }: {
   x: number
@@ -155,7 +157,10 @@ function Warehouse({
   peak: number
   color: string
   night: boolean
+  /** Wall window height; lit at night. */
   window?: number
+  /** Gable-face window height (above the wall top); lit at night. */
+  attic?: number
   hoist?: boolean
 }) {
   const rise = peak - wallHeight
@@ -177,6 +182,12 @@ function Warehouse({
           <Glow color={P.light} on={night} intensity={1.5} />
         </mesh>
       )}
+      {attic !== undefined && (
+        <mesh position={[0, attic, depth * 0.55 + 0.25]}>
+          <boxGeometry args={[0.7, 0.9, 0.12]} />
+          <Glow color={P.light} on={night} intensity={1.5} />
+        </mesh>
+      )}
       {hoist && (
         <mesh position={[0, peak - 0.9, depth / 2 + 0.9]} castShadow>
           <boxGeometry args={[0.28, 0.28, 1.7]} />
@@ -188,16 +199,21 @@ function Warehouse({
 }
 
 const ROW_HEIGHT = 14
+/** Review: the row renders at 20 m (slot says 28) and sits 3 m right-front of the slot so the hull shows beside it. */
+const ROW_RENDER_HEIGHT = 20
+const ROW_SHIFT = [2.1, 0, 2.1] as const
 
-/** P2: three narrow canal warehouses, gables as tall as their walls, one hoist beam. */
+/** P2: three narrow canal warehouses receding along the quay, gables as tall as their walls, tallest at the back, one hoist beam. */
 function WarehouseRow({ night }: { night: boolean }) {
   const place = placementFor('front-left')
   return (
-    <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / ROW_HEIGHT} position={[-2.2, 0, 0]}>
-        <Warehouse x={-2.4} z={1.3} yaw={0.12} width={2.6} depth={3.6} wallHeight={5.8} peak={10.4} color={P.teal} night={night} window={3.6} />
-        <Warehouse x={0.3} z={-0.3} yaw={0} width={2.9} depth={3.8} wallHeight={7.8} peak={14} color={P.sail} night={night} window={5.2} hoist />
-        <Warehouse x={2.9} z={-1.5} yaw={-0.14} width={2.6} depth={3.6} wallHeight={6.6} peak={11.6} color={P.slate} night={night} />
+    <group position={ROW_SHIFT}>
+      <group position={place.position} rotation={outwardRotation(place)}>
+        <group scale={ROW_RENDER_HEIGHT / ROW_HEIGHT} position={[-1, 0, 0]}>
+          <Warehouse x={0.4} z={3} yaw={0.1} width={2.6} depth={3.2} wallHeight={5.8} peak={10.4} color={P.teal} night={night} window={3.6} />
+          <Warehouse x={-0.2} z={0} yaw={-0.06} width={2.6} depth={3.2} wallHeight={6.6} peak={11.6} color={P.slate} night={night} attic={8.2} />
+          <Warehouse x={0.3} z={-3} yaw={0.04} width={2.9} depth={3.4} wallHeight={7.8} peak={14} color={P.sail} night={night} hoist />
+        </group>
       </group>
     </group>
   )
@@ -212,11 +228,11 @@ function HarbourCrane() {
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / CRANE_HEIGHT}>
         <mesh position={[0, 3.25, 0]} castShadow>
-          <cylinderGeometry args={[1.7, 2.4, 6.5, 8]} />
+          <cylinderGeometry args={[1.4, 2, 6.5, 8]} />
           <Surf color={P.timber} />
         </mesh>
         <mesh position={[0, 7.75, 0]} castShadow>
-          <coneGeometry args={[2.9, 2.5, 8]} />
+          <coneGeometry args={[2.5, 2.5, 8]} />
           <Surf color={P.ink} />
         </mesh>
         <group position={[1.2, 3.9, 2.4]}>
@@ -237,19 +253,19 @@ function HarbourCrane() {
             <Surf color={P.ink} />
           </mesh>
         </group>
-        <mesh position={[4.47, 11.8, 0]} rotation={[0, 0, -0.95]} castShadow>
-          <cylinderGeometry args={[0.26, 0.42, 11, 6]} />
+        <mesh position={[3.23, 11.74, 0]} rotation={[0, 0, -0.8]} castShadow>
+          <cylinderGeometry args={[0.26, 0.42, 9, 6]} />
           <Surf color={P.timber} />
         </mesh>
-        <mesh position={[3.25, 6.8, 0]} rotation={[0, 0, -0.289]} castShadow>
-          <cylinderGeometry args={[0.17, 0.17, 8.8, 6]} />
+        <mesh position={[2.5, 6.8, 0]} rotation={[0, 0, -0.165]} castShadow>
+          <cylinderGeometry args={[0.17, 0.17, 8.5, 6]} />
           <Surf color={P.timber} />
         </mesh>
-        <mesh position={[8.94, 11.8, 0]}>
+        <mesh position={[6.45, 11.7, 0]}>
           <cylinderGeometry args={[0.07, 0.07, 6.4, 5]} />
           <Surf color={P.ink} />
         </mesh>
-        <mesh position={[8.94, 7.1, 0]} castShadow>
+        <mesh position={[6.45, 7.1, 0]} castShadow>
           <boxGeometry args={[1.6, 1.4, 1.6]} />
           <Surf color={P.cream} />
         </mesh>
@@ -381,7 +397,7 @@ export const harborTown: BiomeBouquet = {
       { id: 'buoy-bollard', height: 24, slot: 'front-right' },
     ],
     rim: 'Cobble kerb ring in kerb slate around the quay edge, six ink mooring bollards at 60 degree steps, each with a cream rope loop slung over it.',
-    exaggeration: 'The mainsail is wider than the hull is long: a 19 m cream sail with a marigold stripe on a 17 m hull, so the ship reads as sail first, boat second.',
+    exaggeration: 'The mainsail is wider than the hull is long: a 19 m cream sail with one marigold stripe on a 17 m hull under a 36 m mast, so the ship reads as sail first, boat second.',
     closestProtected: 'Kirby W4 (palm island with a lighthouse on soft dough). Ours has no lighthouse and no palm: a tall ship in a stone basin, canal-gabled warehouses, a treadwheel crane and a giant buoy on a cut-stone quay.',
   },
   Props: HarborProps,

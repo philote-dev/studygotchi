@@ -24,6 +24,8 @@ import { Districts, Paths } from './Structures'
 import { Floes, Forest, Landforms, Scatter, Terrain, Water } from './Terrain'
 import { WorldScene } from '../world/WorldScene'
 import { edgeTechnique } from '../edge'
+import { ColliderProvider } from '../../collision/ColliderRegistry'
+import { ColliderDebug } from '../../collision/ColliderDebug'
 
 interface BiomeSceneProps {
   layout: BiomeLayout
@@ -87,6 +89,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
       <SkyBlend grade={skyGrade} instant={reducedMotion} />
 
       <StormWindProvider storm={storm} reducedMotion={reducedMotion}>
+      <ColliderProvider>
       {edge ? <edge.Scene layout={layout} night={night} storm={storm} seed={state.seed} reducedMotion={reducedMotion} /> : null}
       {world ? (
         <WorldScene layout={layout} world={world} progress={state.progress} seed={state.seed} night={night} darkDistrict={darkDistrict} />
@@ -104,6 +107,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
         </>
       )}
       <DelayedResidents layout={layout} progress={state.progress} phase={catastrophe.phase} />
+      <ColliderDebug groundAt={(x, z) => Math.max(layout.seaLevel, sampleTerrain(layout, x, z).height)} />
       <Catastrophe layout={layout} state={catastrophe} />
 
       {(state.clouds || storm) && <Clouds layout={layout} night={night || storm} />}
@@ -136,6 +140,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
         limitsOverride={edge?.camera}
         readyKey={state.edge ?? 'none'}
       />
+      </ColliderProvider>
       </StormWindProvider>
       {state.pixel && <PixelComposer />}
     </>

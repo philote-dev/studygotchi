@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { Group } from 'three'
-import { Surf } from '../../render/materials'
+import { Glow, Surf } from '../../render/materials'
 import { BASE_RADIUS, BASE_TOP, type TerrainLobe, outwardRotation, placementFor } from '../bouquetGeometry'
 import type { BiomeBouquet, BouquetPropsProps } from './types'
 
@@ -11,28 +11,20 @@ const P = {
   canopy: '#6fae6a',
   water: '#5fc9c9',
   trunk: '#8b5a3c',
-  stone: '#b7a58f',
+  stone: '#c7b8a0',
   accent: '#f2b84f',
   ink: '#3a2f45',
   white: '#fffaf3',
 } as const
 
-/**
- * The roster accent must stay in its own colour by day and only emit at night.
- * `Glow` greys out when off, which is right for a window but wrong for flame or fruit.
- */
-function Accent({ color, night }: { color: string; night: boolean }) {
-  return <Surf color={color} emissive={night ? color : '#000000'} emissiveIntensity={night ? 1.6 : 0} />
-}
-
 /** Vines dangling from the canopy edge: [x, top y, z, length]. */
 const CANOPY_VINES: readonly (readonly [number, number, number, number])[] = [
-  [-10.5, 21.8, 3.5, 7.5],
-  [9.8, 22, 4.2, 9],
-  [-4.2, 21.2, 9.2, 6],
+  [-9.5, 23.5, 3, 8],
+  [9.2, 23.5, 3.8, 9.5],
+  [-3.8, 22.5, 7.5, 6],
 ]
 
-/** P1: canopy tree over a waterfall cliff, authored at 32 m. Umbrella canopy as wide as the plinth, one white water stripe down the cliff. */
+/** P1: canopy tree over a waterfall cliff, authored at 32 m. A deep-green canopy dome half as tall as it is wide, one white water stripe down the cliff. */
 function WaterfallTree() {
   const place = placementFor('hero')
   return (
@@ -69,20 +61,16 @@ function WaterfallTree() {
           </mesh>
         </group>
         <mesh position={[0, 19, -0.5]} castShadow>
-          <cylinderGeometry args={[1.4, 2.0, 7, 8]} />
+          <cylinderGeometry args={[1.4, 2.0, 6, 8]} />
           <Surf color={P.trunk} />
         </mesh>
-        <mesh position={[0.8, 22.6, 0.6]} scale={[11, 2.6, 10]} rotation={[0, 0.5, 0]} castShadow>
-          <dodecahedronGeometry args={[1, 0]} />
+        <mesh position={[0.5, 25.8, -0.5]} scale={[12.5, 6.2, 11.5]} rotation={[0, 0.2, 0]} castShadow>
+          <dodecahedronGeometry args={[1, 1]} />
           <Surf color={P.deep} />
         </mesh>
-        <mesh position={[0.5, 25.8, -0.5]} scale={[15.5, 4.6, 13.5]} rotation={[0, 0.2, 0]} castShadow>
-          <dodecahedronGeometry args={[1, 1]} />
-          <Surf color={P.canopy} />
-        </mesh>
-        <mesh position={[-1, 29.3, 0]} scale={[7.5, 3.2, 6.8]} rotation={[0, -0.3, 0]} castShadow>
+        <mesh position={[-5.5, 28.5, 3.5]} scale={[6.5, 4, 6]} rotation={[0, -0.4, 0]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
-          <Surf color={P.canopy} />
+          <Surf color={P.deep} />
         </mesh>
         {CANOPY_VINES.map(([x, top, z, length], index) => (
           <mesh key={index} position={[x, top - length / 2, z]} rotation={[0.05, 0, index % 2 ? 0.06 : -0.06]} castShadow>
@@ -106,12 +94,15 @@ const FRONDS: readonly (readonly [number, number, number])[] = [
   [5.5, 0.55, 5.8],
 ]
 
+/** The palm reaches 24 m rather than its 28 m slot so it stays secondary to the waterfall tree (Kirby W4 drift). */
+const PALM_HEIGHT = 24
+
 /** P2: palm, authored at 14 m. A curved trunk under a drooping frond crown nearly as wide as the trunk is tall. */
 function Palm() {
   const place = placementFor('front-left')
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / 14}>
+      <group scale={PALM_HEIGHT / 14}>
         <mesh position={[0, 2.4, 0]} rotation={[0, 0, 0.12]} castShadow>
           <cylinderGeometry args={[0.52, 0.66, 5, 7]} />
           <Surf color={P.trunk} />
@@ -134,7 +125,7 @@ function Palm() {
                 castShadow
               >
                 <coneGeometry args={[1.0, length, 4]} />
-                <Surf color={P.deep} />
+                <Surf color={P.canopy} />
               </mesh>
             </group>
           ))}
@@ -203,6 +194,9 @@ function RuinStack() {
   )
 }
 
+/** The flame is the family's only emissive; scaled ×1.3 on review. */
+const FLAME_SCALE = 1.3
+
 /** P4: tiki torch, authored at 12 m. The flame is bigger than the torch head that holds it. */
 function TikiTorch({ night }: { night: boolean }) {
   const place = placementFor('front-right')
@@ -211,36 +205,37 @@ function TikiTorch({ night }: { night: boolean }) {
     if (!flame.current) return
     const t = clock.elapsedTime
     const stretch = 1 + Math.sin(t * 9) * 0.07 + Math.sin(t * 13.7) * 0.05
-    flame.current.scale.set(1.6 - 0.6 * stretch, stretch, 1.6 - 0.6 * stretch)
+    const girth = FLAME_SCALE * (1.6 - 0.6 * stretch)
+    flame.current.scale.set(girth, FLAME_SCALE * stretch, girth)
     flame.current.rotation.z = Math.sin(t * 6.1) * 0.06
   })
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / 12}>
-        <mesh position={[0, 3.8, 0]} castShadow>
-          <cylinderGeometry args={[0.36, 0.48, 7.6, 7]} />
+        <mesh position={[0, 3.2, 0]} castShadow>
+          <cylinderGeometry args={[0.36, 0.48, 6.4, 7]} />
           <Surf color={P.trunk} />
         </mesh>
-        <mesh position={[0, 2.6, 0]} castShadow>
+        <mesh position={[0, 2.2, 0]} castShadow>
           <cylinderGeometry args={[0.56, 0.56, 0.5, 7]} />
           <Surf color={P.deep} />
         </mesh>
-        <mesh position={[0, 6.4, 0]} castShadow>
+        <mesh position={[0, 5.4, 0]} castShadow>
           <cylinderGeometry args={[0.52, 0.52, 0.5, 7]} />
           <Surf color={P.deep} />
         </mesh>
-        <mesh position={[0, 8.2, 0]} rotation={[Math.PI, 0, 0]} castShadow>
+        <mesh position={[0, 7.0, 0]} rotation={[Math.PI, 0, 0]} castShadow>
           <coneGeometry args={[1.55, 2.0, 7]} />
           <Surf color={P.ink} />
         </mesh>
-        <group ref={flame} position={[0, 8.9, 0]}>
+        <group ref={flame} position={[0, 7.7, 0]} scale={FLAME_SCALE}>
           <mesh position={[0, 1.7, 0]}>
             <coneGeometry args={[1.7, 3.4, 7]} />
-            <Accent color={P.accent} night={night} />
+            <Glow color={P.accent} on={night} offColor={P.accent} />
           </mesh>
           <mesh position={[0.3, 2.9, 0.2]} rotation={[0, 0, -0.2]}>
             <coneGeometry args={[0.85, 2.0, 6]} />
-            <Accent color={P.accent} night={night} />
+            <Glow color={P.accent} on={night} offColor={P.accent} />
           </mesh>
         </group>
       </group>
@@ -248,38 +243,9 @@ function TikiTorch({ night }: { night: boolean }) {
   )
 }
 
-const VINE_COUNT = 16
-const vineAngle = (index: number) => (index / VINE_COUNT) * Math.PI * 2 + 0.12
-const vineLength = (index: number) => 1.15 + 0.4 * Math.abs(Math.sin(index * 2.3))
-
-/** Rim vines that carry a fruit; the fruit lives in Props so it can emit at night. */
-const FRUIT_VINES: readonly number[] = [14, 0, 2, 4, 12, 6]
-
-function RimFruit({ night }: { night: boolean }) {
-  return (
-    <group>
-      {FRUIT_VINES.map((index) => {
-        const angle = vineAngle(index)
-        const radius = BASE_RADIUS + 0.7
-        return (
-          <mesh
-            key={index}
-            position={[Math.sin(angle) * radius, BASE_TOP - 0.45 - vineLength(index) - 0.4, Math.cos(angle) * radius]}
-            castShadow
-          >
-            <dodecahedronGeometry args={[0.95, 0]} />
-            <Accent color={P.accent} night={night} />
-          </mesh>
-        )
-      })}
-    </group>
-  )
-}
-
 function Props({ propCount, night }: BouquetPropsProps) {
   return (
     <group>
-      <RimFruit night={night} />
       <WaterfallTree />
       <Palm />
       {propCount >= 3 && <RuinStack />}
@@ -288,13 +254,20 @@ function Props({ propCount, night }: BouquetPropsProps) {
   )
 }
 
-/** Hanging vine fringe: a lip band with 16 vines dropping ~1.2 m below the edge, leaf tufts on every third. */
-export function Rim({ color }: { color: string }) {
+const VINE_COUNT = 16
+const vineAngle = (index: number) => (index / VINE_COUNT) * Math.PI * 2 + 0.12
+const vineLength = (index: number) => 1.15 + 0.4 * Math.abs(Math.sin(index * 2.3))
+
+/** Rim vines that end in a static fruit dot in the lip colour. The pedestal never emits. */
+const FRUIT_VINES: readonly number[] = [14, 0, 2, 4, 12, 6]
+
+/** Hanging vine fringe: a vine-green band, 16 vines dropping ~1.2 m below the edge, leaf tufts on every third, fruit dots in the lip colour. */
+function Rim({ color }: { color: string }) {
   return (
     <group>
       <mesh position={[0, BASE_TOP - 0.25, 0]} rotation={[0, Math.PI / 12, 0]} castShadow>
         <cylinderGeometry args={[BASE_RADIUS + 0.3, BASE_RADIUS + 0.15, 0.45, 12]} />
-        <Surf color={color} />
+        <Surf color={P.deep} />
       </mesh>
       {Array.from({ length: VINE_COUNT }, (_, index) => {
         const angle = vineAngle(index)
@@ -304,7 +277,7 @@ export function Rim({ color }: { color: string }) {
           <group key={index} position={[Math.sin(angle) * radius, BASE_TOP - 0.45, Math.cos(angle) * radius]} rotation={[0, angle, 0]}>
             <mesh position={[0, -length / 2, 0]} rotation={[-0.08, 0, index % 2 ? 0.08 : -0.08]} castShadow>
               <cylinderGeometry args={[0.1, 0.15, length, 5]} />
-              <Surf color={color} />
+              <Surf color={P.deep} />
             </mesh>
             {index % 3 === 0 && (
               <mesh position={[0, -length - 0.05, 0.12]} scale={[0.6, 0.32, 0.6]} castShadow>
@@ -313,6 +286,16 @@ export function Rim({ color }: { color: string }) {
               </mesh>
             )}
           </group>
+        )
+      })}
+      {FRUIT_VINES.map((index) => {
+        const angle = vineAngle(index)
+        const radius = BASE_RADIUS + 0.7
+        return (
+          <mesh key={index} position={[Math.sin(angle) * radius, BASE_TOP - 0.45 - vineLength(index) - 0.4, Math.cos(angle) * radius]} castShadow>
+            <dodecahedronGeometry args={[0.85, 0]} />
+            <Surf color={color} />
+          </mesh>
         )
       })}
     </group>
@@ -334,7 +317,7 @@ export const jungle: BiomeBouquet = {
   spec: {
     id: 'jungle',
     name: 'Waterfall Canopy Ruins',
-    silhouette: 'A wide umbrella canopy over a green cliff with one white-cyan water stripe falling down its face, a palm leaning left and a pale ruin stack at the back.',
+    silhouette: 'A deep-green canopy dome over a cliff with one white-cyan water stripe falling down its face, a light-green palm leaning left and a pale ruin stack at the back.',
     hero: 'waterfall-tree',
     elements: [
       { id: 'waterfall-tree', height: 32, slot: 'hero' },
@@ -342,9 +325,9 @@ export const jungle: BiomeBouquet = {
       { id: 'ruin-stack', height: 28, slot: 'back-right' },
       { id: 'tiki-torch', height: 24, slot: 'front-right' },
     ],
-    rim: 'Hanging vine fringe: thin green vines dropping 1.2 m below the lip all the way around, with golden fruit dots at the plinth edge.',
-    exaggeration: 'The canopy umbrella is as wide as the whole plinth, and one white waterfall stripe runs the full height of the cliff so it reads at 48 px.',
-    closestProtected: 'Kirby W4 (palm island on soft dough). Ours leads with a waterfall canopy tree over a cliff and a four-block ruin stack; the palm is secondary, and a tiki torch and vine fringe replace the open sand.',
+    rim: 'Hanging vine fringe: thin green vines dropping 1.2 m below the lip all the way around, with static fruit-gold dots at the plinth edge (nothing on the pedestal emits).',
+    exaggeration: 'The canopy dome is 25 m across and half as tall as it is wide, and one white waterfall stripe runs the full height of the cliff so it reads at 48 px.',
+    closestProtected: 'Kirby W4 (palm island on soft dough). Ours leads with a waterfall canopy tree over a cliff and a four-block ruin stack; the palm is held to 24 m so it stays secondary, and a tiki torch and vine fringe replace the open sand.',
   },
   Props,
   Rim,

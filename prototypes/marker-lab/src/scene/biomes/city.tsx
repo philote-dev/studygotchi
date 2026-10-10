@@ -8,7 +8,8 @@ import type { BiomeBouquet, BouquetPropsProps } from './types'
 /** City palette: roster row + pedestal hexes, ink and cream for details. */
 const P = {
   wall: '#e6f2fb',
-  roof: '#b98bb0',
+  /** Roof plates: one step darker than the plinth side (review: `#b98bb0` merged into the plaster). */
+  roof: '#a57aa0',
   paving: '#d9c3d6',
   kerbCream: '#f6ecd2',
   kerb: '#6b5f7a',
@@ -25,8 +26,15 @@ const UPPER_COLS = [-2.2, 2.2] as const
 const UPPER_ROWS = [20.4, 25.8] as const
 
 /**
+ * Night checker: 6 of the 12 facets light up, so at 48 px every lit window has a
+ * dark neighbour on each side (≥ 4 m pitch between lit boxes) and the grid reads
+ * as points rather than one bright block.
+ */
+const lit = (column: number, row: number) => (column + row) % 2 === 0
+
+/**
  * P1 tower block, 32 m. Exaggerated feature: it is all window grid, twelve
- * storey-tall lit facets on a stepped slab with mauve roof plates.
+ * storey-tall facets on a stepped slab with mauve roof plates, six lit at night.
  */
 function TowerBlock({ night }: { night: boolean }) {
   const place = placementFor('hero')
@@ -49,27 +57,27 @@ function TowerBlock({ night }: { night: boolean }) {
           <boxGeometry args={[10, 11, 8]} />
           <Surf color={P.wall} />
         </mesh>
-        <mesh position={[0, 29.4, -0.6]} castShadow>
-          <boxGeometry args={[11, 1, 9]} />
+        <mesh position={[0, 29.6, -0.6]} castShadow>
+          <boxGeometry args={[11.4, 1.4, 9.4]} />
           <Surf color={P.roof} />
         </mesh>
-        <mesh position={[0, 30.95, -1]} castShadow>
-          <boxGeometry args={[4.2, 2.1, 4]} />
+        <mesh position={[0, 31.15, -1]} castShadow>
+          <boxGeometry args={[5, 1.7, 4.4]} />
           <Surf color={P.roof} />
         </mesh>
-        {LOWER_ROWS.map((y) =>
-          LOWER_COLS.map((x) => (
+        {LOWER_ROWS.map((y, row) =>
+          LOWER_COLS.map((x, column) => (
             <mesh key={`${x}:${y}`} position={[x, y, 5.15]}>
               <boxGeometry args={[2.6, 3.6, 0.3]} />
-              <Glow color={P.light} on={night} />
+              <Glow color={P.light} on={night && lit(column, row)} />
             </mesh>
           )),
         )}
-        {UPPER_ROWS.map((y) =>
-          UPPER_COLS.map((x) => (
+        {UPPER_ROWS.map((y, row) =>
+          UPPER_COLS.map((x, column) => (
             <mesh key={`${x}:${y}`} position={[x, y, 3.55]}>
               <boxGeometry args={[2.8, 3.6, 0.3]} />
-              <Glow color={P.light} on={night} />
+              <Glow color={P.light} on={night && lit(column, row + 1)} />
             </mesh>
           )),
         )}
@@ -94,7 +102,8 @@ function ClockTower() {
   })
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / 28}>
+      {/* Review: +2 m outward left so the tower block and clock tower do not merge. */}
+      <group position={[-2, 0, 0]} scale={place.height / 28}>
         <mesh position={[0, 1.5, 0]} castShadow>
           <boxGeometry args={[8, 3, 8]} />
           <Surf color={P.roof} />
@@ -326,7 +335,7 @@ export const city: BiomeBouquet = {
       { id: 'lamp-planter', height: 24, slot: 'front-right' },
     ],
     rim: 'Kerb and cobble ring: a dark plum kerb band around the plinth edge with a ring of flat cream and mauve cobble plates set on top of it.',
-    exaggeration: 'The tower block is all window grid: twelve chunky lit facets across its stepped front, each window a full storey tall.',
+    exaggeration: 'The tower block is all window grid: twelve chunky facets across its stepped front, each a full storey tall, six lit in a checker at night.',
     closestProtected:
       'Kirby W6 (sandstone keep towers with green pipes on a stone pedestal). Ours has no keep and no pipes: a stepped window-grid tower block, a clock tower whose face spans most of its width, townhouses with awnings that stick out a storey, and a 24 m lamp post, on a paving-plate plinth with a cobble kerb.',
   },

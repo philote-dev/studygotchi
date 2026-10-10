@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { MarkerDefinition } from '../markers'
-import { MarkerScene } from '../scene/MarkerScene'
+import { MARKER_CAMERA, MarkerScene } from '../scene/MarkerScene'
 
 export function MarkerViewport({
   marker,
@@ -24,7 +24,7 @@ export function MarkerViewport({
         <Canvas
           shadows
           dpr={1}
-          camera={{ position: [0, 72, 118], fov: 30, near: 0.1, far: 260 }}
+          camera={{ position: MARKER_CAMERA.position, fov: MARKER_CAMERA.fov, near: MARKER_CAMERA.near, far: MARKER_CAMERA.far }}
           gl={{ antialias: false, preserveDrawingBuffer: true }}
         >
           <MarkerScene

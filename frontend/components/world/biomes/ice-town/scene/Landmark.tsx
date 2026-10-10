@@ -1,8 +1,10 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ICE_TOWN_PALETTE as P, type LandmarkStage } from '../layout/biome-layout'
 import { Glow, Surf } from '../render/materials'
+import { useCollider } from '../../collision/ColliderRegistry'
+import { landmarkColliders } from '../../collision/ice-town-footprints'
 
 /**
  * Ice / Chilly Town landmark line: igloo (s1) → observatory (s2) → glacier lighthouse (s3).
@@ -21,6 +23,8 @@ export function Landmark({
   useFrame(({ clock }) => {
     if (beacon.current) beacon.current.rotation.y = clock.elapsedTime * 0.9
   })
+  // Plinth plus the igloo / observatory / lighthouse footprint of the current stage.
+  useCollider(useMemo(() => landmarkColliders(position[0], position[2], stage), [position, stage]))
 
   return (
     <group position={position}>

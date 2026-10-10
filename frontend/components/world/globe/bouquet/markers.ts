@@ -64,7 +64,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     id: 'ice-town',
     name: 'Ice / Chilly Town',
     pedestal: {
-      side: '#8fbfdc',
+      side: '#7fb0d0',
       top: '#eef4f7',
       lip: '#ffffff',
       rim: 'rounded snow lip, 12 lobes dripping 0.4 m over the edge',
@@ -136,8 +136,8 @@ export const MARKERS: readonly MarkerDefinition[] = [
     id: 'future-utopia',
     name: 'Future Utopia',
     pedestal: {
-      side: '#c7dfd6',
-      top: '#e3f2ec',
+      side: '#5fa894',
+      top: '#c9eedd',
       lip: '#3fd1c9',
       rim: 'flush glass edge with a 0.3 m cyan light strip',
     },
@@ -161,7 +161,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     },
     props: [
       { id: 'tall-ship', label: 'tall ship with cream sails', category: 'ship', height: 32, colors: ['#4a3c36', '#f4e9d2', '#f0b429'] },
-      { id: 'warehouse-row', label: 'three gabled warehouses', category: 'building', height: 28, colors: ['#5f9ea8', '#f4e9d2', '#6d7f96'] },
+      { id: 'warehouse-row', label: 'three gabled warehouses', category: 'building', height: 28, colors: ['#5f9ea8', '#f4e9d2', '#6d7f96'], emissive: '#ffe9a8' },
       { id: 'harbour-crane', label: 'timber harbour crane', category: 'crane', height: 28, colors: ['#786557'] },
       { id: 'buoy-bollard', label: 'buoy and bollard cluster', category: 'tower', height: 24, colors: ['#f0b429', '#3a2f45'] },
     ],
@@ -198,7 +198,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     props: [
       { id: 'mesa-butte', label: 'flat-top mesa butte', category: 'mesa', height: 32, colors: ['#a0522d', '#d9b07a'] },
       { id: 'windpump', label: 'windpump with eight-blade vane', category: 'tower', height: 28, colors: ['#8b5a3c'] },
-      { id: 'saloon', label: 'saloon with false front', category: 'building', height: 28, colors: ['#c2925a', '#8b5a3c'] },
+      { id: 'saloon', label: 'saloon with false front', category: 'building', height: 28, colors: ['#c2925a', '#8b5a3c'], emissive: '#ffe9a8' },
       { id: 'saguaro-pair', label: 'saguaro pair', category: 'tree', height: 24, colors: ['#4f8a4a'] },
     ],
     accentObject: 'saguaro-pair',
@@ -228,7 +228,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     pedestal: {
       side: '#d2a95e',
       top: '#efd9a2',
-      lip: '#e2b98a',
+      lip: '#b8824a',
       rim: 'three wind-ripple strata bands',
     },
     props: [
@@ -246,13 +246,13 @@ export const MARKERS: readonly MarkerDefinition[] = [
     pedestal: {
       side: '#8d9299',
       top: '#86b26e',
-      lip: '#a9aeb5',
+      lip: '#eef4f7',
       rim: 'split-granite ledge with turf tufts and six snow-dusted notches',
     },
     props: [
       { id: 'twin-peak', label: 'jagged twin peak with snow caps', category: 'alpine-peak', height: 32, colors: ['#8d9299', '#eef4f7'] },
       { id: 'cable-pylon', label: 'cable pylon with orange gondola', category: 'tower', height: 28, colors: ['#6d7f96', '#d9622b'] },
-      { id: 'chalet', label: 'wide-roof chalet', category: 'building', height: 28, colors: ['#786557', '#f4e9d2'] },
+      { id: 'chalet', label: 'wide-roof chalet', category: 'building', height: 28, colors: ['#786557', '#f4e9d2'], emissive: '#ffe9a8' },
       { id: 'fir-pair', label: 'fir pair', category: 'tree', height: 24, colors: ['#4f8a4a'] },
     ],
     accentObject: 'cable-pylon',
@@ -282,7 +282,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     pedestal: {
       side: '#4f8a4a',
       top: '#6fae6a',
-      lip: '#4f8a4a',
+      lip: '#f2b84f',
       rim: '1.2 m hanging vine fringe with fruit dots',
     },
     props: [
@@ -306,7 +306,7 @@ export const MARKERS: readonly MarkerDefinition[] = [
     props: [
       { id: 'great-round-tree', label: 'great round tree', category: 'round-tree', height: 32, colors: ['#4f8a4a', '#8b5a3c'] },
       { id: 'round-tree-pair', label: 'small and large round-tree pair', category: 'round-tree', height: 28, colors: ['#4f8a4a', '#8b5a3c'] },
-      { id: 'mushroom-cottage', label: 'mushroom cottage', category: 'building', height: 28, colors: ['#d9765c', '#f2e3c6'] },
+      { id: 'mushroom-cottage', label: 'mushroom cottage', category: 'building', height: 28, colors: ['#d9765c', '#f2e3c6'], emissive: '#ffe9a8' },
       { id: 'log-fern', label: 'log and fern clump', category: 'tree', height: 24, colors: ['#8b5a3c', '#4f8a4a'] },
     ],
     accentObject: 'mushroom-cottage',
@@ -334,15 +334,15 @@ export const MARKERS: readonly MarkerDefinition[] = [
     id: 'whimsical-land',
     name: 'Whimsical Land',
     pedestal: {
-      side: '#f7c8d8',
+      side: '#e8a9c0',
       top: '#fff1c9',
-      lip: '#8fc9d8',
+      lip: '#5fa8c8',
       rim: 'scalloped edge with alternating candy stripes',
     },
     props: [
       { id: 'spiral-tower', label: 'spiral tower with a 12 degree lean', category: 'spiral-tower', height: 32, colors: ['#f7c8d8', '#8fc9d8'] },
       { id: 'oversized-flower', label: 'oversized flower with a 3 m bloom', category: 'tree', height: 28, colors: ['#8fc9d8', '#fff1c9'] },
-      { id: 'upside-down-house', label: 'upside-down house balanced on its ridge', category: 'building', height: 28, colors: ['#f7c8d8', '#fff1c9'] },
+      { id: 'upside-down-house', label: 'upside-down house balanced on its ridge', category: 'building', height: 28, colors: ['#f7c8d8', '#fff1c9'], emissive: '#ffe9a8' },
       { id: 'checker-spiral', label: 'low checker-path spiral', category: 'ring', height: 24, colors: ['#8fc9d8', '#fff1c9'] },
     ],
     accentObject: 'spiral-tower',
@@ -352,10 +352,10 @@ export const MARKERS: readonly MarkerDefinition[] = [
     id: 'fractal-recursion',
     name: 'Fractal Recursion',
     pedestal: {
-      side: '#8a90a8',
-      top: '#a8b0c4',
+      side: '#7a6f9e',
+      top: '#a99fc9',
       lip: '#dfe3ff',
-      rim: 'three one-third-scale sub-bouquets budding from the plinth edge',
+      rim: 'two one-quarter-scale sub-bouquets budding from the plinth edge',
     },
     props: [
       { id: 'pythagoras-tree', label: 'Pythagoras tree of branching squares', category: 'fractal-tree', height: 32, colors: ['#a8b0c4'] },

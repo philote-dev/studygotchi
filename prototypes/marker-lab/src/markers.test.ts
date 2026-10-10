@@ -34,16 +34,26 @@ describe('marker colour acceptance', () => {
     expect(() => hexToLab('not-a-colour')).toThrow(TypeError)
   })
 
-  it('records the literal roster rows that do not meet the provisional lip contrast threshold', () => {
+  it('gives every family a lip that reads against its own side at 48 px', () => {
+    // 2026-10-10 acceptance review: jungle (lip = side), egyptian-desert and alpine were re-tinted,
+    // future-utopia's side deepened to #5fa894 so the cyan strip clears the threshold.
     const failures = MARKERS.flatMap((marker) => {
       const contrast = deltaE2000(hexToLab(marker.pedestal.lip), hexToLab(marker.pedestal.side))
       return contrast < MIN_LIP_SIDE_DELTA_E ? [{ id: marker.id, contrast: Number(contrast.toFixed(2)) }] : []
     })
-    expect(failures).toEqual([
-      { id: 'egyptian-desert', contrast: 7.92 },
-      { id: 'alpine', contrast: 8.61 },
-      { id: 'jungle', contrast: 0 },
-    ])
+    expect(failures).toEqual([])
+  })
+
+  it('keeps the three 48 px colour-collision families off their neighbours', () => {
+    const by = Object.fromEntries(MARKERS.map((marker) => [marker.id, marker.pedestal]))
+    const sideTop = (a: string, b: string) => [
+      deltaE2000(hexToLab(by[a].side), hexToLab(by[b].side)),
+      deltaE2000(hexToLab(by[a].top), hexToLab(by[b].top)),
+    ]
+    // Before the re-tint these pairs sat at 8.0/5.4, 12.5/8.6 and 17.5/6.5.
+    expect(Math.max(...sideTop('fractal-recursion', 'harbor-town'))).toBeGreaterThan(14)
+    expect(Math.max(...sideTop('future-utopia', 'ink-world'))).toBeGreaterThan(20)
+    expect(Math.max(...sideTop('future-utopia', 'ice-town'))).toBeGreaterThan(20)
   })
 
   it('does not pair a near-matching top colour with the same tallest-prop category', () => {

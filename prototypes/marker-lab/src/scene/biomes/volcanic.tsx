@@ -1,15 +1,15 @@
 import { useRef, type RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type * as THREE from 'three'
-import { Surf } from '../../render/materials'
+import { Glow, Surf } from '../../render/materials'
 import { BASE_RADIUS, BASE_TOP, outwardRotation, placementFor, type BouquetPlacement, type BouquetSlot } from '../bouquetGeometry'
 import type { BiomeBouquet, BouquetPropsProps } from './types'
 
-/** Family slots: columns pushed left of the cone's flank, ember rock pushed right so its puff clears the forge door. */
+/** Family slots: cone pushed back so its wide foot clears the forge house; columns left of the flank; ember rock far right. */
 const PLACEMENTS: readonly BouquetPlacement[] = [
-  { id: 'hero', position: [-0.5, BASE_TOP, -7.5], height: 32, yaw: 0.08, outwardLean: 0.16, crownRadius: 9 },
+  { id: 'hero', position: [-0.5, BASE_TOP, -9], height: 32, yaw: 0.08, outwardLean: 0.16, crownRadius: 9 },
   { id: 'front-left', position: [-9.5, BASE_TOP, 2.5], height: 28, yaw: 0.08, outwardLean: 0.14, crownRadius: 4.5 },
-  { id: 'back-right', position: [9, BASE_TOP, -3], height: 28, yaw: -0.18, outwardLean: 0.18, crownRadius: 9 },
+  { id: 'back-right', position: [11, BASE_TOP, -3.2], height: 28, yaw: -0.18, outwardLean: 0.18, crownRadius: 9 },
   { id: 'front-right', position: [12.5, BASE_TOP, 3.5], height: 24, yaw: 0.16, outwardLean: 0.2, crownRadius: 10 },
 ] as const
 
@@ -27,59 +27,50 @@ const P = {
   crust: '#8a4a3f',
   lava: '#ff7a3a',
   smoke: '#fffaf3',
+  nightSmoke: '#4a4058',
 } as const
 
 const HEX = Math.PI / 6
 const place = (slot: BouquetSlot) => placementFor(slot, PLACEMENTS)
 
-/** Lava stays orange by day (unlike a window) and only emits at night. */
-function Lava({ night, intensity = 1.6 }: { night: boolean; intensity?: number }) {
-  return <Surf color={P.lava} emissive={P.lava} emissiveIntensity={night ? intensity : 0} />
-}
-
-/** P1 — crater cone. Authored 15.8 m; the crater rim is a lava torus as thick as a tyre. */
+/** P1 — crater cone. Authored 15.8 m; wide foot, slim neck, and a crater rim torus as thick as a tyre. */
 function CraterCone({ night }: { night: boolean }) {
   const slot = place('hero')
   return (
     <group position={slot.position} rotation={outwardRotation(slot)}>
       <group scale={slot.height / 15.8}>
-        {/* truncated cone body, flat face toward the camera */}
-        <mesh position={[0, 7.3, 0]} rotation={[0, Math.PI / 7, 0]} scale={[1, 1, 0.78]} castShadow>
-          <cylinderGeometry args={[3, 6.4, 14.6, 7]} />
+        {/* truncated cone body (foot : neck ≈ 5 : 1), flat face toward the camera */}
+        <mesh position={[0, 7.3, 0]} rotation={[0, Math.PI / 7, 0]} scale={[0.92, 1, 0.68]} castShadow>
+          <cylinderGeometry args={[1.7, 8, 14.6, 7]} />
           <Surf color={P.crust} />
         </mesh>
         {/* dark basalt shoulders at the foot */}
-        <mesh position={[-4.4, 1.9, 1.4]} scale={[3.2, 2.4, 2.6]} rotation={[0.1, 0.5, 0]} castShadow>
+        <mesh position={[-6.2, 1.9, 2.6]} scale={[3.2, 2.4, 2.6]} rotation={[0.1, 0.5, 0]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.basalt} />
         </mesh>
-        <mesh position={[4, 1.5, 2]} scale={[2.6, 2, 2.2]} rotation={[0, -0.4, 0.1]} castShadow>
+        <mesh position={[5.8, 1.5, 3.2]} scale={[2.6, 2, 2.2]} rotation={[0, -0.4, 0.1]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.basalt} />
         </mesh>
-        {/* basalt neck protruding from the upper slope */}
-        <mesh position={[-2.4, 10.2, 2]} scale={[1.6, 1.2, 1.2]} rotation={[0.3, 0.6, -0.2]} castShadow>
+        {/* basalt neck rock protruding from the upper slope */}
+        <mesh position={[-2.6, 9.6, 2.5]} scale={[1.6, 1.2, 1.2]} rotation={[0.3, 0.6, -0.2]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.basalt} />
         </mesh>
         {/* THE crater rim: a tyre-thick lava torus, and the pool inside it */}
         <mesh position={[0, 14.7, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
           <torusGeometry args={[3, 0.95, 8, 24]} />
-          <Lava night={night} />
+          <Glow color={P.lava} offColor={P.lava} on={night} />
         </mesh>
         <mesh position={[0, 14.4, 0]}>
           <cylinderGeometry args={[2.5, 2.5, 0.6, 8]} />
-          <Lava night={night} intensity={2} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2} />
         </mesh>
         {/* one lava tongue down the front face */}
-        <mesh position={[0.8, 10, 3.05]} rotation={[1.3, 0.05, 0.1]}>
+        <mesh position={[0.7, 9.6, 2.9]} rotation={[1.19, 0.05, 0.1]}>
           <boxGeometry args={[0.9, 0.3, 5.4]} />
-          <Lava night={night} />
-        </mesh>
-        {/* parasitic cinder cone */}
-        <mesh position={[5.6, 1.9, -0.6]} rotation={[0, 0.4, 0]} castShadow>
-          <coneGeometry args={[2.3, 3.8, 6]} />
-          <Surf color={P.crust} />
+          <Glow color={P.lava} offColor={P.lava} on={night} />
         </mesh>
       </group>
     </group>
@@ -144,13 +135,13 @@ function ForgeHouse({ night }: { night: boolean }) {
           <boxGeometry args={[2.1, 0.5, 2.1]} />
           <Surf color={P.basalt} />
         </mesh>
-        {/* open door glow + lintel */}
-        <mesh position={[-1.1, 1.45, 2.22]}>
-          <boxGeometry args={[2, 2.9, 0.16]} />
-          <Lava night={night} intensity={2} />
+        {/* THE open forge mouth: a door glow 1.6× the old one, plus lintel */}
+        <mesh position={[-1.4, 2.05, 2.22]}>
+          <boxGeometry args={[3.2, 4.1, 0.16]} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2.8} />
         </mesh>
-        <mesh position={[-1.1, 3.1, 2.3]} castShadow>
-          <boxGeometry args={[2.6, 0.4, 0.45]} />
+        <mesh position={[-1.4, 4.3, 2.3]} castShadow>
+          <boxGeometry args={[3.8, 0.4, 0.45]} />
           <Surf color={P.basalt} />
         </mesh>
         {/* lean-to workshop */}
@@ -163,7 +154,7 @@ function ForgeHouse({ night }: { night: boolean }) {
           <Surf color={P.basalt} />
         </mesh>
         {/* basalt step stone */}
-        <mesh position={[-1.1, 0.15, 3.1]} castShadow>
+        <mesh position={[-1.4, 0.15, 3.1]} castShadow>
           <cylinderGeometry args={[1.2, 1.4, 0.3, 6]} />
           <Surf color={P.basalt} />
         </mesh>
@@ -173,48 +164,48 @@ function ForgeHouse({ night }: { night: boolean }) {
 }
 
 const PUFF: readonly (readonly [number, number, number, number])[] = [
-  // [x, y, z, radius]
-  [0, 5.2, 0, 1.2],
-  [0, 8.2, 0, 2.7],
-  [-2, 7.2, 0.5, 1.9],
-  [1.9, 7.5, -0.3, 1.8],
-  [0.6, 10.2, 0.3, 1.7],
+  // [x, y, z, radius] — a rising column: puff radii are 0.6× the rock
+  [0, 6.2, 0, 0.95],
+  [0, 8.3, 0, 1.62],
+  [-1.2, 7.9, 0.3, 1.1],
+  [1.1, 8.1, -0.2, 1.05],
+  [0.3, 10.6, 0.2, 1.3],
 ]
 
-/** P4 — ember rock + smoke puff. Authored 12.2 m; the puff is bigger than the rock. */
+/** P4 — ember rock + smoke column. Authored 12 m; the smoke column is twice the rock's height. */
 function EmberRock({ night, puff }: { night: boolean; puff: RefObject<THREE.Group | null> }) {
   const slot = place('front-right')
   return (
     <group position={slot.position} rotation={outwardRotation(slot)}>
-      <group scale={slot.height / 12.2}>
-        <mesh position={[0, 2, 0]} scale={[2.5, 2.1, 2.3]} rotation={[0.2, 0.5, 0.1]} castShadow>
+      <group scale={slot.height / 12}>
+        <mesh position={[0, 1.9, 0]} scale={[2.2, 1.9, 2]} rotation={[0.2, 0.5, 0.1]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.crust} />
         </mesh>
         {/* lava seeping out under the rock */}
-        <mesh position={[0.5, 0.25, 0.5]}>
-          <cylinderGeometry args={[2, 2.3, 0.5, 7]} />
-          <Lava night={night} />
+        <mesh position={[0.4, 0.25, 0.4]}>
+          <cylinderGeometry args={[2.2, 2.5, 0.5, 7]} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2.6} />
         </mesh>
         {/* three ember cracks on the faces */}
-        <mesh position={[1, 2.3, 1.9]} rotation={[0.3, 0.4, 0.5]}>
-          <boxGeometry args={[0.3, 2.9, 0.3]} />
-          <Lava night={night} />
+        <mesh position={[0.9, 2.1, 1.65]} rotation={[0.3, 0.4, 0.5]}>
+          <boxGeometry args={[0.3, 2.6, 0.3]} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2.6} />
         </mesh>
-        <mesh position={[-1.4, 1.8, 1.7]} rotation={[0.2, -0.3, -0.6]}>
-          <boxGeometry args={[0.3, 2.4, 0.3]} />
-          <Lava night={night} />
+        <mesh position={[-1.2, 1.6, 1.5]} rotation={[0.2, -0.3, -0.6]}>
+          <boxGeometry args={[0.3, 2.2, 0.3]} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2.6} />
         </mesh>
-        <mesh position={[0.2, 3.5, 1.5]} rotation={[0.45, 0.2, 0.15]}>
-          <boxGeometry args={[2.4, 0.3, 0.3]} />
-          <Lava night={night} />
+        <mesh position={[0.2, 3.1, 1.3]} rotation={[0.45, 0.2, 0.15]}>
+          <boxGeometry args={[2.2, 0.3, 0.3]} />
+          <Glow color={P.lava} offColor={P.lava} on={night} intensity={2.6} />
         </mesh>
-        {/* THE smoke puff */}
+        {/* THE smoke column: cream by day, ink-shaded at night so it never reads as a glow */}
         <group ref={puff}>
           {PUFF.map(([x, y, z, radius], index) => (
             <mesh key={index} position={[x, y, z]} castShadow>
               <sphereGeometry args={[radius, 7, 5]} />
-              <Surf color={P.smoke} />
+              <Surf color={night ? P.nightSmoke : P.smoke} />
             </mesh>
           ))}
         </group>
@@ -233,7 +224,7 @@ function RimCracks({ night }: { night: boolean }) {
         return (
           <mesh key={index} position={[Math.sin(angle) * 15.3, BASE_TOP + 0.22, Math.cos(angle) * 15.3]} rotation={[0, angle, 0]}>
             <boxGeometry args={[0.42, 0.2, length]} />
-            <Lava night={night} />
+            <Glow color={P.lava} offColor={P.lava} on={night} />
           </mesh>
         )
       })}
@@ -285,7 +276,7 @@ export const volcanic: BiomeBouquet = {
   spec: {
     id: 'volcanic',
     name: 'Cinder Forge Burst',
-    silhouette: 'A dark truncated cone wearing a thick orange rim, ink organ-pipe columns at its left foot and a white smoke puff front-right, over a tan disc on an ink side.',
+    silhouette: 'A wide-footed dark cone narrowing to a thick orange rim, ink organ-pipe columns at its left foot and a slim smoke column front-right, over a tan disc on an ink side.',
     hero: 'crater-cone',
     elements: [
       { id: 'crater-cone', height: 32, slot: 'hero' },
@@ -295,7 +286,7 @@ export const volcanic: BiomeBouquet = {
     ],
     rim: 'Chunky basalt crust: 12 irregular dark blocks around the plinth edge, cut by 6 radial ember cracks that are orange by day and emissive at night.',
     exaggeration: 'A crater rim as thick as a tyre: a lava torus a fifth of the cone height, orange by day and glowing at night.',
-    closestProtected: 'Kirby W8 (a single volcano on a dark disc). Ours adds a five-column basalt cluster, a forge house with a chimney taller than itself and an ember rock under an oversized smoke puff, on a crusted plinth with ember cracks.',
+    closestProtected: 'Kirby W8 (a single volcano on a dark disc). Ours adds a five-column basalt cluster, a forge house with an open forge mouth and a chimney taller than itself, and an ember rock under a tall smoke column, on a crusted plinth with ember cracks.',
     placements: PLACEMENTS,
   },
   Props,

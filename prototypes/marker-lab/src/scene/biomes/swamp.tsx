@@ -15,35 +15,35 @@ const P = {
   moss: '#a3b080',
   timber: '#786557',
   paper: '#f2c14e',
-  lily: '#d66fa8',
+  lily: '#b58aa8',
   ink: '#3a2f45',
   cream: '#f4e9d2',
   window: '#ffe9a8',
 } as const
 
-/**
- * The roster accent must stay in its own colour by day and only emit at night.
- * `Glow` greys out when off, which is right for a window but wrong for paper.
- */
-function Accent({ color, night }: { color: string; night: boolean }) {
-  return <Surf color={color} emissive={night ? color : '#000000'} emissiveIntensity={night ? 1.6 : 0} />
-}
-
-/** Moss curtains hanging off the cypress crown: [angle, radius, length, top radius]. Angle 0 faces the camera. */
-const MOSS_CURTAINS: readonly (readonly [number, number, number, number])[] = [
-  [0.1, 3.4, 12, 2.0],
-  [0.65, 8.0, 9.5, 1.8],
-  [1.5, 7.4, 8, 1.5],
-  [2.6, 6.6, 7, 1.4],
-  [3.6, 7.4, 8.5, 1.5],
-  [4.7, 7.8, 9, 1.7],
-  [5.6, 6.2, 11, 1.9],
+/** Moss curtains hanging off the crown tiers: [angle, radius, length, top radius, hang-from y]. Angle 0 faces the camera. */
+const MOSS_CURTAINS: readonly (readonly [number, number, number, number, number])[] = [
+  [0.1, 3.4, 12, 2.0, 26.2],
+  [0.65, 7.2, 9.5, 1.8, 26.0],
+  [1.5, 6.6, 8, 1.5, 26.0],
+  [2.6, 6.0, 7, 1.4, 26.0],
+  [3.6, 6.6, 8.5, 1.5, 26.0],
+  [4.7, 7.0, 9, 1.7, 26.0],
+  [5.6, 5.6, 11, 1.9, 26.2],
+  [0.9, 4.6, 7.5, 1.4, 28.8],
+  [5.0, 4.2, 8, 1.5, 28.8],
 ]
 
-/** P1: bald cypress, authored at 32 m. Dark buttressed trunk, flat crown, moss curtains longer than the trunk is wide. */
+/** Three stacked crown tiers, widths 0.8 / 0.6 / 0.4 of the old 22 m disc: [x, y, z, half width, half depth, yaw]. */
+const CROWN_TIERS: readonly (readonly [number, number, number, number, number, number])[] = [
+  [0, 26.4, 0, 8.8, 7.7, 0.3],
+  [0.6, 28.6, -0.4, 6.6, 5.8, -0.2],
+  [-0.3, 30.6, 0.3, 4.4, 3.9, 0.5],
+]
+
+/** P1: bald cypress, authored at 32 m. Dark buttressed trunk, three stacked crown tiers, moss curtains longer than the trunk is wide. */
 function BaldCypress() {
   const place = placementFor('hero')
-  const crownBottom = 25.2
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / 32}>
@@ -71,18 +71,20 @@ function BaldCypress() {
           <cylinderGeometry args={[0.4, 0.75, 7.8, 6]} />
           <Surf color={P.peat} />
         </mesh>
-        <mesh position={[0, 27.6, 0]} scale={[11, 2.6, 9.6]} rotation={[0, 0.3, 0]} castShadow>
-          <dodecahedronGeometry args={[1, 0]} />
-          <Surf color={P.cypress} />
+        <mesh position={[0, 28.5, 0]} castShadow>
+          <cylinderGeometry args={[0.6, 1.0, 5, 6]} />
+          <Surf color={P.peat} />
         </mesh>
-        <mesh position={[1.4, 30.2, -0.9]} scale={[6.4, 2.2, 5.6]} rotation={[0, -0.4, 0]} castShadow>
-          <dodecahedronGeometry args={[1, 0]} />
-          <Surf color={P.cypress} />
-        </mesh>
-        {MOSS_CURTAINS.map(([angle, radius, length, top], index) => (
+        {CROWN_TIERS.map(([x, y, z, halfWidth, halfDepth, yaw], index) => (
+          <mesh key={index} position={[x, y, z]} scale={[halfWidth, 1.5 - index * 0.1, halfDepth]} rotation={[0, yaw, 0]} castShadow>
+            <dodecahedronGeometry args={[1, 0]} />
+            <Surf color={P.cypress} />
+          </mesh>
+        ))}
+        {MOSS_CURTAINS.map(([angle, radius, length, top, hangFrom], index) => (
           <group key={index} rotation={[0, angle, 0]}>
             <mesh
-              position={[0, crownBottom + 0.8 - length / 2, radius]}
+              position={[0, hangFrom - length / 2, radius]}
               rotation={[Math.PI - 0.06, 0, index % 2 ? 0.05 : -0.05]}
               scale={[1.5, 1, 0.6]}
               castShadow
@@ -189,7 +191,7 @@ function LanternPost({ night }: { night: boolean }) {
           </mesh>
           <mesh position={[0, -4.5, 0]} scale={[1, 1.15, 1]} castShadow>
             <sphereGeometry args={[2.6, 7, 5]} />
-            <Accent color={P.paper} night={night} />
+            <Glow color={P.paper} on={night} offColor={P.paper} />
           </mesh>
           <mesh position={[0, -4.5, 0]}>
             <cylinderGeometry args={[2.95, 2.95, 0.24, 7]} />
@@ -213,7 +215,7 @@ const REEDS: readonly (readonly [number, number, number, number, number])[] = [
   [0.7, 1.6, 8.2, 0.16, 0.08],
 ]
 
-/** P4: reed and lily clump, authored at 12 m. One lily bloom as big as a hut window wall. */
+/** P4: reed and lily clump, authored at 12 m. Cattail reeds over two muted lily blooms on duckweed pads. */
 function ReedsLily() {
   const place = placementFor('front-right')
   return (
@@ -239,15 +241,15 @@ function ReedsLily() {
           <cylinderGeometry args={[1.7, 1.7, 0.3, 7]} />
           <Surf color={P.duckweed} />
         </mesh>
-        <mesh position={[-1.8, 2.2, 1.0]} scale={[2.0, 1.5, 2.0]} rotation={[0, 0.3, 0]} castShadow>
+        <mesh position={[-1.8, 1.55, 1.0]} scale={[1.0, 0.75, 1.0]} rotation={[0, 0.3, 0]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.lily} />
         </mesh>
-        <mesh position={[-1.8, 3.6, 1.0]} castShadow>
-          <sphereGeometry args={[0.6, 7, 5]} />
+        <mesh position={[-1.8, 2.25, 1.0]} castShadow>
+          <sphereGeometry args={[0.3, 7, 5]} />
           <Surf color={P.cream} />
         </mesh>
-        <mesh position={[1.6, 1.7, 1.6]} scale={[1.15, 0.9, 1.15]} rotation={[0, 0.9, 0]} castShadow>
+        <mesh position={[1.6, 1.3, 1.6]} scale={[0.58, 0.45, 0.58]} rotation={[0, 0.9, 0]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.lily} />
         </mesh>
@@ -301,7 +303,7 @@ const RIM_DUCKWEED: readonly (readonly [number, number, number])[] = [
 ]
 
 /** Reed-tuft edge: thin reed fans and dark root knuckles around the lip, duckweed patches on top. */
-export function Rim({ color }: { color: string }) {
+function Rim({ color }: { color: string }) {
   return (
     <group>
       {Array.from({ length: 12 }, (_, index) => {
@@ -363,7 +365,7 @@ export const swamp: BiomeBouquet = {
   spec: {
     id: 'swamp',
     name: 'Mossy Lantern Bayou',
-    silhouette: 'A tall dark cypress trunk with pale moss curtains drooping off a flat crown, over an olive disc with one yellow lantern dot at the right.',
+    silhouette: 'A tall dark cypress trunk with pale moss curtains drooping off three stacked crown tiers, over an olive disc with one yellow lantern dot at the right.',
     hero: 'bald-cypress',
     elements: [
       { id: 'bald-cypress', height: 32, slot: 'hero' },

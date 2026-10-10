@@ -11,14 +11,12 @@ import { CREATURE_DISPLAY_HEIGHT } from "@/lib/world/creature-scale";
 import type { BiomeLayout, DistrictProgress, IceDistrictKind } from "../layout/biome-layout";
 import { sampleTerrain } from "../layout/terrain";
 import type { CatastrophePhase } from "../state";
-import { WALKER_DISTRICTS, paradePoint } from "./parade";
+import { collidersDebugEnabled, useColliderRegistry, useColliderSet, type WalkerDevHook } from "../../collision/ColliderRegistry";
+import { ICE_LAND_SCALE, WALKER_DISTRICTS, createWalker, settleWalkers, stepWalkers, type WalkerBody } from "./parade";
 import { residentsFallApart } from "./catastrophe-sequence";
 
-/**
- * Mesh is 0.82 m; ice-town metres are larger. 4.9 puts a buddy at 4.0 m, under the 4.5–6 m houses
- * and ≥ 6 % of the viewport at the harbour district station (the scale rule; see the test).
- */
-export const ICE_LAND_SCALE = 4.9;
+/** Creature scale for this land (defined with the walker body radius in parade.ts). */
+export { ICE_LAND_SCALE } from "./parade";
 
 /** Hatch pets, Pokémon-ish Tripo, Mario-ish gobkit — never the biome-lab stock hats. */
 export const ICE_CAST = [
@@ -35,27 +33,31 @@ export const ICE_CAST = [
 
 export const residentPositions: THREE.Vector3[] = [];
 
+const WALKER_AGENTS_ID = "ice-walkers";
+/** Frames the collider registry must hold still before the first bodies are placed. */
+const SETTLE_FRAMES = 2;
+
+/** GLB bodies face +z: a heading (cos h, sin h) in XZ is rotation.y = atan2(dirX, dirZ). */
+function yawFromHeading(heading: number): number {
+  return Math.atan2(Math.cos(heading), Math.sin(heading));
+}
+
 function Walker({
   index,
   member,
   layout,
   dismantle,
+  bodies,
 }: {
   index: number;
   member: (typeof ICE_CAST)[number];
   layout: BiomeLayout;
   dismantle: boolean;
+  bodies: React.RefObject<WalkerBody[]>;
 }) {
   const group = useRef<THREE.Group>(null);
   const motion = useRef<BlobMotion>({ moving: false, t: 0 });
   const requests = useRef<CreatureRequests>({ happy: false });
-  const wander = useRef({
-    x: 0,
-    z: 0,
-    angle: index * 0.85 + WALKER_DISTRICTS.indexOf(member.district) * 0.4,
-    timer: 0,
-    moving: true,
-  });
 
   useEffect(() => {
     if (!residentPositions[index]) residentPositions[index] = new THREE.Vector3();
@@ -63,35 +65,32 @@ function Walker({
 
   useFrame((_, dt) => {
     const root = group.current;
+    const body = bodies.current?.[index];
     if (!root) return;
-    const s = wander.current;
     motion.current.t += dt;
-    s.timer -= dt;
-    if (!dismantle) {
-      const dir = index % 2 === 0 ? 1 : -1;
-      s.angle += dt * (0.22 + (index % 3) * 0.04) * dir;
-      const point = paradePoint(layout, member.district, s.angle);
-      s.x = point.x;
-      s.z = point.z;
-      s.moving = true;
+    if (!body) {
+      root.visible = false;
+      return;
     }
-    motion.current.moving = s.moving && !dismantle;
-    const ground = Math.max(layout.seaLevel + 0.12, sampleTerrain(layout, s.x, s.z).height);
+    root.visible = true;
+    motion.current.moving = body.moving && !dismantle;
+    const ground = Math.max(layout.seaLevel + 0.12, sampleTerrain(layout, body.x, body.z).height);
+    const yaw = yawFromHeading(body.heading);
     if (dismantle) {
       const t = motion.current.t;
       const pop = index === 1 && t < 1.4;
       const slip = Math.sin(t * 3.6 + index) * (pop ? 1.8 : 0.95);
       const hop = Math.abs(Math.sin(t * 6.1 + index * 0.8)) * (pop ? 2.4 : 0.42);
-      root.position.set(s.x + slip, ground + hop + (pop ? t * 3.2 : 0), s.z + Math.cos(t * 2.4 + index) * 0.28);
+      root.position.set(body.x + slip, ground + hop + (pop ? t * 3.2 : 0), body.z + Math.cos(t * 2.4 + index) * 0.28);
       root.rotation.set(
         0.62 + Math.sin(t * 4.4 + index) * 0.38,
-        s.angle + t * (pop ? 8 : 0.55) + Math.sin(t * 2.2 + index) * 0.4,
+        yaw + t * (pop ? 8 : 0.55) + Math.sin(t * 2.2 + index) * 0.4,
         0.9 * Math.sin(t * 3.1 + index),
       );
       root.scale.setScalar(pop ? Math.max(0.05, 1.35 - t * 1.1) : 1);
     } else {
-      root.position.set(s.x, ground, s.z);
-      root.rotation.set(0, s.angle + (index % 2 === 0 ? Math.PI / 2 : -Math.PI / 2), 0);
+      root.position.set(body.x, ground, body.z);
+      root.rotation.set(0, yaw, 0);
       root.scale.setScalar(1);
     }
     residentPositions[index]?.copy(root.position);
@@ -172,6 +171,12 @@ function SillyFailBits({
   );
 }
 
+/**
+ * The parade: one deterministic simulation (`stepWalkers`) runs once per frame at priority −1,
+ * before the creatures read their bodies. Each body steers round the registered colliders,
+ * sweeps its circle (no tunnelling), stays off the sea, and is kept apart from the others.
+ * During the catastrophe the bodies hold still and are only kept clear of colliders.
+ */
 export function OurWalkers({
   layout,
   progress,
@@ -192,10 +197,50 @@ export function OurWalkers({
   }, [fraction]);
   const dismantle = residentsFallApart(phase);
 
+  const registry = useColliderRegistry();
+  const colliders = useColliderSet();
+  const bodies = useRef<WalkerBody[]>([]);
+  const settle = useRef({ version: -1, frames: 0 });
+  const stats = useRef({ ms: 0 });
+
+  useEffect(() => {
+    registry.setAgents(WALKER_AGENTS_ID, bodies.current);
+    return () => registry.clearAgents(WALKER_AGENTS_ID);
+  }, [registry]);
+
+  useEffect(() => {
+    if (!collidersDebugEnabled()) return;
+    const hook: WalkerDevHook = Object.assign(() => bodies.current.map((body) => ({ x: body.x, z: body.z, r: body.r })), {
+      ms: () => stats.current.ms,
+    });
+    window.__iceWalkers = hook;
+    return () => {
+      delete window.__iceWalkers;
+    };
+  }, []);
+
+  useFrame((_, dt) => {
+    const set = colliders.current;
+    const list = bodies.current;
+    // Wait for the registrations of the first frames to settle before placing anyone.
+    if (registry.version !== settle.current.version) {
+      settle.current.version = registry.version;
+      settle.current.frames = 0;
+    } else settle.current.frames += 1;
+    if (list.length === 0 && settle.current.frames < SETTLE_FRAMES) return;
+    if (list.length > shown.length) list.length = shown.length;
+    while (list.length < shown.length) list.push(createWalker(layout, set, WALKER_DISTRICTS, list.length));
+    if (list.length === 0) return;
+    const t0 = performance.now();
+    if (dismantle) settleWalkers(layout, list, set);
+    else stepWalkers(layout, list, set, dt);
+    stats.current.ms += (performance.now() - t0 - stats.current.ms) * 0.1;
+  }, -1);
+
   return (
     <group name="our-ice-walkers">
       {shown.map((member, index) => (
-        <Walker key={member.id} index={index} member={member} layout={layout} dismantle={dismantle} />
+        <Walker key={member.id} index={index} member={member} layout={layout} dismantle={dismantle} bodies={bodies} />
       ))}
     </group>
   );

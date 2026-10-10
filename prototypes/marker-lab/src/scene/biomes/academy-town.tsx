@@ -12,7 +12,8 @@ import type { BiomeBouquet, BouquetPropsProps } from './types'
  * all on a lawn with a pale paved axis.
  */
 const P = {
-  brick: '#a85a4a',
+  /** Roster brick #a85a4a rendered salmon under the toon ramp; one step darker per the art-director review. */
+  brick: '#904b3d',
   lawn: '#9fcf7a',
   coping: '#d9d2c4',
   white: '#f4efe6',
@@ -53,6 +54,8 @@ function Gable({
 }
 
 const TOWER_HEIGHT = 17.8
+/** Review: tower renders at 35 m (slot says 32) so the cupola clears the dorm row. */
+const TOWER_RENDER_HEIGHT = 35
 const OCTAGON = Math.PI / 8
 
 /** P1: brick bell tower; the white cupola drum is wider than the shaft, under an oversized verdigris cap and a waving pennant. */
@@ -66,7 +69,7 @@ function BellTower() {
   })
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / TOWER_HEIGHT}>
+      <group scale={TOWER_RENDER_HEIGHT / TOWER_HEIGHT}>
         <mesh position={[0, 1, 0]} castShadow>
           <boxGeometry args={[4.8, 2, 4.8]} />
           <Surf color={P.brick} />
@@ -107,13 +110,13 @@ function BellTower() {
           <coneGeometry args={[3.5, 2.6, 8]} />
           <Surf color={P.verdigris} />
         </mesh>
-        <mesh position={[0, 18.8, 0]} castShadow>
-          <cylinderGeometry args={[0.1, 0.1, 2.8, 5]} />
+        <mesh position={[0, 18.1, 0]} castShadow>
+          <cylinderGeometry args={[0.1, 0.1, 1.3, 5]} />
           <Surf color={P.ink} />
         </mesh>
-        <group ref={flag} position={[0, 19.5, 0]}>
-          <mesh position={[1.25, 0, 0]} rotation={[0, 0, -Math.PI / 2]} scale={[1, 1, 0.08]} castShadow>
-            <coneGeometry args={[0.75, 2.5, 3]} />
+        <group ref={flag} position={[0, 18.3, 0]}>
+          <mesh position={[1.1, 0, 0]} rotation={[0, 0, -Math.PI / 2]} scale={[1, 1, 0.08]} castShadow>
+            <coneGeometry args={[0.5, 2.2, 3]} />
             <Surf color={P.pennant} />
           </mesh>
         </group>
@@ -123,6 +126,8 @@ function BellTower() {
 }
 
 const LIBRARY_HEIGHT = 15.5
+/** Review: library renders at 22 m (slot says 28) so the pediment stops rivalling the tower. */
+const LIBRARY_RENDER_HEIGHT = 22
 const COLUMNS = [-2.5, -0.85, 0.85, 2.5] as const
 
 /** P2: four-column library whose pediment is deeper than the hall beneath it. */
@@ -130,7 +135,7 @@ function Library() {
   const place = placementFor('front-left')
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
-      <group scale={place.height / LIBRARY_HEIGHT}>
+      <group scale={LIBRARY_RENDER_HEIGHT / LIBRARY_HEIGHT}>
         <mesh position={[0, 0.4, 0.2]} castShadow>
           <boxGeometry args={[8.2, 0.8, 6.6]} />
           <Surf color={P.white} />
@@ -214,12 +219,14 @@ function CampusRow({ night }: { night: boolean }) {
 }
 
 const OAK_HEIGHT = 12
+/** Review: oak sits 2 m further out along the front-right radial so a band of lawn shows. */
+const OAK_SHIFT = [1.64, 0, 1.15] as const
 
 /** P4: quad oak with a canopy wider than the trunk is tall, and a bench under it. */
 function QuadOak() {
   const place = placementFor('front-right')
   return (
-    <group position={place.position} rotation={outwardRotation(place)}>
+    <group position={[place.position[0] + OAK_SHIFT[0], place.position[1], place.position[2] + OAK_SHIFT[2]]} rotation={outwardRotation(place)}>
       <group scale={place.height / OAK_HEIGHT}>
         <mesh position={[-0.6, 2.6, 0.4]} castShadow>
           <cylinderGeometry args={[0.65, 1.1, 5.2, 7]} />
@@ -241,7 +248,7 @@ function QuadOak() {
           <dodecahedronGeometry args={[2.1, 0]} />
           <Surf color={P.oak} />
         </mesh>
-        <group position={[3.4, 0, 2.6]}>
+        <group position={[1.9, 0, 1.4]}>
           <mesh position={[0, 1.05, 0]} castShadow>
             <boxGeometry args={[2.8, 0.28, 0.9]} />
             <Surf color={P.timber} />

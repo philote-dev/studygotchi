@@ -35,6 +35,18 @@ export function PixelComposer() {
     [bundle],
   )
 
-  useFrame((_, delta) => bundle.composer.render(delta), 1)
+  useEffect(() => {
+    // The pixel pass renders the scene twice (beauty + normals). Updating the shadow map by hand
+    // once per frame stops the second pass from re-rendering every caster.
+    gl.shadowMap.autoUpdate = false
+    return () => {
+      gl.shadowMap.autoUpdate = true
+    }
+  }, [gl])
+
+  useFrame((_, delta) => {
+    gl.shadowMap.needsUpdate = true
+    bundle.composer.render(delta)
+  }, 1)
   return null
 }

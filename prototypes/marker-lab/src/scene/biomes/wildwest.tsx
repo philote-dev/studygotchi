@@ -26,8 +26,6 @@ const P = {
   strata: '#c2925a',
   timber: '#8b5a3c',
   saguaro: '#4f8a4a',
-  ink: '#3a2f45',
-  cream: '#f4e9d2',
   window: '#ffe9a8',
 } as const
 
@@ -69,8 +67,8 @@ function MesaButte() {
           <cylinderGeometry args={[3.3, 3.8, 0.9, 6]} />
           <Surf color={P.flats} />
         </mesh>
-        {/* balanced rock perched on the cap edge */}
-        <mesh position={[4, 15.2, 0.8]} scale={[1.3, 1.1, 1.1]} rotation={[0.2, 0.7, -0.15]} castShadow>
+        {/* small red-rock boulder perched on the cap edge */}
+        <mesh position={[4, 15.05, 0.8]} scale={[0.65, 0.55, 0.55]} rotation={[0.2, 0.7, -0.15]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.rock} />
         </mesh>
@@ -192,7 +190,7 @@ function Saloon({ night, sign }: { night: boolean; sign: RefObject<THREE.Group |
         <group ref={sign} position={[0, 3.6, 3.95]}>
           <mesh position={[0, -0.55, 0]} castShadow>
             <boxGeometry args={[2.4, 0.8, 0.12]} />
-            <Surf color={P.cream} />
+            <Surf color={P.strata} />
           </mesh>
         </group>
         {/* upper windows + batwing door */}
@@ -204,7 +202,7 @@ function Saloon({ night, sign }: { night: boolean; sign: RefObject<THREE.Group |
         ))}
         <mesh position={[0, 1.15, 1.95]}>
           <boxGeometry args={[1.25, 2.1, 0.12]} />
-          <Surf color={P.ink} />
+          <Surf color={P.timber} />
         </mesh>
       </group>
     </group>
@@ -218,7 +216,7 @@ function Saguaro({
 }: {
   position: [number, number, number]
   height: number
-  arms: readonly (readonly [number, number, number])[] // [side, shoulderY, armHeight]
+  arms: readonly (readonly [number, number, number])[] // [azimuth (rad, 0 = +x), shoulderY, armHeight]
 }) {
   const r = height * 0.078
   return (
@@ -231,16 +229,16 @@ function Saguaro({
         <sphereGeometry args={[r, 7, 5]} />
         <Surf color={P.saguaro} />
       </mesh>
-      {arms.map(([side, shoulderY, armHeight]) => {
+      {arms.map(([azimuth, shoulderY, armHeight], index) => {
         const ar = r * 0.85
         const reach = r * 2.6
         return (
-          <group key={side}>
-            <mesh position={[side * reach * 0.5, shoulderY, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <group key={index} rotation={[0, azimuth, 0]}>
+            <mesh position={[reach * 0.5, shoulderY, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
               <cylinderGeometry args={[ar, ar, reach, 8]} />
               <Surf color={P.saguaro} />
             </mesh>
-            <mesh position={[side * reach, shoulderY + armHeight / 2 - ar, 0]} castShadow>
+            <mesh position={[reach, shoulderY + armHeight / 2 - ar, 0]} castShadow>
               <cylinderGeometry args={[ar, ar, armHeight, 8]} />
               <Surf color={P.saguaro} />
             </mesh>
@@ -261,11 +259,12 @@ function SaguaroPair() {
           position={[0, 0, 0]}
           height={11.3}
           arms={[
-            [-1, 5.2, 4.8],
-            [1, 6.8, 4.2],
+            [Math.PI, 5.2, 4.8],
+            [0, 6.8, 4.2],
+            [-2.4, 8, 2.9],
           ]}
         />
-        <Saguaro position={[2.3, 0, 1.3]} height={7} arms={[[1, 3.4, 3.2]]} />
+        <Saguaro position={[2.3, 0, 1.3]} height={7} arms={[[0, 3.4, 3.2]]} />
       </group>
     </group>
   )
