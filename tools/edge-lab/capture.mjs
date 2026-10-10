@@ -22,6 +22,7 @@ const repo = resolve(here, '..', '..')
 const { chromium } = createRequire(resolve(repo, 'prototypes/marker-lab/package.json'))('playwright')
 
 const args = process.argv.slice(2)
+const flag = (name) => args.includes(`--${name}`)
 const value = (name, fallback) => {
   const index = args.indexOf(`--${name}`)
   return index >= 0 && args[index + 1] && !args[index + 1].startsWith('--') ? args[index + 1] : fallback
@@ -32,16 +33,21 @@ const list = (name, all) => {
 }
 
 const baseUrl = process.env.EDGE_LAB_URL ?? 'http://localhost:3000'
+/** Course code whose land to open (8.223 = ice-town) and the `data-land-mount` of that land. */
 const land = value('land', '8.223')
+const mount = value('mount', 'ice-town')
 const output = resolve(value('out', '/tmp/edge-shots'))
-const EDGES = ['none', 'endless', 'parallax', 'curvature', 'barriers', 'sea', 'cloudsea']
-const POSES = ['overview', 'north-out', 'east-out', 'south-out', 'west-out', 'low-horizon', 'zoom-max']
-const edges = list('edge', EDGES)
-const poses = list('poses', POSES)
+const ICE_EDGES = ['none', 'endless', 'parallax', 'curvature', 'barriers', 'sea', 'cloudsea', 'combined']
+const ICE_POSES = ['overview', 'north-out', 'east-out', 'south-out', 'west-out', 'low-horizon', 'zoom-max', 'horizon-max']
+// Other lands define their own technique ids and pose ids; pass them with --edge / --poses.
+const edges = list('edge', mount === 'ice-town' ? ICE_EDGES : ['none', 'outer'])
+const poses = list('poses', mount === 'ice-town' ? ICE_POSES : ['overview'])
 const modes = list('modes', ['day', 'night'])
 
-for (const edge of edges) if (!EDGES.includes(edge)) throw new Error(`Unknown edge technique ${edge}`)
-for (const pose of poses) if (!POSES.includes(pose)) throw new Error(`Unknown pose ${pose}`)
+if (mount === 'ice-town') {
+  for (const edge of edges) if (!ICE_EDGES.includes(edge)) throw new Error(`Unknown edge technique ${edge}`)
+  for (const pose of poses) if (!ICE_POSES.includes(pose)) throw new Error(`Unknown pose ${pose}`)
+}
 
 async function waitReady(page, timeout = 30_000) {
   await page.waitForFunction(() => document.documentElement.dataset.edgeReady === 'true', null, { timeout })
@@ -73,12 +79,12 @@ async function setLab(page, edge, pose) {
 
 /** Hide every DOM sibling on the path from the land mount up to <body>, plus the lab panel and dev tools. */
 async function isolateCanvas(page, hidden) {
-  await page.evaluate((hide) => {
+  await page.evaluate(({ hide, mountId }) => {
     const mark = (element, on) => {
       if (on) element.setAttribute('data-edge-hidden', '1')
       else element.removeAttribute('data-edge-hidden')
     }
-    const mount = document.querySelector('[data-land-mount="ice-town"]')
+    const mount = document.querySelector(`[data-land-mount="${mountId}"]`)
     if (!mount) return
     let node = mount
     while (node && node.parentElement && node !== document.body) {
@@ -93,13 +99,13 @@ async function isolateCanvas(page, hidden) {
       style.textContent = '[data-edge-hidden]{visibility:hidden !important}'
       document.head.appendChild(style)
     }
-  }, hidden)
+  }, { hide: hidden, mountId: mount })
 }
 
 async function canvasShot(page, path) {
   await isolateCanvas(page, true)
   await page.waitForTimeout(80)
-  const canvas = page.locator('[data-land-mount="ice-town"] canvas').first()
+  const canvas = page.locator(`[data-land-mount="${mount}"] canvas`).first()
   await canvas.screenshot({ path })
   await isolateCanvas(page, false)
 }
@@ -132,8 +138,13 @@ async function compose(page, title, rows, columns, cellWidth, file) {
   html.push('</tbody></table></body></html>')
   const htmlFile = file.replace(/\.png$/, '.html')
   await writeFile(htmlFile, html.join(''))
+  // The sheet is wider than the capture viewport; size the viewport to the table so nothing clips.
+  const width = Math.min(16000, 48 + 90 + columns.length * (cellWidth + 8))
+  const height = Math.min(16000, 80 + rows.length * (Math.round((cellWidth * 9) / 16) + 24))
+  await page.setViewportSize({ width, height })
   await page.goto(`file://${htmlFile}`)
-  await page.locator('body').screenshot({ path: file })
+  await page.locator('table').screenshot({ path: file })
+  await page.setViewportSize({ width: 1280, height: 720 })
 }
 
 await mkdir(output, { recursive: true })
@@ -141,17 +152,21 @@ const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle',
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 })
 page.on('pageerror', (error) => console.error('page error:', error.message))
 
+const composeOnly = flag('compose-only')
+
 try {
-  await page.goto(`${baseUrl}/earth?land=${encodeURIComponent(land)}&edge=${edges[0]}&pose=${poses[0]}`, { waitUntil: 'networkidle' })
-  await waitReady(page, 60_000)
-  for (const mode of modes) {
-    await setTheme(page, mode)
-    for (const edge of edges) {
-      for (const pose of poses) {
-        await setLab(page, edge, pose)
-        await waitReady(page)
-        await canvasShot(page, `${output}/${edge}-${pose}-${mode}.png`)
-        console.log(`captured ${edge} ${pose} ${mode}`)
+  if (!composeOnly) {
+    await page.goto(`${baseUrl}/earth?land=${encodeURIComponent(land)}&edge=${edges[0]}&pose=${poses[0]}`, { waitUntil: 'networkidle' })
+    await waitReady(page, 60_000)
+    for (const mode of modes) {
+      await setTheme(page, mode)
+      for (const edge of edges) {
+        for (const pose of poses) {
+          await setLab(page, edge, pose)
+          await waitReady(page)
+          await canvasShot(page, `${output}/${edge}-${pose}-${mode}.png`)
+          console.log(`captured ${edge} ${pose} ${mode}`)
+        }
       }
     }
   }

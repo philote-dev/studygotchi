@@ -23,7 +23,7 @@ import { Residents } from './Residents'
 import { Districts, Paths } from './Structures'
 import { Floes, Forest, Landforms, Scatter, Terrain, Water } from './Terrain'
 import { WorldScene } from '../world/WorldScene'
-import { edgeTechnique } from '../edge'
+import { ICE_PRODUCT_EDGE, edgeTechnique } from '../edge'
 import { ColliderProvider } from '../../collision/ColliderRegistry'
 import { ColliderDebug } from '../../collision/ColliderDebug'
 
@@ -73,8 +73,9 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
 
   const world = layout.world
   const reducedMotion = usePrefersReducedMotion()
-  // Edge lab: an outer-world technique may add geometry and retune sky / fog / camera.
-  const edge = state.edgeLab ? edgeTechnique(state.edge) : null
+  // The outer world. Product: the chosen `combined` technique (shelf + vistas; Philote, 2026-10-10).
+  // Edge lab (`?edge=`): whatever the URL names, including `none` for the bare plate.
+  const edge = state.edgeLab ? edgeTechnique(state.edge) : edgeTechnique(ICE_PRODUCT_EDGE)
   // Sky, fog and lights crossfade over 1.2 s between day / night / storm (bible §6).
   const skyGrade = useMemo(() => {
     const base = skyGradeFor(night, storm ? stormGrade(1) : null, {
@@ -138,7 +139,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
         free={state.edgeLab ?? false}
         poseId={state.pose ?? null}
         limitsOverride={edge?.camera}
-        readyKey={state.edge ?? 'none'}
+        readyKey={state.edge ?? ICE_PRODUCT_EDGE}
       />
       </ColliderProvider>
       </StormWindProvider>

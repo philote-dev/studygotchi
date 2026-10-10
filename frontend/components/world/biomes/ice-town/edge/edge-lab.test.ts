@@ -53,9 +53,9 @@ describe('edge lab rig', () => {
 })
 
 describe('edge techniques', () => {
-  it('registers all six in the menu order', () => {
+  it('registers all six plus the combination in the menu order', () => {
     expect(EDGE_TECHNIQUES.map((technique) => technique.id)).toEqual(EDGE_TECHNIQUE_IDS)
-    expect(new Set(EDGE_TECHNIQUES.map((technique) => technique.name)).size).toBe(6)
+    expect(new Set(EDGE_TECHNIQUES.map((technique) => technique.name)).size).toBe(7)
   })
 
   describe.each(EDGE_TECHNIQUE_IDS.map((id) => [id] as const))('%s', (id) => {

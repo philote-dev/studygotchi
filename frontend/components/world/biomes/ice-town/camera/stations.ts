@@ -99,16 +99,20 @@ export const ICE_FREE_CAMERA_LIMITS: IceCameraLimits = {
 export const ICE_LOOK_AT: [number, number, number] = [2, 2.4, 8]
 export const ICE_OVERVIEW_CHORD = 176
 
-/** CameraControls.setBoundary clamps the look-at, not the camera. This box is the land. */
+/**
+ * CameraControls.setBoundary clamps the look-at, not the camera. This box is the land, every
+ * coast included, so a player can look at the far side of the range (Philote, 2026-10-10: going
+ * behind the mountains is fine; the outer world has to hold up there).
+ */
 export const ICE_LOOK_BOX: Box = {
-  min: [-128, -1, -82],
-  max: [128, 24, 102],
+  min: [-150, -1, -150],
+  max: [150, 40, 150],
 }
 
-/** Where the camera may sit: wide enough for every station pose (overview at 36° / 0.82, oblique district azimuths). */
+/** Where the camera may sit: all round the land, wide enough for every station pose and a full orbit. */
 export const ICE_CAMERA_BOX: Box = {
-  min: [-160, 20, -20],
-  max: [196, 220, 300],
+  min: [-460, 20, -460],
+  max: [460, 260, 460],
 }
 
 /** Edge lab look box: every coast of the terrain plate, so the look-at can sit on an edge. */

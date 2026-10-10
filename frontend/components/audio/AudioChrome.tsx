@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { FULL_CREDITS_HREF, usedBgmTracks, type BgmTrack } from "@/lib/audio/catalog";
+import { useCallback, useEffect, useId, useReducer, useRef, useState } from "react";
+import { ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { FULL_CREDITS_HREF, usedBgmTracks } from "@/lib/audio/catalog";
 import { emit } from "@/lib/audio/events";
 import { useAudio } from "./AudioProvider";
+import {
+  INITIAL_CHROME_STATE,
+  browserStorage,
+  chipLine,
+  chromeReducer,
+  readPillPreference,
+  writePillPreference,
+} from "./audio-chrome-state";
 import type { Bus } from "@/lib/audio/runtime";
 
 const BUSES: { bus: Bus; label: string; hint: string }[] = [
@@ -13,27 +21,95 @@ const BUSES: { bus: Bus; label: string; hint: string }[] = [
   { bus: "voice", label: "Voices", hint: "Creatures saying their names" },
 ];
 
-function chipLine(track: BgmTrack | null, unlocked: boolean, muted: boolean): string {
-  if (muted) return track ? `Muted · ${track.title}` : "Muted";
-  if (!unlocked) return "Tap anywhere to start the music";
-  if (!track) return "Quiet for now";
-  return `${track.title} · ${track.artist}`;
-}
+/** How long the mute / collapse actions linger after the pointer slips off the pill. */
+const HOT_GRACE_MS = 250;
 
 export function AudioChrome({ variant = "paper" }: { variant?: "paper" | "ink" }) {
   const { state, nowPlaying, setGain, toggleMuted, unlock } = useAudio();
-  const [open, setOpen] = useState(false);
+  const [chrome, dispatch] = useReducer(chromeReducer, INITIAL_CHROME_STATE);
+  const [restored, setRestored] = useState(false);
+  const [booted, setBooted] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const pill = useRef<HTMLDivElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const hotTimer = useRef<number | null>(null);
   const titleId = useId();
+  const pillId = useId();
   const credits = usedBgmTracks();
+  const { expanded, open, hot } = chrome;
+
+  // The server renders the pill tucked away; the remembered choice lands after hydration, and
+  // transitions stay off until the frame after it has been painted so a restored pill does not
+  // replay its pop-out on every load.
+  useEffect(() => {
+    dispatch({ type: "restore", preference: readPillPreference(browserStorage()) });
+    setRestored(true);
+  }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!restored) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => setBooted(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, [restored]);
+
+  const clearHotTimer = useCallback(() => {
+    if (hotTimer.current !== null) {
+      window.clearTimeout(hotTimer.current);
+      hotTimer.current = null;
+    }
+  }, []);
+
+  const warm = useCallback(() => {
+    clearHotTimer();
+    dispatch({ type: "hot", hot: true });
+  }, [clearHotTimer]);
+
+  const cool = useCallback(() => {
+    clearHotTimer();
+    hotTimer.current = window.setTimeout(() => {
+      hotTimer.current = null;
+      dispatch({ type: "hot", hot: false });
+    }, HOT_GRACE_MS);
+  }, [clearHotTimer]);
+
+  useEffect(() => clearHotTimer, [clearHotTimer]);
+
+  const togglePill = useCallback(() => {
+    emit({ type: "ui", kind: "tap" });
+    void unlock();
+    clearHotTimer();
+    dispatch({ type: "toggle-pill" });
+    writePillPreference(browserStorage(), expanded ? "collapsed" : "expanded");
+  }, [clearHotTimer, expanded, unlock]);
+
+  const collapse = useCallback(() => {
+    emit({ type: "ui", kind: "tap" });
+    clearHotTimer();
+    dispatch({ type: "collapse" });
+    writePillPreference(browserStorage(), "collapsed");
+    // The actions disappear with the pill, so keyboard focus comes home to the ♪ button.
+    toggle.current?.focus({ preventScroll: true });
+  }, [clearHotTimer]);
+
+  useEffect(() => {
+    if (!open && !expanded) return;
     const onDoc = (event: MouseEvent) => {
-      if (root.current && !root.current.contains(event.target as Node)) setOpen(false);
+      if (open && root.current && !root.current.contains(event.target as Node)) dispatch({ type: "close-panel" });
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      if (open) {
+        dispatch({ type: "close-panel" });
+        return;
+      }
+      // Escape while the pill has focus tucks it away; elsewhere on the page it is not ours.
+      if (expanded && root.current?.contains(document.activeElement)) collapse();
     };
     document.addEventListener("mousedown", onDoc);
     window.addEventListener("keydown", onKey);
@@ -41,41 +117,96 @@ export function AudioChrome({ variant = "paper" }: { variant?: "paper" | "ink" }
       document.removeEventListener("mousedown", onDoc);
       window.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, expanded, collapse]);
 
   const muted = state.muted;
   const line = chipLine(nowPlaying, state.unlocked, muted);
 
   return (
-    <div ref={root} className={`audio-chrome audio-chrome--${variant}`}>
-      <button
-        type="button"
-        className="audio-chrome-mute"
-        aria-pressed={muted}
-        aria-label={muted ? "Unmute" : "Mute"}
-        onClick={() => {
-          void unlock();
-          toggleMuted();
-        }}
-      >
-        {muted ? <VolumeX size={15} strokeWidth={2.1} aria-hidden /> : <Volume2 size={15} strokeWidth={2.1} aria-hidden />}
-      </button>
+    <div
+      ref={root}
+      className={`audio-chrome audio-chrome--${variant}`}
+      data-expanded={expanded ? "true" : "false"}
+      data-hot={hot ? "true" : "false"}
+      data-booted={booted ? "" : undefined}
+    >
+      <div className="audio-chrome-pop" inert={!expanded}>
+        <div
+          ref={pill}
+          id={pillId}
+          className="audio-chrome-pill"
+          onPointerEnter={warm}
+          onPointerLeave={cool}
+          onFocus={warm}
+          onBlur={(event) => {
+            if (!pill.current?.contains(event.relatedTarget as Node | null)) cool();
+          }}
+        >
+          <button
+            type="button"
+            className="audio-chrome-chip"
+            aria-expanded={open}
+            aria-controls={titleId}
+            onClick={() => {
+              emit({ type: "ui", kind: "tap" });
+              void unlock();
+              dispatch({ type: "toggle-panel" });
+            }}
+          >
+            <span className="audio-chrome-mark" aria-hidden>
+              ♪
+            </span>
+            <span className="audio-chrome-line">{line}</span>
+          </button>
+
+          <div className="audio-chrome-actions">
+            <div className="audio-chrome-actions-row">
+              <button
+                type="button"
+                className="audio-chrome-action audio-chrome-mute"
+                aria-pressed={muted}
+                aria-label={muted ? "Unmute" : "Mute"}
+                title={muted ? "Unmute" : "Mute"}
+                onClick={() => {
+                  void unlock();
+                  toggleMuted();
+                }}
+              >
+                {muted ? (
+                  <VolumeX size={13} strokeWidth={2.1} aria-hidden />
+                ) : (
+                  <Volume2 size={13} strokeWidth={2.1} aria-hidden />
+                )}
+              </button>
+              <button
+                type="button"
+                className="audio-chrome-action audio-chrome-collapse"
+                aria-label="Collapse music"
+                title="Collapse"
+                onClick={collapse}
+              >
+                <ChevronRight size={14} strokeWidth={2.1} aria-hidden />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <button
+        ref={toggle}
         type="button"
-        className="audio-chrome-chip"
-        aria-expanded={open}
-        aria-controls={titleId}
-        onClick={() => {
-          emit({ type: "ui", kind: "tap" });
-          void unlock();
-          setOpen((v) => !v);
-        }}
+        className="audio-chrome-toggle"
+        aria-label="Music"
+        aria-expanded={expanded}
+        aria-controls={pillId}
+        title={line}
+        data-locked={state.unlocked ? undefined : "true"}
+        data-muted={muted ? "true" : undefined}
+        onClick={togglePill}
       >
         <span className="audio-chrome-mark" aria-hidden>
           ♪
         </span>
-        <span className="audio-chrome-line">{line}</span>
       </button>
 
       {open ? (

@@ -14,6 +14,7 @@ export type EdgePoseId =
   | 'west-out'
   | 'low-horizon'
   | 'zoom-max'
+  | 'horizon-max'
 
 export interface EdgePose {
   id: EdgePoseId
@@ -87,6 +88,15 @@ export const EDGE_POSES: readonly EdgePose[] = [
     why: 'The whole plate and everything the technique puts beyond it.',
     target: [0, 4, 0],
     pitchDeg: 30,
+    azimuthDeg: 22,
+    distance: 380,
+  },
+  {
+    id: 'horizon-max',
+    label: 'Horizon at maximum zoom',
+    why: 'Lowest pitch at the furthest distance: whatever a technique puts above the horizon is in frame.',
+    target: [0, 4, 0],
+    pitchDeg: 12,
     azimuthDeg: 22,
     distance: 380,
   },

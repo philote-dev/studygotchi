@@ -1,5 +1,6 @@
 import { barriers } from './barriers'
 import { cloudsea } from './cloudsea'
+import { combined } from './combined'
 import { curvature } from './curvature'
 import { endless } from './endless'
 import { parallax } from './parallax'
@@ -10,7 +11,10 @@ export type { EdgeSceneProps, EdgeTechnique, EdgeTechniqueId } from './types'
 export { EDGE_TECHNIQUE_IDS } from './types'
 
 /** Menu order; also the column order on the comparison sheets. */
-export const EDGE_TECHNIQUES: readonly EdgeTechnique[] = [endless, parallax, curvature, barriers, sea, cloudsea]
+export const EDGE_TECHNIQUES: readonly EdgeTechnique[] = [endless, parallax, curvature, barriers, sea, cloudsea, combined]
+
+/** What the product land ships with (Philote, 2026-10-10: endless shelf + barrier vistas). */
+export const ICE_PRODUCT_EDGE: EdgeTechniqueId = 'combined'
 
 export function edgeTechnique(id: EdgeTechniqueId | null | undefined): EdgeTechnique | null {
   if (!id) return null

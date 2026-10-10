@@ -7,7 +7,7 @@ import type { SkyGrade } from '../scene/sky-blend'
  * Edge lab: six ways real games hide the end of the world, built side by side on the ice land
  * so Philote can compare them from identical camera poses (`?edge=<id>&pose=<pose>`).
  */
-export type EdgeTechniqueId = 'endless' | 'parallax' | 'curvature' | 'barriers' | 'sea' | 'cloudsea'
+export type EdgeTechniqueId = 'endless' | 'parallax' | 'curvature' | 'barriers' | 'sea' | 'cloudsea' | 'combined'
 
 export const EDGE_TECHNIQUE_IDS: readonly EdgeTechniqueId[] = [
   'endless',
@@ -16,6 +16,7 @@ export const EDGE_TECHNIQUE_IDS: readonly EdgeTechniqueId[] = [
   'barriers',
   'sea',
   'cloudsea',
+  'combined',
 ]
 
 export interface EdgeSceneProps {
