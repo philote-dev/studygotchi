@@ -14,6 +14,7 @@ import type { ScreenPoint } from "@/components/world/globe/globe-types";
 import { biomeForGlobeCourse, isOwnedCourse, rosterBiome, toGlobeCourses, withEarthCourses } from "@/lib/world/globe-courses";
 import { DEMO_HERO_CODE } from "@/lib/world/demo-courses";
 import { ICE_DEMO_DEFAULT, type IceDemoState } from "@/lib/world/demo-theater";
+import { STAGE_MS } from "@/lib/stage-motion";
 import {
   galaxyHrefForConcept,
   isConceptId,
@@ -45,12 +46,17 @@ export function EarthShell() {
   const [activeCourseId, setActiveCourseId] = useState<string | null>(
     () => identity.courseId || identity.courses[0]?.id || null,
   );
-  const [enteredCourseId, setEnteredCourseId] = useState<string | null>(null);
+  const [enteredCourseId, setEnteredCourseId] = useState<string | null>(() =>
+    resolveLandCourseId(landParamFromSearch(searchParams), withEarthCourses(identity.courses)),
+  );
   const [diving, setDiving] = useState<{
     courseId: string;
     anchor: ScreenPoint | null;
   } | null>(null);
+  const [rising, setRising] = useState(false);
   const enterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const riseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const roseFromLand = useRef(false);
   const [world, setWorld] = useState<WorldResponse | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [events, setEvents] = useState<WorldEvent[]>([]);
@@ -65,6 +71,8 @@ export function EarthShell() {
   const courses = useMemo(() => withEarthCourses(identity.courses), [identity.courses]);
   const landCourseId = resolveLandCourseId(landParamFromSearch(searchParams), courses);
   const entered = enteredCourseId !== null;
+  const enteredRef = useRef(enteredCourseId);
+  enteredRef.current = enteredCourseId;
   const overviewCache = useCourseOverviewCache(identity.studentId, courses);
   const globeCourses = useMemo(
     () =>
@@ -136,6 +144,7 @@ export function EarthShell() {
         setActiveCourseId(courseId);
       }
       setDiving({ courseId, anchor });
+      roseFromLand.current = false;
       select(null);
       const biome = globeCourses.find((course) => course.id === courseId)?.biome ?? null;
       emit({
@@ -168,6 +177,16 @@ export function EarthShell() {
     [activeCourseId, enterCourse, flag],
   );
 
+  const startGlobeRise = useCallback(() => {
+    roseFromLand.current = true;
+    setRising(true);
+    if (riseTimer.current) clearTimeout(riseTimer.current);
+    riseTimer.current = setTimeout(() => {
+      setRising(false);
+      riseTimer.current = null;
+    }, STAGE_MS.aperture);
+  }, []);
+
   const leave = useCallback(() => {
     if (enterTimer.current) {
       clearTimeout(enterTimer.current);
@@ -175,6 +194,7 @@ export function EarthShell() {
     }
     select(null);
     setDiving(null);
+    if (enteredRef.current) startGlobeRise();
     setEnteredCourseId(null);
     setWorld(null);
     setHovered(null);
@@ -183,10 +203,16 @@ export function EarthShell() {
     setLandArriving(false);
     emit({ type: "leave-island" });
     if (landParamFromSearch(searchParams)) router.replace(planetHref());
-  }, [router, searchParams, select]);
+  }, [router, searchParams, select, startGlobeRise]);
 
   useEffect(() => {
     if (nav.leavingTo === planetHref() || (!landCourseId && !diving)) {
+      if (enteredRef.current) {
+        startGlobeRise();
+        // Header nav back to Courses skips `leave()`; tell the director here. The other way
+        // in (no land param yet, mid-dive) is a transient re-render, not a departure.
+        if (nav.leavingTo === planetHref()) emit({ type: "leave-island" });
+      }
       setEnteredCourseId(null);
       setWorld(null);
       setHovered(null);
@@ -199,11 +225,22 @@ export function EarthShell() {
       setEnteredCourseId(landCourseId);
       if (isOwnedCourse(landCourseId, courses)) selectCourse(landCourseId);
     }
-  }, [courses, diving, landCourseId, nav.leavingTo]);
+  }, [courses, diving, landCourseId, nav.leavingTo, startGlobeRise]);
+
+  // The dive announces its island inside the click (so the whoosh can play). A cold `?land=`
+  // load or a reload never dives, so announce it here too, silently. Re-announcing the same
+  // land is a no-op for the director, so this also covers the roster resolving the biome late
+  // and dev StrictMode replaying the mount effect's `enter-world` after us.
+  useEffect(() => {
+    if (!enteredCourseId) return;
+    const biome = globeCourses.find((course) => course.id === enteredCourseId)?.biome ?? null;
+    emit({ type: "enter-island", biome: biome ? rosterBiome(biome) : null, arrival: "direct" });
+  }, [enteredCourseId, globeCourses]);
 
   useEffect(
     () => () => {
       if (enterTimer.current) clearTimeout(enterTimer.current);
+      if (riseTimer.current) clearTimeout(riseTimer.current);
     },
     [],
   );
@@ -279,7 +316,8 @@ export function EarthShell() {
               <CourseGlobe
                 courses={globeCourses}
                 activeCourseId={activeCourseId}
-                arriving
+                arriving={!rising && !roseFromLand.current}
+                rising={rising}
                 diving={diving !== null}
                 diveAnchor={diving?.anchor ?? null}
                 onActiveCourseChange={focusCourse}

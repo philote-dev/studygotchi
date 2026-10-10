@@ -16,9 +16,9 @@ describe("growth studio mapping", () => {
       DEMO_GROWTH_COURSES.filter((course) => course.role === "live").map((course) => [course.code, course]),
     );
     expect(byCode["8.223"]).toMatchObject({
-      globeBiome: "sand",
-      land: "frontier-town",
-      landName: "Frontier Town",
+      globeBiome: "ice",
+      land: "ice-town",
+      landName: "Ice Town",
     });
     expect(byCode["6.1400"]).toMatchObject({
       globeBiome: "forest",
@@ -29,7 +29,7 @@ describe("growth studio mapping", () => {
       DEMO_GROWTH_COURSES.filter((course) => course.role === "snapshot").map((course) => [course.code, course]),
     );
     expect(snapshot["18.06"]).toMatchObject({
-      globeBiome: "city",
+      globeBiome: "meadow",
       land: "medieval-meadow-kingdom",
     });
     expect(snapshot["CS-4780"].land).toBe(visualForGlobeBiome(snapshot["CS-4780"].globeBiome));
@@ -45,13 +45,13 @@ describe("growth studio mapping", () => {
     expect(places.some((place) => place.cluster === "Regular Language")).toBe(true);
     expect(places.some((place) => place.cluster === "Deterministic Finite Automaton (DFA)")).toBe(true);
 
-    const frontier = DEMO_GROWTH_COURSES.find((course) => course.code === "8.223")!;
-    const frontierPlaces = assignPlaces(frontier);
-    expect(frontierPlaces[0]).toMatchObject({
+    const ice = DEMO_GROWTH_COURSES.find((course) => course.code === "8.223")!;
+    const icePlaces = assignPlaces(ice);
+    expect(icePlaces[0]).toMatchObject({
       cluster: "Canonical Momentum",
-      districtName: "Main Town",
+      districtName: "Harbour",
     });
-    expect(frontierPlaces.map((place) => place.districtName)).toContain("Grand Railway");
+    expect(icePlaces.map((place) => place.districtName)).toContain("Observatory");
   });
 
   it("scrubs the product growth ladder, not a made-up set of looks", () => {

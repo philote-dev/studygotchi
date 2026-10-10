@@ -64,6 +64,7 @@ describe("earth planet vs land", () => {
   it("slides the flag out with Classes when leaving Courses for Information", () => {
     expect(sharesPlanetLeaveBeat("course-navigator")).toBe(true);
     expect(sharesPlanetLeaveBeat("landmark-flag")).toBe(true);
+    expect(sharesPlanetLeaveBeat("concept-rail")).toBe(true);
     expect(sharesPlanetLeaveBeat("sg-constellation")).toBe(false);
   });
 

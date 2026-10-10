@@ -22,7 +22,7 @@ const P = {
 const placement = (id: (typeof BOUQUET_PLACEMENTS)[number]['id']) => BOUQUET_PLACEMENTS.find((entry) => entry.id === id)!
 
 function BouquetMountain() {
-  const place = placement('mountain')
+  const place = placement('hero')
   const snowHeight = place.height * 0.48
   const sidePeakHeight = place.height * 0.72
   const rightPeakHeight = place.height * 0.62
@@ -63,7 +63,7 @@ function BouquetMountain() {
 }
 
 function BouquetLighthouse({ night }: { night: boolean }) {
-  const place = placement('lighthouse')
+  const place = placement('front-left')
   const scale = place.height / 15
   const sweep = useRef<THREE.Group>(null)
   useFrame(({ clock }) => {
@@ -136,7 +136,7 @@ function Pine({ position, height, lean = 0 }: { position: [number, number, numbe
 }
 
 function BouquetPines() {
-  const place = placement('pines')
+  const place = placement('back-right')
   const scale = place.height / 14
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
@@ -221,7 +221,7 @@ function House({
 }
 
 function BouquetHouses({ night }: { night: boolean }) {
-  const place = placement('houses')
+  const place = placement('front-right')
   const scale = place.height / 11
   return (
     <group position={place.position} rotation={outwardRotation(place)}>

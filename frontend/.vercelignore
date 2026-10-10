@@ -1,9 +1,7 @@
-# The public/assets symlink points at the 400MB repo assets tree.
-# Following it exceeds Vercel's 100MB file cap. Galaxy uses the
-# generated React spiral; the build script can rematerialize a slim
-# public/assets if a local assets source exists.
-public/assets
-public/assets/**
+# public/assets is served as-is. Locally it is a symlink to the 410MB repo
+# assets tree; before a deploy, scripts/dereference-public-assets.mjs
+# (FORCE_DEREF_ASSETS=1) replaces it with the ~80MB runtime set listed in
+# scripts/public-assets-manifest.mjs, which is what gets uploaded.
 
 # Local Next verify/output trees are hundreds of MB and are not the app source.
 .next

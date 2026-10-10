@@ -50,6 +50,7 @@ export interface CourseGlobeCanvasProps {
   theme: SpaceTheme;
   arriving: boolean;
   diving: boolean;
+  rising: boolean;
   diveAnchor: ScreenPoint | null;
   reducedMotion: boolean;
   onActiveCourseChange(courseId: string): void;

@@ -9,7 +9,7 @@ import { emit, type AudioEvent } from "@/lib/audio/events";
 import { dominantBiome } from "@/lib/audio/director";
 import { useIdentity } from "@/lib/identity";
 import { WORLD_CHANGE_PRIORITY, asWorldResponse, changedRegions, describeChanges, toCanvasWorld, type WorldChange } from "@/lib/world/adapter";
-import type { WorldResponse } from "@/lib/world/types";
+import type { BiomeId, WorldResponse } from "@/lib/world/types";
 import { demoProgress, type IceDemoState } from "@/lib/world/demo-theater";
 import type { LocalBiomeId } from "./biomes/types";
 
@@ -62,7 +62,14 @@ function playChanges(changes: WorldChange[]) {
 const WorldCanvas = dynamic(() => import("./WorldCanvas"), { ssr: false });
 const DevelopedBiomeCanvas = dynamic(
   () => import("./biomes/DevelopedBiomeCanvas").then((mod) => mod.DevelopedBiomeCanvas),
-  { ssr: false },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="biome-canvas-loading" role="status">
+        Raising the land…
+      </div>
+    ),
+  },
 );
 
 export type WorldSource = { kind: "own" } | { kind: "visit"; token: string };
@@ -78,11 +85,14 @@ export function WorldPage({
   iceDemo,
   focusDistrict,
   onFocusDistrict,
+  landBiome = null,
 }: {
   source?: WorldSource;
   /** Load this course's land even when identity still points at another course. */
   courseId?: string | null;
   visual?: LocalBiomeId;
+  /** The land the student is standing on; when set, the music follows it instead of the payload's biome mix. */
+  landBiome?: BiomeId | null;
   readOnly?: boolean;
   /** Called with every payload the canvas draws, so a panel can read the same world. */
   onWorld?: (world: WorldResponse | null) => void;
@@ -174,17 +184,21 @@ export function WorldPage({
 
   const canvasWorld = useMemo(() => (world ? toCanvasWorld(world) : null), [world]);
 
-  // The island's bed follows the biome most of its concepts live in.
+  // The island's bed follows the land itself; a visit with no land falls back to the biome most
+  // of its concepts live in.
   useEffect(() => {
-    if (canvasWorld) emit({ type: "island-biome", biome: dominantBiome(canvasWorld.places) });
-  }, [canvasWorld]);
+    if (!canvasWorld) return;
+    emit({ type: "island-biome", biome: landBiome ?? dominantBiome(canvasWorld.places) });
+  }, [canvasWorld, landBiome]);
 
   const reached = world ? world.regions.filter((region) => region.semantic_state !== "frontier").length : 0;
   const total = world ? world.regions.length + world.hidden_concept_count : 0;
   const liveProgress = total > 0 ? reached / total : 0.68;
+  // Growth follows the real course fraction (ship handoff §2); the 8.223 demo theater's beat wins
+  // for the hero, and the legacy golden scene stays pinned at 100 %.
   const progress = iceDemo
     ? demoProgress(iceDemo.beat)
-    : visual === "ice-town" || visual === "ice-golden"
+    : visual === "ice-golden"
       ? 1
       : liveProgress;
 
@@ -197,6 +211,12 @@ export function WorldPage({
           focusDistrict={focusDistrict}
           iceDemo={iceDemo}
           onFocusDistrict={onFocusDistrict}
+          world={canvasWorld}
+          selectedId={selectedId}
+          hoveredId={hovered}
+          changedIds={changed}
+          onSelect={select}
+          onHover={setHovered}
         />
         {error ? (
           <p className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-paper-card px-3 py-1 text-[12px] text-paper-soft">
@@ -223,6 +243,12 @@ export function WorldPage({
           focusDistrict={focusDistrict}
           iceDemo={iceDemo}
           onFocusDistrict={onFocusDistrict}
+          world={canvasWorld}
+          selectedId={selectedId}
+          hoveredId={hovered}
+          changedIds={changed}
+          onSelect={select}
+          onHover={setHovered}
         />
         {error ? (
           <p className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-paper-card px-3 py-1 text-[12px] text-paper-soft">

@@ -2,21 +2,20 @@
 
 import { useMemo, useRef } from "react";
 import { Html } from "@react-three/drei";
-import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { showGlobeLandmarkNumberPin } from "@/lib/world/earth-nav";
-import { isLandmarkVisible } from "@/lib/world/landmark-hit";
 import { markerIdForCourse } from "@/lib/world/globe-courses";
 import { BouquetBase } from "./bouquet/BouquetBase";
 import { WorldProps } from "./bouquet/WorldProps";
 import { MARKERS } from "./bouquet/markers";
 import { propCountFromProgress } from "./bouquet/bouquet-state";
+import { isGlobeLandmarkFacing } from "./globe-pick";
 import { GLOBE_ACTIVE_POP, GLOBE_BOUQUET_SCALE } from "./globe-parade";
 import { courseMarkerState, sampleTerrain } from "./globe-spec";
 import { GLOBE_RADIUS } from "./globe-materials";
 import type {
   CourseGlobeCourse,
-  ScreenPoint,
   UnitDirection,
 } from "./globe-types";
 
@@ -28,7 +27,7 @@ const LANDMARK_DEAD_LAYER = 31;
 
 export interface GlobeTownOpenEvent {
   courseId: string;
-  anchor: ScreenPoint;
+  anchor: { x: number; y: number };
 }
 
 interface GlobeTownProps {
@@ -37,9 +36,8 @@ interface GlobeTownProps {
   courses: CourseGlobeCourse[];
   directions: Map<string, UnitDirection>;
   active: boolean;
+  hovered: boolean;
   night: boolean;
-  onActivate(courseId: string): void;
-  onOpen(event: GlobeTownOpenEvent): void;
 }
 
 export function GlobeTown({
@@ -48,15 +46,13 @@ export function GlobeTown({
   courses,
   directions,
   active,
+  hovered,
   night,
-  onActivate,
-  onOpen,
 }: GlobeTownProps) {
   const group = useRef<THREE.Group>(null);
-  const hittable = useRef(true);
   const pinWorld = useRef(new THREE.Vector3());
   const planetCenter = useRef(new THREE.Vector3());
-  const { camera, size } = useThree();
+  const { camera } = useThree();
   const markerState = courseMarkerState(course.progress);
   const marker =
     MARKERS.find((entry) => entry.id === markerIdForCourse(course)) ?? MARKERS[0];
@@ -83,37 +79,15 @@ export function GlobeTown({
     const center = root.parent
       ? root.parent.getWorldPosition(planetCenter.current)
       : planetCenter.current.set(0, -0.7, 0);
-    const next = isLandmarkVisible({
-      pin: pinWorld.current,
-      camera: camera.position,
-      planetCenter: center,
-      planetRadius: GLOBE_RADIUS,
-    });
-    hittable.current = next;
+    const next = isGlobeLandmarkFacing(
+      pinWorld.current,
+      center,
+      camera.position,
+    );
     root.traverse((obj) => {
       obj.layers.set(next ? 0 : LANDMARK_DEAD_LAYER);
     });
   });
-
-  const raiseFlag = () => {
-    if (!group.current) return;
-    group.current.updateWorldMatrix(true, false);
-    const projected = group.current
-      .getWorldPosition(new THREE.Vector3())
-      .project(camera);
-    const anchor = {
-      x: size.left + ((projected.x + 1) * size.width) / 2,
-      y: size.top + ((1 - projected.y) * size.height) / 2,
-    };
-    onActivate(course.id);
-    onOpen({ courseId: course.id, anchor });
-  };
-
-  const openTown = (event: ThreeEvent<MouseEvent>) => {
-    if (!hittable.current) return;
-    event.stopPropagation();
-    raiseFlag();
-  };
 
   return (
     <group
@@ -122,19 +96,6 @@ export function GlobeTown({
       quaternion={quaternion}
       scale={active ? scale * GLOBE_ACTIVE_POP : scale}
       userData={{ courseLandmark: course.id }}
-      onClick={(event) => {
-        if (!hittable.current) return;
-        event.stopPropagation();
-        openTown(event);
-      }}
-      onPointerOver={(event) => {
-        if (!hittable.current) return;
-        event.stopPropagation();
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        document.body.style.cursor = "auto";
-      }}
     >
       <group position={active ? [0, ACTIVE_LIFT, 0] : [0, 0, 0]}>
         <BouquetBase marker={marker} />
@@ -143,8 +104,25 @@ export function GlobeTown({
           propCount={propCountFromProgress(course.progress)}
           night={night}
         />
+        {hovered ? (
+          <mesh
+            position={[0, 0.08, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            raycast={() => undefined}
+          >
+            <ringGeometry args={active ? [20.4, 24.2, 28] : [16.4, 19.8, 28]} />
+            <meshBasicMaterial
+              color={night ? "#f2ead4" : "#2c261c"}
+              toneMapped={false}
+            />
+          </mesh>
+        ) : null}
         {active ? (
-          <mesh position={[0, 0.12, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh
+            position={[0, 0.12, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            raycast={() => undefined}
+          >
             <ringGeometry args={[16.4, 19.8, 28]} />
             <meshBasicMaterial color="#fff0ae" toneMapped={false} />
           </mesh>
@@ -172,18 +150,16 @@ interface GlobeTownsProps {
   courses: CourseGlobeCourse[];
   directions: Map<string, UnitDirection>;
   activeCourseId: string | null;
+  hoveredCourseId?: string | null;
   night?: boolean;
-  onActiveCourseChange(courseId: string): void;
-  onCourseTownOpen(event: GlobeTownOpenEvent): void;
 }
 
 export function GlobeTowns({
   courses,
   directions,
   activeCourseId,
+  hoveredCourseId = null,
   night = false,
-  onActiveCourseChange,
-  onCourseTownOpen,
 }: GlobeTownsProps) {
   return (
     <group>
@@ -197,9 +173,8 @@ export function GlobeTowns({
             courses={courses}
             directions={directions}
             active={course.id === activeCourseId}
+            hovered={course.id === hoveredCourseId}
             night={night}
-            onActivate={onActiveCourseChange}
-            onOpen={onCourseTownOpen}
           />
         ) : null;
       })}

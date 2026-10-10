@@ -1,13 +1,13 @@
 import kirbyReference from '../../../../docs/design/world/refs/kirby-w3-pedestal.png?url'
 import lighthouseReference from '../../../../docs/design/world/refs/penguin-isle-lighthouse-rock.png?url'
-import { ICE_BOUQUET } from '../iceBouquet'
-import { MARKERS, type MarkerDefinition } from '../markers'
+import type { MarkerDefinition } from '../markers'
 import type { MarkerRenderState } from '../state'
+import { bouquetFor } from '../scene/biomes'
 import { Creature } from '../scene/Creature'
 import { WorldProps } from '../scene/WorldProps'
 import { MarkerViewport } from './MarkerViewport'
 
-function MarkerContents({ marker, state }: { marker: MarkerDefinition; state: MarkerRenderState }) {
+export function MarkerContents({ marker, state }: { marker: MarkerDefinition; state: MarkerRenderState }) {
   return (
     <>
       <WorldProps marker={marker} propCount={state.propCount} night={state.night} />
@@ -26,15 +26,17 @@ export function IceReviewBoard({
   onReady: (id: string) => void
 }) {
   const ice = marker.id === 'ice-town'
+  const { spec } = bouquetFor(marker.id)
+  const built = spec.name.length > 0
   return (
-    <section className="ice-review" aria-label={`${marker.name} bouquet review`}>
+    <section className="ice-review" aria-label={`${marker.name} bouquet review`} data-built={built}>
       <div className="review-heading">
         <div>
           <span className="marker-kicker">One plinth · one terrain mass · oversized landscape</span>
-          <h2>{ice ? ICE_BOUQUET.name : marker.name}</h2>
+          <h2>{built ? spec.name : `${marker.name} (stub)`}</h2>
         </div>
         <p>
-          Direction <b>{ice ? 'Village bouquet' : marker.silhouette}</b>
+          48 px read <b>{built ? spec.silhouette : marker.silhouette}</b>
         </p>
       </div>
 
@@ -54,23 +56,30 @@ export function IceReviewBoard({
             </MarkerViewport>
           </div>
           <div className="bouquet-notes">
-            <p>{ice ? ICE_BOUQUET.description : `${marker.name} keeps the Ice bouquet grammar: one circular plinth and four oversized signature props bursting outward.`}</p>
+            <p>{built ? spec.exaggeration : 'Category stand-ins only. This family has not been hand-built yet.'}</p>
             <ul>
-              {ice ? (
-                <>
-                  <li>Three capped peaks form a visible 32 m mountain range.</li>
-                  <li>28 m red-cap lighthouse uses a restrained outward curve.</li>
-                  <li>28 m pines and two 24 m gabled houses stay on the plinth.</li>
-                  <li>The cream house that hung off the edge is gone.</li>
-                </>
-              ) : (
-                marker.props.filter((prop): prop is NonNullable<typeof prop> => Boolean(prop)).map((prop) => (
-                  <li key={prop.id}>
-                    {prop.height} m {prop.label}
+              {spec.elements.map((element) => {
+                const prop = marker.props.find((entry) => entry?.id === element.id)
+                return (
+                  <li key={element.id}>
+                    {element.height} m {prop?.label ?? element.id}
+                    {element.id === spec.hero ? ' (hero)' : ''}
                   </li>
-                ))
-              )}
+                )
+              })}
             </ul>
+            {built && (
+              <dl className="bouquet-meta">
+                <div>
+                  <dt>Rim</dt>
+                  <dd>{spec.rim}</dd>
+                </div>
+                <div>
+                  <dt>Nearest protected silhouette</dt>
+                  <dd>{spec.closestProtected}</dd>
+                </div>
+              </dl>
+            )}
           </div>
         </div>
       </div>
@@ -111,25 +120,6 @@ export function IceSizeViews({
       {([48, 96, 512] as const).map((size) => (
         <MarkerViewport key={size} marker={marker} night={state.night} size={size} label={`${size} px`} onReady={() => onReady(String(size))}>
           <MarkerContents marker={marker} state={state} />
-        </MarkerViewport>
-      ))}
-    </section>
-  )
-}
-
-export function MarkerSheet({
-  state,
-  onReady,
-}: {
-  state: MarkerRenderState
-  onReady: (id: string) => void
-}) {
-  return (
-    <section className="marker-sheet" aria-label="17-marker sheet">
-      {MARKERS.map((entry) => (
-        <MarkerViewport key={entry.id} marker={entry} night={state.night} size={96} label={entry.name} onReady={() => onReady(entry.id)}>
-          <WorldProps marker={entry} propCount={state.propCount} night={state.night} />
-          {state.creature && <Creature />}
         </MarkerViewport>
       ))}
     </section>

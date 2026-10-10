@@ -4,8 +4,16 @@ export const BASE_TOP = BASE_HEIGHT
 export const SNOW_CAP_THICKNESS = 0.08
 export const TERRAIN_RADIUS = 13
 
+/**
+ * Four bouquet slots shared by every family. Heights are the roster order
+ * P1 → P4 (32 / 28 / 28 / 24 m). Families may override positions, yaw, lean
+ * and crown radius with their own `placements` but must keep the anchor rule:
+ * base inside TERRAIN_RADIUS, crown projecting beyond BASE_RADIUS, lean 8–12°.
+ */
+export type BouquetSlot = 'hero' | 'front-left' | 'back-right' | 'front-right'
+
 export interface BouquetPlacement {
-  id: 'mountain' | 'lighthouse' | 'pines' | 'houses'
+  id: BouquetSlot
   position: readonly [number, number, number]
   height: 32 | 28 | 24
   yaw: number
@@ -13,12 +21,20 @@ export interface BouquetPlacement {
   crownRadius: number
 }
 
+export const SLOT_ORDER: readonly BouquetSlot[] = ['hero', 'front-left', 'back-right', 'front-right']
+
 export const BOUQUET_PLACEMENTS: readonly BouquetPlacement[] = [
-  { id: 'mountain', position: [-1, BASE_TOP, -6.5], height: 32, yaw: 0.08, outwardLean: 0.18, crownRadius: 9 },
-  { id: 'lighthouse', position: [-7.1, BASE_TOP, 3.4], height: 28, yaw: 0.08, outwardLean: 0.14, crownRadius: 4.5 },
-  { id: 'pines', position: [6.6, BASE_TOP, -3.2], height: 28, yaw: -0.18, outwardLean: 0.18, crownRadius: 9 },
-  { id: 'houses', position: [6, BASE_TOP, 4.2], height: 24, yaw: 0.16, outwardLean: 0.2, crownRadius: 10 },
+  { id: 'hero', position: [-1, BASE_TOP, -6.5], height: 32, yaw: 0.08, outwardLean: 0.18, crownRadius: 9 },
+  { id: 'front-left', position: [-7.1, BASE_TOP, 3.4], height: 28, yaw: 0.08, outwardLean: 0.14, crownRadius: 4.5 },
+  { id: 'back-right', position: [6.6, BASE_TOP, -3.2], height: 28, yaw: -0.18, outwardLean: 0.18, crownRadius: 9 },
+  { id: 'front-right', position: [6, BASE_TOP, 4.2], height: 24, yaw: 0.16, outwardLean: 0.2, crownRadius: 10 },
 ] as const
+
+export function placementFor(slot: BouquetSlot, placements: readonly BouquetPlacement[] = BOUQUET_PLACEMENTS): BouquetPlacement {
+  const found = placements.find((entry) => entry.id === slot)
+  if (!found) throw new Error(`No bouquet placement for slot ${slot}`)
+  return found
+}
 
 export function projectedCrownRadius(placement: BouquetPlacement): number {
   return Math.hypot(placement.position[0], placement.position[2]) + Math.sin(placement.outwardLean) * placement.height + placement.crownRadius

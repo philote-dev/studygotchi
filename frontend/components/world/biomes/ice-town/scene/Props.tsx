@@ -5,6 +5,7 @@ import { ICE_TOWN_PALETTE as P, type BuildingKind } from '../layout/biome-layout
 import type { PropKind } from '../layout/terrain'
 import { Glow, Surf } from '../render/materials'
 import { containerShipHull, type ContainerShipHullSpec } from '@/lib/world/container-ship'
+import { WindSway } from './StormWind'
 
 /* Every object here is primitive geometry with the shared toon material: two or three flat
  * colours plus one accent. Sizes are metres at scale 1 (houses 4.5–6 m, per the pass-3 scale
@@ -312,25 +313,27 @@ export function Building({ kind, index, lit }: { kind: BuildingKind; index: numb
 
 /* ---------- trees, rocks ---------- */
 
-export function Pine({ scale = 1 }: { scale?: number }) {
+export function Pine({ scale = 1, seed = 1 }: { scale?: number; seed?: number }) {
   return (
     <group scale={scale}>
-      <mesh position={[0, 0.5, 0]} castShadow>
-        <cylinderGeometry args={[0.12, 0.18, 1.0, 6]} />
-        <Surf color={P.trunk} />
-      </mesh>
-      <mesh position={[0, 1.15, 0]} castShadow>
-        <coneGeometry args={[0.85, 1.4, 7]} />
-        <Surf color={P.pine} />
-      </mesh>
-      <mesh position={[0, 1.85, 0]} castShadow>
-        <coneGeometry args={[0.62, 1.2, 7]} />
-        <Surf color={P.pineLight} />
-      </mesh>
-      <mesh position={[0, 2.4, 0]} castShadow>
-        <coneGeometry args={[0.38, 0.8, 7]} />
-        <Surf color={P.snow} />
-      </mesh>
+      <WindSway seed={seed}>
+        <mesh position={[0, 0.5, 0]} castShadow>
+          <cylinderGeometry args={[0.12, 0.18, 1.0, 6]} />
+          <Surf color={P.trunk} />
+        </mesh>
+        <mesh position={[0, 1.15, 0]} castShadow>
+          <coneGeometry args={[0.85, 1.4, 7]} />
+          <Surf color={P.pine} />
+        </mesh>
+        <mesh position={[0, 1.85, 0]} castShadow>
+          <coneGeometry args={[0.62, 1.2, 7]} />
+          <Surf color={P.pineLight} />
+        </mesh>
+        <mesh position={[0, 2.4, 0]} castShadow>
+          <coneGeometry args={[0.38, 0.8, 7]} />
+          <Surf color={P.snow} />
+        </mesh>
+      </WindSway>
     </group>
   )
 }
@@ -338,20 +341,21 @@ export function Pine({ scale = 1 }: { scale?: number }) {
 export function PineTrio({ scale = 1 }: { scale?: number }) {
   return (
     <group scale={scale}>
-      <Pine scale={1.15} />
+      <Pine scale={1.15} seed={2} />
       <group position={[1.6, 0, 0.6]}>
-        <Pine scale={0.85} />
+        <Pine scale={0.85} seed={9} />
       </group>
       <group position={[-1.1, 0, 1.3]}>
-        <Pine scale={0.65} />
+        <Pine scale={0.65} seed={15} />
       </group>
     </group>
   )
 }
 
-export function BareTree({ scale = 1 }: { scale?: number }) {
+export function BareTree({ scale = 1, seed = 4 }: { scale?: number; seed?: number }) {
   return (
     <group scale={scale}>
+      <WindSway seed={seed}>
       <mesh position={[0, 0.9, 0]} castShadow>
         <cylinderGeometry args={[0.07, 0.14, 1.8, 5]} />
         <Surf color={P.trunk} />
@@ -367,6 +371,7 @@ export function BareTree({ scale = 1 }: { scale?: number }) {
           <Surf color={P.trunk} />
         </mesh>
       ))}
+      </WindSway>
     </group>
   )
 }
@@ -1040,7 +1045,7 @@ export function PlazaTree({ lit }: { lit: boolean }) {
         <Surf color={P.paleIce} />
       </mesh>
       <group position={[0, 0.24, 0]}>
-        <Pine scale={2.6} />
+        <Pine scale={2.6} seed={21} />
       </group>
       {Array.from({ length: 12 }, (_, i) => {
         const a = (i / 12) * Math.PI * 2

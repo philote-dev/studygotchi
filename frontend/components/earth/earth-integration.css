@@ -28,8 +28,44 @@
   height: 100%;
 }
 
-.sg-shell:has(.biome-land-stage) .sg-field,
-.sg-shell:has(.biome-land-stage) .sg-sky-spiral {
+.biome-canvas-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--a-ink) 62%, transparent);
+  background: #dbe2ee;
+  font-family: var(--a-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.biome-concept-label {
+  max-width: min(220px, 42vw);
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--a-ink);
+  background: color-mix(in srgb, var(--a-sheet) 92%, transparent);
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--a-ink) 16%, transparent);
+  font-family: var(--a-mono);
+  font-size: 11px;
+  line-height: 15px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--a-t-quick) linear;
+}
+
+.biome-concept-label[data-visible="true"],
+.biome-concept-label:hover,
+.biome-concept-label:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sg-shell:has(.biome-land-stage):not(:has([data-leave-phase="rise"])) .sg-field,
+.sg-shell:has(.biome-land-stage):not(:has([data-leave-phase="rise"])) .sg-sky-spiral {
   display: none;
 }
 

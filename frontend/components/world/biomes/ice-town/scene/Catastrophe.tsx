@@ -5,6 +5,8 @@ import { ICE_TOWN_PALETTE as P, type BiomeLayout, districtCentre, districtRadius
 import { sampleTerrain } from '../layout/terrain'
 import type { CatastropheState } from '../state'
 import { ruin } from './Structures'
+import { useStormWind } from './StormWind'
+import { STORM_WIND, windGustSpeed } from './storm-weather'
 
 /**
  * Fail is loud: every district cracks, shards fly, the snow goes dark.
@@ -12,10 +14,14 @@ import { ruin } from './Structures'
  */
 export function Catastrophe({ layout, state }: { layout: BiomeLayout; state: CatastropheState }) {
   const storm = useRef<THREE.Group>(null)
+  const cracks = useRef<THREE.Group>(null)
+  const debris = useRef<THREE.Group>(null)
   const amount = useRef(0)
   const raging = state.phase === 'ruin' || state.phase === 'bang' || state.phase === 'blizzard'
+  const { reducedMotion } = useStormWind()
+  const wrap = layout.frameRadius * 1.6
 
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     const target = state.phase === 'ruin' ? 1 : state.phase === 'bang' || state.phase === 'blizzard' ? 0.75 : 0
     const rate = state.phase === 'recovering' ? 0.9 : 4
     amount.current += (target - amount.current) * Math.min(1, delta * rate)
@@ -24,12 +30,19 @@ export function Catastrophe({ layout, state }: { layout: BiomeLayout; state: Cat
     ruin.amount = amount.current
     if (!storm.current) return
     storm.current.visible = amount.current > 0.02
-    storm.current.children.forEach((child, index) => {
-      const mesh = child as THREE.Mesh
-      const material = mesh.material as THREE.MeshBasicMaterial
+    cracks.current?.children.forEach((child, index) => {
+      const material = (child as THREE.Mesh).material as THREE.MeshBasicMaterial
       if (material?.opacity !== undefined) material.opacity = amount.current * (index % 3 === 0 ? 0.42 : 0.22)
-      child.rotation.y += delta * (0.25 + (index % 5) * 0.08)
-      child.position.y += Math.sin(amount.current * 5 + index) * delta * 0.18
+    })
+    if (!debris.current || reducedMotion) return
+    const gale = windGustSpeed(clock.elapsedTime, 10, amount.current, false)
+    debris.current.children.forEach((child, index) => {
+      child.rotation.x += delta * (2.2 + (index % 5) * 0.4)
+      child.rotation.y += delta * (1.6 + (index % 4) * 0.3)
+      child.position.x += STORM_WIND.x * gale * delta * (0.55 + (index % 4) * 0.12)
+      child.position.z += STORM_WIND.z * gale * delta * (0.55 + (index % 4) * 0.12)
+      child.position.y = 2.1 + (index % 5) * 1.1 + Math.sin(clock.elapsedTime * 7 + index) * 0.55
+      if (child.position.x > wrap) child.position.x = -wrap
     })
   })
 
@@ -65,18 +78,22 @@ export function Catastrophe({ layout, state }: { layout: BiomeLayout; state: Cat
 
   return (
     <group ref={storm} visible={raging}>
-      {marks.map((mark) => (
-        <mesh key={mark.key} position={[mark.x, mark.y, mark.z]} rotation={[-Math.PI / 2, 0, mark.yaw]}>
-          <planeGeometry args={[mark.w, 0.55]} />
-          <meshBasicMaterial color={P.waterNight} transparent opacity={0} depthWrite={false} />
-        </mesh>
-      ))}
-      {shards.map((shard, i) => (
-        <mesh key={`shard-${i}`} position={[shard.x, shard.y, shard.z]} rotation={[0.4, i, 0.2]} scale={shard.s}>
-          <boxGeometry args={[1.1, 1.1, 1.1]} />
-          <meshStandardMaterial color="#e7f6ff" emissive="#9fd4ee" emissiveIntensity={0.35} roughness={0.12} transparent opacity={0.8} />
-        </mesh>
-      ))}
+      <group ref={cracks}>
+        {marks.map((mark) => (
+          <mesh key={mark.key} position={[mark.x, mark.y, mark.z]} rotation={[-Math.PI / 2, 0, mark.yaw]}>
+            <planeGeometry args={[mark.w, 0.55]} />
+            <meshBasicMaterial color={P.waterNight} transparent opacity={0} depthWrite={false} />
+          </mesh>
+        ))}
+      </group>
+      <group ref={debris}>
+        {shards.map((shard, i) => (
+          <mesh key={`shard-${i}`} position={[shard.x, shard.y, shard.z]} rotation={[0.4, i, 0.2]} scale={shard.s}>
+            <boxGeometry args={[1.1, 1.1, 1.1]} />
+            <meshStandardMaterial color="#e7f6ff" emissive="#9fd4ee" emissiveIntensity={0.35} roughness={0.12} transparent opacity={0.8} />
+          </mesh>
+        ))}
+      </group>
       <IceChunkPop layout={layout} raging={raging} />
     </group>
   )

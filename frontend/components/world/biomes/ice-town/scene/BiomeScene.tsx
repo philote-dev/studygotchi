@@ -10,8 +10,13 @@ import {
 import { sampleTerrain } from '../layout/terrain'
 import { LockedOverviewCamera } from '../camera/CameraRig'
 import type { LabState } from '../state'
-import { Aurora, Clouds, GustRibbons, Snowfall, Stars, WhaleEvent } from './Ambient'
+import { Aurora, Clouds, GustRibbons, Hailfall, Snowfall, Stars, WhaleEvent } from './Ambient'
 import { Catastrophe } from './Catastrophe'
+import { StormWindProvider, usePrefersReducedMotion } from './StormWind'
+import { stormGrade } from './storm-weather'
+import { skyGradeFor } from './sky-blend'
+import { SkyBlend } from './SkyBlend'
+import { PixelComposer } from '../render/PixelComposer'
 import { IceHover } from './IceHover'
 import { Landmark } from './Landmark'
 import { Residents } from './Residents'
@@ -64,29 +69,22 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
   }, [layout])
 
   const world = layout.world
-  const sky = night ? (world?.colours.skyNight ?? P.skyNight) : storm ? '#6d84a0' : (world?.colours.sky ?? P.sky)
+  const reducedMotion = usePrefersReducedMotion()
+  // Sky, fog and lights crossfade over 1.2 s between day / night / storm (bible §6).
+  const skyGrade = useMemo(
+    () =>
+      skyGradeFor(night, storm ? stormGrade(1) : null, {
+        sky: world?.colours.sky ?? P.sky,
+        skyNight: world?.colours.skyNight ?? P.skyNight,
+      }),
+    [night, storm, world],
+  )
 
   return (
     <>
-      <color attach="background" args={[sky]} />
-      <fog attach="fog" args={[sky, storm ? 130 : 220, storm ? 480 : 640]} />
-      <hemisphereLight args={[night || storm ? '#8aa0c0' : '#dff4ff', night || storm ? '#3a3550' : '#9e8fae', storm ? 0.58 : night ? 0.7 : 0.45]} />
-      <directionalLight
-        position={night || storm ? [-40, 60, 30] : [60, 90, 70]}
-        intensity={storm ? 1.15 : night ? 1.1 : 2.0}
-        color={storm ? '#b7c8dc' : night ? '#8fa3d8' : '#fff3e0'}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-near={10}
-        shadow-camera-far={360}
-        shadow-camera-left={-110}
-        shadow-camera-right={110}
-        shadow-camera-top={110}
-        shadow-camera-bottom={-110}
-        shadow-bias={-0.0008}
-      />
+      <SkyBlend grade={skyGrade} instant={reducedMotion} />
 
+      <StormWindProvider storm={storm} reducedMotion={reducedMotion}>
       {world ? (
         <WorldScene layout={layout} world={world} progress={state.progress} seed={state.seed} night={night} darkDistrict={darkDistrict} />
       ) : (
@@ -114,6 +112,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
         />
       )}
       {storm ? <GustRibbons layout={layout} /> : null}
+      {storm ? <Hailfall layout={layout} /> : null}
       {state.whale && (!world || world.creatureEvent) && <WhaleEvent layout={layout} seed={state.seed} paused={catastrophe.phase !== 'calm'} />}
       {night && !world && <Aurora />}
       {night && <Stars />}
@@ -127,6 +126,8 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
       />
 
       <LockedOverviewCamera layout={layout} focusDistrict={state.focusDistrict} />
+      </StormWindProvider>
+      {state.pixel && <PixelComposer />}
     </>
   )
 }

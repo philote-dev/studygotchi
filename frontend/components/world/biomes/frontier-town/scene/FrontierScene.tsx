@@ -363,7 +363,7 @@ function Landmark({ stage, night }: { stage: ReturnType<typeof landmarkStage>; n
 
 function BackdropSkyline({ night, fraction }: { night: boolean; fraction: number }) {
   const profile = skylineProfile(fraction)
-  const segments = 28
+  const segments = 13
   return (
     <group>
       {[0, 1].flatMap((row) =>
@@ -371,8 +371,8 @@ function BackdropSkyline({ night, fraction }: { night: boolean; fraction: number
           const x = -205 + i * (410 / (segments - 1))
           const z = row ? -166 - Math.cos((i / segments) * Math.PI) * 3 : -142 + Math.sin(i * 1.7) * 3
           const base = row ? profile.far : profile.near
-          const h = base + Math.sin(i * 1.9 + row) * 4 + (i % 6 === 0 ? 5 : 0)
-          const width = 18
+          const h = base * 0.58 + Math.sin(i * 1.9 + row) * 4 + (i % 5 === 0 ? 5 : 0)
+          const width = 20 + ((i + row) % 3) * 4
           return (
             <group key={`${row}:${i}`} position={[x, h / 2, z]}>
               <Box position={[0, 0, 0]} size={[width, h, row ? 18 : 24]} color={night ? (row ? '#3a2f45' : '#6f3f38') : row ? P.farRock : P.redRock} />

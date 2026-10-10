@@ -4,6 +4,7 @@ import { WorldPage } from "@/components/world/WorldPage";
 import { visualForGlobeBiome } from "@/components/world/biomes/types";
 import type { GlobeBiome } from "@/components/world/globe/globe-types";
 import type { IceDemoState } from "@/lib/world/demo-theater";
+import { rosterBiome } from "@/lib/world/globe-courses";
 import type { WorldResponse } from "@/lib/world/types";
 
 /**
@@ -42,6 +43,7 @@ export function BiomeLand({
       <WorldPage
         courseId={courseId}
         visual={visualForGlobeBiome(biome)}
+        landBiome={rosterBiome(biome)}
         onWorld={onWorld}
         hoveredId={hoveredId}
         onHover={onHover}

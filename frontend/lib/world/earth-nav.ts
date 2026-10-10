@@ -76,8 +76,8 @@ export function showGlobeLandmarkNumberPin(): boolean {
   return false;
 }
 
-/** Left-rail chrome that uses the Classes leave beat on Courses → Information. */
-export const PLANET_LEAVE_CHROME = ["course-navigator", "landmark-flag"] as const;
+/** Left-rail chrome that uses the complementary leave beat when earth exits right. */
+export const PLANET_LEAVE_CHROME = ["course-navigator", "landmark-flag", "concept-rail"] as const;
 
 export function sharesPlanetLeaveBeat(className: string): boolean {
   return (PLANET_LEAVE_CHROME as readonly string[]).includes(className);

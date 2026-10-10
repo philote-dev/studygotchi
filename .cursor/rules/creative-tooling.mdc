@@ -1,0 +1,33 @@
+---
+description: Which installed skills and MCP servers to use for 3D, world, Blender, VFX, art and audio work in StudyGotchi
+alwaysApply: true
+---
+
+# Creative tooling: use the installed skills and MCPs
+
+Skills live in `~/.agents/skills` (Cursor and Codex read it directly; Claude Code through `~/.claude/skills` symlinks). Read the relevant `SKILL.md` before starting the task, and say which skill you used.
+
+| Task | Use |
+|---|---|
+| Any `three` / R3F change (globe, biomes, spiral, stage transitions) | `threejs-fundamentals` + `r3f-fundamentals`; GLSL or ocean/grass shaders → `threejs-shaders`; `EffectComposer` / `RenderPixelatedPass` → `threejs-postprocessing` + `r3f-postprocessing`; click, hover, picking → `r3f-interaction`; GLB creatures with `useAnimations` → `threejs-gltf-loading`; lights and the toon look → `threejs-materials-lighting` |
+| Catastrophes, confetti, "model pop", camera shake, hit-stop | `game-feel` |
+| Seeded terrain, continents, prop scatter | `procedural-gen` |
+| Reviewing or planning transitions and motion | `review-animations`, `animation-vocabulary` |
+| Rebuilding a prop from a reference image in code (boats, houses, landmarks) | `img2threejs` (staged sculpt + vision self-check loop) |
+| Blender landmark or creature work | MCP server `blender` plus `blender-modeling`, `blender-uv-texturing`, `blender-export`, and the existing `blender-animation/cameras/lighting/materials/rendering/pro-workflow` skills |
+
+## Blender MCP (`mcp-for-blender`)
+
+- Needs Blender open with the sidebar panel **MCP for Blender** (press `N`) → **Start MCP Server**. If tools time out, say so and ask the user to start it; do not run `uvx mcp-for-blender` in a terminal.
+- Use `look` (multi-angle, wireframe, x-ray) to check your own result before reporting; `generate_3d` for Tripo / Hunyuan3D / Rodin; `search_assets` + `import_asset` for Poly Pizza, Poly Haven, Sketchfab.
+- Batch generation stays headless in `tools/landmark-factory` and `tools/creature-factory` (`Blender -b --python ...`); the MCP is for interactive iteration on one asset.
+
+## Stack constraints
+
+- `three` 0.186, `@react-three/fiber` 9.x, `@react-three/drei` 10.x, WebGL renderer. Do not migrate to R3F 10, drei 11, WebGPU or TSL; they are alpha.
+- The pixel look is `RenderPixelatedPass`; keep pixel size resolution-independent (derive from renderer size, pixel-aligned frustum when panning).
+- New GLBs go through `gltf-transform optimize` before `frontend/public/assets`.
+
+## External generators (keys in env only, never in the repo; ask before spending credits)
+
+Tripo (rig model `v2.5-20260210` for quadruped / avian walk cycles), Meshy (`smart-topology` props), PixelLab (`https://api.pixellab.ai/v2/llms.txt`), Gemini `gemini-3-pro-image` (concept and expression sheets), ElevenLabs Music (`music_v2_5`), Poly Pizza (free key).

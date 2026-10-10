@@ -17,9 +17,15 @@ describe("meadow camera clamps", () => {
     expect(clampDioramaYaw(8)).toBe(8);
   });
 
-  it("allows tilt and zoom without a locked top-down rail", () => {
-    expect(CAMERA_LIMITS.pitchMaxDeg - CAMERA_LIMITS.pitchMinDeg).toBeGreaterThan(20);
-    expect(CAMERA_LIMITS.pitchMaxDeg).toBeLessThan(70);
+  it("keeps pitch and zoom inside the local-biome contract", () => {
+    expect(CAMERA_LIMITS.pitchMinDeg).toBe(34);
+    expect(CAMERA_LIMITS.pitchMaxDeg).toBe(40);
+    expect(CAMERA_LIMITS.yawDeg).toBe(35);
+    for (const station of Object.values(STATIONS)) {
+      expect(station.pitchDeg).toBeGreaterThanOrEqual(34);
+      expect(station.pitchDeg).toBeLessThanOrEqual(40);
+      expect(Math.abs(station.azimuthDeg)).toBeLessThanOrEqual(35);
+    }
     expect(clampDioramaPitch(4)).toBe(CAMERA_LIMITS.pitchMinDeg);
     expect(clampDioramaPitch(80)).toBe(CAMERA_LIMITS.pitchMaxDeg);
     expect(clampDolly(0.1)).toBe(CAMERA_LIMITS.minDolly);
@@ -35,6 +41,6 @@ describe("meadow camera clamps", () => {
     );
     expect(pose.position[2]).toBeGreaterThan(80);
     expect(pose.position[1]).toBeGreaterThan(16);
-    expect(pose.position[1] / pose.position[2]).toBeLessThan(0.55);
+    expect(pose.position[1]).toBeLessThan(pose.position[2]);
   });
 });

@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  diskOmega,
+  diskToScreen,
   paintSpiralGalaxy,
+  projectDiskPoint,
+  projectSpiralPixel,
+  rotateDiskAngle,
+  sampleSpiralGalaxy,
+  screenToDisk,
+  seedSpiralPixels,
   SPIRAL_GALAXY_DEFAULTS,
   SPIRAL_PALETTE,
   spiralGalaxyPaths,
@@ -87,5 +95,97 @@ describe("generated pixel spiral", () => {
     expect(svg).toContain('role="img"');
     expect(svg).toContain("<title>Spiral galaxy sky</title>");
     expect(svg).not.toContain("aria-hidden");
+  });
+});
+
+describe("disk-axis spiral rotation", () => {
+  const untilted = { tilt: 0, squash: 0.6, twist: 3.7, arms: 2, seed: 0x5a1a };
+
+  it("maps disk (0.8, 0) onto the major axis, not a screen circle", () => {
+    // discScale is 0.94: nx = u * 0.94, ny = v * 0.94 * squash when tilt = 0.
+    const onMajor = projectDiskPoint(0.8, 0, untilted);
+    expect(onMajor.nx).toBeCloseTo(0.752, 5);
+    expect(onMajor.ny).toBeCloseTo(0, 5);
+
+    const afterQuarter = projectDiskPoint(0.8, Math.PI / 2, untilted);
+    expect(afterQuarter.nx).toBeCloseTo(0, 5);
+    expect(afterQuarter.ny).toBeCloseTo(0.4512, 5);
+  });
+
+  it("advances a pixel in the disk plane (inner and outer share rigid ω)", () => {
+    expect(diskOmega(0.2)).toBe(1);
+    expect(diskOmega(0.9)).toBe(1);
+    expect(rotateDiskAngle(0.3, 0.2, 0.5)).toBeCloseTo(0.8, 10);
+    expect(rotateDiskAngle(0.3, 0.9, 0.5)).toBeCloseTo(0.8, 10);
+  });
+
+  it("lets optional differential rotation run faster near the core", () => {
+    expect(diskOmega(0.2, "differential")).toBeCloseTo(1 / (0.32 + 0.68 * 0.2), 10);
+    expect(diskOmega(0.2, "differential")).toBeGreaterThan(diskOmega(0.9, "differential"));
+    expect(rotateDiskAngle(0, 0.2, 1, "differential")).toBeGreaterThan(rotateDiskAngle(0, 0.9, 1, "differential"));
+  });
+
+  it("round-trips screen ↔ disk inside the disc", () => {
+    const disk = screenToDisk(0.4, -0.15, SPIRAL_GALAXY_DEFAULTS);
+    expect(disk).not.toBeNull();
+    const back = diskToScreen(disk!.u, disk!.v, SPIRAL_GALAXY_DEFAULTS);
+    expect(back.nx).toBeCloseTo(0.4, 8);
+    expect(back.ny).toBeCloseTo(-0.15, 8);
+  });
+
+  it("keeps the tilted elliptical silhouette fixed while the pattern turns", () => {
+    const rest = paintSpiralGalaxy({ diskSpin: 0 });
+    const turned = paintSpiralGalaxy({ diskSpin: 1.1 });
+    expect(turned).not.toEqual(rest);
+
+    const o = SPIRAL_GALAXY_DEFAULTS;
+    const g = o.grid;
+    const half = g / 2;
+    for (let y = 0; y < g; y++) {
+      for (let x = 0; x < g; x++) {
+        const nx = (x + 0.5 - half) / half;
+        const ny = (y + 0.5 - half) / half;
+        const { rho } = screenToDisk(nx, ny, o);
+        if (rho > 1.02) {
+          expect(rest[y][x]).toBeNull();
+          expect(turned[y][x]).toBeNull();
+        }
+      }
+    }
+    expect(paintSpiralGalaxy({ diskSpin: Math.PI * 2 })).toEqual(rest);
+  });
+
+  it("samples the same material after a disk-axis turn", () => {
+    const rho = 0.55;
+    const phi = 0.4;
+    const spin = 0.9;
+    const rest = projectDiskPoint(rho, phi, SPIRAL_GALAXY_DEFAULTS);
+    const moved = projectDiskPoint(rho, phi + spin, SPIRAL_GALAXY_DEFAULTS);
+    expect(sampleSpiralGalaxy(rest.nx, rest.ny, { diskSpin: 0 })).toBe(
+      sampleSpiralGalaxy(moved.nx, moved.ny, { diskSpin: spin }),
+    );
+  });
+
+  it("orbits seeded pixels on the disc and lands them on the grid", () => {
+    const pixels = seedSpiralPixels({ diskSpin: 0 });
+    expect(pixels.length).toBeGreaterThan(180);
+    const mid = pixels.find((p) => p.rho < 0.12);
+    expect(mid).toBeDefined();
+
+    const spin = Math.PI / 2;
+    const projected = pixels.map((p) => projectSpiralPixel(p, spin, SPIRAL_GALAXY_DEFAULTS));
+    for (const hit of projected) {
+      expect(hit).not.toBeNull();
+      expect(hit!.x).toBeGreaterThanOrEqual(0);
+      expect(hit!.x).toBeLessThan(SPIRAL_GALAXY_DEFAULTS.grid);
+      expect(hit!.y).toBeGreaterThanOrEqual(0);
+      expect(hit!.y).toBeLessThan(SPIRAL_GALAXY_DEFAULTS.grid);
+    }
+
+    const rim = pixels.reduce((best, p) => (p.rho > best.rho ? p : best));
+    const before = projectSpiralPixel(rim, 0, untilted)!;
+    const after = projectSpiralPixel(rim, spin, untilted)!;
+    expect(after.x).not.toBe(before.x);
+    expect(after.y).not.toBe(before.y);
   });
 });

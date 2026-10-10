@@ -1164,8 +1164,10 @@ function DioramaFog({ mist }: { mist: boolean }) {
     const fog = scene.fog as THREE.Fog | null
     if (!fog) return
     const distance = camera.position.distanceTo(center)
-    const near = distance + (mist ? 28 : 58)
-    const far = distance + (mist ? 190 : 245)
+    // Keep the rear canopy atmospheric without washing the authored skyline
+    // into a white band at the product overview camera.
+    const near = distance + (mist ? 72 : 96)
+    const far = distance + (mist ? 285 : 330)
     fog.near += (near - fog.near) * 0.12
     fog.far += (far - fog.far) * 0.12
   })

@@ -3,8 +3,10 @@ import {
   BASE_HEIGHT,
   BASE_RADIUS,
   BOUQUET_PLACEMENTS,
+  SLOT_ORDER,
   SNOW_CAP_THICKNESS,
   TERRAIN_RADIUS,
+  placementFor,
   projectedCrownRadius,
   terrainLobes,
 } from './bouquetGeometry'
@@ -18,20 +20,21 @@ describe('landscape bouquet geometry', () => {
     expect(BASE_RADIUS - TERRAIN_RADIUS).toBeGreaterThanOrEqual(2.5)
   })
 
-  it('fans oversized Ice structures outward at bouquet scale', () => {
+  it('fans the four shared slots outward at bouquet scale in roster order', () => {
     expect(BOUQUET_PLACEMENTS.map(({ id, height }) => [id, height])).toEqual([
-      ['mountain', 32],
-      ['lighthouse', 28],
-      ['pines', 28],
-      ['houses', 24],
+      ['hero', 32],
+      ['front-left', 28],
+      ['back-right', 28],
+      ['front-right', 24],
     ])
+    expect(BOUQUET_PLACEMENTS.map(({ id }) => id)).toEqual(SLOT_ORDER)
     const xs = BOUQUET_PLACEMENTS.map(({ position }) => position[0])
     const zs = BOUQUET_PLACEMENTS.map(({ position }) => position[2])
     expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(13)
     expect(Math.max(...zs) - Math.min(...zs)).toBeGreaterThan(7)
-    const mountain = BOUQUET_PLACEMENTS.find(({ id }) => id === 'mountain')!
-    expect(Math.abs(mountain.position[0])).toBeLessThan(2)
-    expect(mountain.position[2]).toBeLessThan(-6)
+    const hero = placementFor('hero')
+    expect(Math.abs(hero.position[0])).toBeLessThan(2)
+    expect(hero.position[2]).toBeLessThan(-6)
   })
 
   it('anchors only the bases while every crown curves beyond the platform edge', () => {

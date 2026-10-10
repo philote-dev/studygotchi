@@ -12,9 +12,13 @@ import type { BiomeLayout, DistrictProgress, IceDistrictKind } from "../layout/b
 import { sampleTerrain } from "../layout/terrain";
 import type { CatastrophePhase } from "../state";
 import { WALKER_DISTRICTS, paradePoint } from "./parade";
+import { residentsFallApart } from "./catastrophe-sequence";
 
-/** Mesh is 0.82 m; ice-town metres are larger, so the crowd matches house scale. */
-const ICE_LAND_SCALE = 3.55;
+/**
+ * Mesh is 0.82 m; ice-town metres are larger. 4.9 puts a buddy at 4.0 m, under the 4.5–6 m houses
+ * and ≥ 6 % of the viewport at the harbour district station (the scale rule; see the test).
+ */
+export const ICE_LAND_SCALE = 4.9;
 
 /** Hatch pets, Pokémon-ish Tripo, Mario-ish gobkit — never the biome-lab stock hats. */
 export const ICE_CAST = [
@@ -186,7 +190,7 @@ export function OurWalkers({
     if (fraction < 0.75) return ICE_CAST.slice(0, 4);
     return ICE_CAST;
   }, [fraction]);
-  const dismantle = phase === "bang" || phase === "ruin" || phase === "blizzard";
+  const dismantle = residentsFallApart(phase);
 
   return (
     <group name="our-ice-walkers">

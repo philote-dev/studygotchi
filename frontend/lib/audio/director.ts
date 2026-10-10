@@ -5,7 +5,17 @@
 
 import type { BiomeId } from "@/lib/world/types";
 // Explicit extension so `node --test` can run this module without a bundler.
-import { AMBIENCE_FOR_BIOME, BGM_FOR_BIOME, DUCK_RATIO, GLOBE_BGM, NIGHT_BGM_FOR_BIOME, SPACE_BGM, type BgmId } from "./catalog.ts";
+import { AMBIENCE_FOR_BIOME, BGM_FOR_BIOME, DUCK_RATIO, GLOBE_BGM, NIGHT_BGM_FOR_BIOME, SPACE_BGM, type BgmId, type SfxName } from "./catalog.ts";
+
+/** How the student reached an island: a click on the globe, a shared visit link, or a cold load of `?land=`. */
+export type IslandArrival = "dive" | "visit" | "direct";
+
+/** The one-shot for an arrival. A direct load has no gesture yet, so it switches the bed silently. */
+export function arrivalSfx(arrival: IslandArrival | undefined): SfxName | null {
+  if (arrival === "visit") return "visit-whoosh";
+  if (arrival === "direct") return null;
+  return "camera-dive";
+}
 
 /** `space` is the Information tab (/knowledge): the knowledge sky. */
 export type SceneView = "none" | "globe" | "island" | "space";

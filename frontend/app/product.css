@@ -768,9 +768,9 @@ h3 {
 }
 
 /* Original generated spiral — a small sky object above the star canvas and
-   below constellation edges. Square slot so the rotation never clips. The
-   spiral's own pixels are pale, so on the light sky the arms are darkened
-   with a filter (no background plate). */
+   below constellation edges. Square slot so the tilted disc never clips as
+   pixels orbit the disk axis. The spiral's own pixels are pale, so on the
+   light sky the arms are darkened with a filter (no background plate). */
 .sg-sky-spiral {
   --sg-sky-spiral-opacity: 0.8;
   --sg-sky-spiral-filter: brightness(0.56) saturate(1.45) contrast(1.08);
@@ -1045,9 +1045,11 @@ h3 {
 
 .sg-landing {
   position: relative;
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
   display: grid;
   grid-template-rows: var(--sg-header-h) minmax(0, 1fr) auto;
+  overflow: hidden;
   background: var(--a-paper);
   color: var(--a-ink);
 }
@@ -1060,6 +1062,9 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 32px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* Pixel type outside the world is always crisp: no smoothing, no kerning. */
@@ -1344,7 +1349,7 @@ h3 {
   color: var(--a-ink);
   border-radius: var(--a-r-16);
   box-shadow: var(--a-shadow-sheet);
-  animation: sg-from-left var(--a-t-view) var(--a-ease-out-quint) 160ms both;
+  animation: sg-from-left var(--a-t-view) var(--a-ease-out-quint) both;
 }
 
 .sg-page .earth-panel h1 {
@@ -1475,17 +1480,58 @@ h3 {
   }
 }
 
-/* Leaving Planet for Galaxy: zoom out and slide right while the sky holds. */
-.sg-page[data-leaving] .earth-stage,
-.sg-page[data-leaving] .course-globe-overview,
-.sg-page[data-leaving] .course-globe-stage {
+@keyframes sg-galaxy-leave {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-8%, -4%, 0) scale(1.16);
+  }
+}
+
+@keyframes sg-land-rise {
+  to {
+    transform: scale(0.48);
+  }
+}
+
+/* Rise only when leaving a biome for Information. Never on biome → planet. */
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .earth-stage,
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .course-globe-overview {
+  animation: none;
+}
+
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .biome-land-stage {
+  transform-origin: 72% 56%;
+  animation: sg-land-rise var(--a-t-aperture) var(--a-ease-aperture) both;
+}
+
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .earth-panel,
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .concept-rail {
+  animation: sg-to-left var(--a-t-aperture) var(--a-ease-aperture) both;
+}
+
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .course-navigator,
+.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .landmark-flag {
+  animation: none;
+}
+
+/* Leave: planet exits right while the sky claims the frame from the left.
+   Only Information hops — biome → planet is an in-world rise on the globe. */
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .earth-stage,
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-globe-overview,
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-globe-stage {
   transform-origin: 78% 58%;
   animation: sg-planet-to-galaxy var(--a-t-aperture) var(--a-ease-aperture) both;
 }
 
-.sg-page[data-leaving] .earth-panel,
-.sg-page[data-leaving] .course-navigator,
-.sg-page[data-leaving] .landmark-flag {
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .earth-panel,
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-navigator,
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .landmark-flag,
+.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .concept-rail {
   animation: sg-to-left var(--a-t-aperture) var(--a-ease-aperture) both;
 }
 
@@ -1503,12 +1549,13 @@ h3 {
 .sg-page:has(.sg-constellation) .landmark-flag,
 .sg-page:has(.sg-constellation) .earth-planet-chrome,
 .sg-page:has(.sg-constellation) .earth-stage,
-.sg-page:has(.sg-constellation) .earth-panel {
+.sg-page:has(.sg-constellation) .earth-panel,
+.sg-page:has(.sg-constellation) .concept-rail {
   display: none;
 }
 
 .sg-page[data-leaving] .sg-constellation {
-  animation: sg-out var(--a-t-view) var(--a-ease-standard) both;
+  animation: sg-galaxy-leave var(--a-t-aperture) var(--a-ease-aperture) both;
 }
 
 .sg-constellation-canvas {
@@ -1710,6 +1757,62 @@ h3 {
   text-transform: uppercase;
   color: var(--a-ink-75);
   white-space: nowrap;
+}
+
+/* Sound chip: bottom right of the shell on every product view. The left edge belongs to
+   the navigator, flag and legend; the demo theater sits centre. Panel opens upward. */
+.sg-sound {
+  position: absolute;
+  right: var(--sg-gutter);
+  bottom: var(--sg-gutter);
+  z-index: 26;
+}
+
+.sg-sound .audio-chrome-mute,
+.sg-sound .audio-chrome-chip {
+  height: 28px;
+  border: 0;
+  background: var(--a-sheet);
+  box-shadow: var(--a-shadow-hairline);
+  color: var(--a-ink);
+}
+
+.sg-sound .audio-chrome-mute {
+  width: 28px;
+}
+
+.sg-sound .audio-chrome-mute[aria-pressed="true"] {
+  background: var(--a-ink);
+  color: var(--a-sheet);
+}
+
+.sg-sound .audio-chrome-mark {
+  font-family: var(--a-mono);
+  font-size: 11px;
+}
+
+.sg-sound .audio-chrome-line {
+  font-family: var(--a-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--a-ink-75);
+}
+
+.sg-sound .audio-chrome-panel {
+  top: auto;
+  bottom: calc(100% + 8px);
+  border: 0;
+  border-radius: var(--a-r-16);
+  background: var(--a-sheet);
+  box-shadow: var(--a-shadow-sheet);
+  color: var(--a-ink);
+}
+
+@media (max-width: 899px) {
+  .sg-sound .audio-chrome-chip {
+    display: none;
+  }
 }
 
 .sg-tooltip {
@@ -2112,9 +2215,11 @@ h3 {
   .sg-page[data-leaving] .earth-stage,
   .sg-page[data-leaving] .course-globe-overview,
   .sg-page[data-leaving] .course-globe-stage,
+  .sg-page[data-leaving] .biome-land-stage,
   .sg-page[data-leaving] .earth-panel,
   .sg-page[data-leaving] .course-navigator,
   .sg-page[data-leaving] .landmark-flag,
+  .sg-page[data-leaving] .concept-rail,
   .sg-constellation {
     animation: sg-fade var(--a-t-quick) linear both;
   }
@@ -2123,6 +2228,7 @@ h3 {
   .sg-page[data-leaving] .earth-panel,
   .sg-page[data-leaving] .course-navigator,
   .sg-page[data-leaving] .landmark-flag,
+  .sg-page[data-leaving] .concept-rail,
   .sg-page[data-leaving] .sg-constellation {
     animation: sg-out var(--a-t-quick) linear both;
   }

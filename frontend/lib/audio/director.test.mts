@@ -3,12 +3,20 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { dominantBiome, duckTarget, makeThrottle, pickMusic } from "./director.ts";
+import { arrivalSfx, dominantBiome, duckTarget, makeThrottle, pickMusic } from "./director.ts";
 import { AUDIO_BASE, BGM, SFX_NAMES, SPACE_BGM, sfxFile, usedBgmTracks } from "./catalog.ts";
 
 // frontend/public/assets is a symlink to the repo's assets/; resolve the real folder.
 const ASSETS = resolve(dirname(fileURLToPath(import.meta.url)), "../../../assets");
 const onDisk = (url: string) => resolve(ASSETS, url.replace(`${AUDIO_BASE}/`, "audio/"));
+
+test("landing on an island: a dive whooshes down, a visit whooshes in, a direct link or reload is silent but still switches the bed", () => {
+  assert.equal(arrivalSfx("dive"), "camera-dive");
+  assert.equal(arrivalSfx(undefined), "camera-dive");
+  assert.equal(arrivalSfx("visit"), "visit-whoosh");
+  assert.equal(arrivalSfx("direct"), null);
+  assert.deepEqual(pickMusic({ view: "island", biome: "ice", night: false }), { bgm: "snow-globe", ambience: null });
+});
 
 test("the globe plays the title bed and nothing underneath", () => {
   assert.deepEqual(pickMusic({ view: "globe", biome: null, night: false }), { bgm: "cutie-pie", ambience: null });

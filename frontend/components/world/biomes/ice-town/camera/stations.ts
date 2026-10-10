@@ -20,11 +20,11 @@ export interface Station {
 }
 
 export const STATIONS: Record<StationId, Station> = {
-  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 30, azimuthDeg: 16, fov: 34, fitWidth: 0.62, targetLift: 3 },
-  overview: { id: 'overview', label: 'Overview', pitchDeg: 30, azimuthDeg: 16, fov: 36, fitWidth: 0.6, targetLift: 2.6 },
+  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 34, azimuthDeg: 16, fov: 34, fitWidth: 0.62, targetLift: 3 },
+  overview: { id: 'overview', label: 'Overview', pitchDeg: 38, azimuthDeg: 16, fov: 36, fitWidth: 0.6, targetLift: 2.6 },
   /** Frames the district shape at ~70 % of the frame width (creature size follows the scale rule). */
-  district: { id: 'district', label: 'District', pitchDeg: 30, azimuthDeg: 30, fov: 26, fitWidth: 0.75, targetLift: 1.6 },
-  resident: { id: 'resident', label: 'Resident', pitchDeg: 18, azimuthDeg: 20, fov: 26, distance: 9, targetLift: 1.2 },
+  district: { id: 'district', label: 'District', pitchDeg: 36, azimuthDeg: 30, fov: 26, fitWidth: 0.75, targetLift: 1.6 },
+  resident: { id: 'resident', label: 'Resident', pitchDeg: 34, azimuthDeg: 20, fov: 26, distance: 9, targetLift: 1.2 },
 }
 
 export interface CameraOverride {
@@ -41,9 +41,9 @@ export function defaultOverride(station: Station): CameraOverride {
 /** Product roam: whole mainland in frame, harbour through mountains, still boxed. */
 export const ICE_CAMERA_LIMITS = {
   preferredAzimuthDeg: 16,
-  yawDeg: 42,
-  pitchMinDeg: 22,
-  pitchMaxDeg: 44,
+  yawDeg: 35,
+  pitchMinDeg: 34,
+  pitchMaxDeg: 40,
   minDistance: 88,
   maxDistance: 280,
 } as const

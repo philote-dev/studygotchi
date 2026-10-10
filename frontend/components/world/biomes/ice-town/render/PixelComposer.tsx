@@ -12,7 +12,7 @@ import { RenderPixelatedPass } from 'three/addons/postprocessing/RenderPixelated
 export const PIXEL_PROFILE = { pixelSize: 2, normalEdgeStrength: 0.2, depthEdgeStrength: 0.14 } as const
 
 export function PixelComposer() {
-  const { gl, scene, camera, size } = useThree()
+  const { gl, scene, camera, size, viewport } = useThree()
 
   const bundle = useMemo(() => {
     const composer = new EffectComposer(gl)
@@ -26,8 +26,11 @@ export function PixelComposer() {
   }, [camera, gl, scene])
 
   useEffect(() => {
+    // Follow the canvas dpr (PerformanceMonitor may lower it) so the 2 px cell stays 2 device px,
+    // the same convention as the globe's composer.
+    bundle.composer.setPixelRatio(viewport.dpr)
     bundle.composer.setSize(size.width, size.height)
-  }, [bundle.composer, size.height, size.width])
+  }, [bundle.composer, size.height, size.width, viewport.dpr])
 
   useEffect(
     () => () => {

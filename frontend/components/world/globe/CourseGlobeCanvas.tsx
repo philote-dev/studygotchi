@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PerformanceMonitor } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
+import { globeLayoutSize } from "./globe-pick";
 import { CourseGlobeScene, type GlobeSpinApi } from "./CourseGlobeScene";
 import {
   adjacentCourseId,
@@ -17,12 +18,34 @@ import "./globe.css";
 
 export type { CourseGlobeCanvasProps } from "./globe-types";
 
+function SyncLayoutSize() {
+  const gl = useThree((state) => state.gl);
+  const setSize = useThree((state) => state.setSize);
+
+  useLayoutEffect(() => {
+    const parent = gl.domElement.parentElement;
+    if (!parent) return;
+    const sync = () => {
+      const { width, height } = globeLayoutSize(parent);
+      setSize(width, height);
+      gl.setSize(width, height, false);
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(parent);
+    return () => observer.disconnect();
+  }, [gl, setSize]);
+
+  return null;
+}
+
 export default function CourseGlobeCanvas({
   courses,
   activeCourseId,
   theme,
   arriving,
   diving,
+  rising,
   diveAnchor,
   reducedMotion,
   onActiveCourseChange,
@@ -39,6 +62,7 @@ export default function CourseGlobeCanvas({
   const [frameloop, setFrameloop] = useState<"always" | "demand">(
     "always",
   );
+  const [arriveReady, setArriveReady] = useState(false);
   const courseIds = useMemo(
     () => courses.map((course) => course.id),
     [courses],
@@ -61,6 +85,15 @@ export default function CourseGlobeCanvas({
       document.removeEventListener("visibilitychange", syncFrameloop);
     };
   }, []);
+
+  useEffect(() => {
+    if (!arriving) {
+      setArriveReady(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setArriveReady(true), 0);
+    return () => window.clearTimeout(timer);
+  }, [arriving]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -129,8 +162,9 @@ export default function CourseGlobeCanvas({
     <div
       ref={hostRef}
       className="course-globe-stage"
-      data-arriving={arriving}
+      data-arriving={arriving && arriveReady}
       data-diving={diving}
+      data-rising={rising}
       data-reduced-motion={reducedMotion}
       data-theme={theme}
       style={{
@@ -163,6 +197,7 @@ export default function CourseGlobeCanvas({
         }
       >
         <PerformanceMonitor onDecline={() => setDpr([1, 1])} />
+        <SyncLayoutSize />
         <CourseGlobeScene
           courses={courses}
           activeCourseId={activeCourseId}

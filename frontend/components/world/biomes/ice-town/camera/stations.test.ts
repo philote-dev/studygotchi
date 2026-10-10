@@ -11,10 +11,15 @@ import {
 } from "./stations";
 
 describe("ice camera bounds", () => {
-  it("pulls back far enough to fit harbour through mountains, still boxed", () => {
-    expect(ICE_CAMERA_LIMITS.yawDeg).toBeGreaterThanOrEqual(38);
-    expect(ICE_CAMERA_LIMITS.yawDeg).toBeLessThanOrEqual(48);
-    expect(ICE_CAMERA_LIMITS.pitchMinDeg).toBeGreaterThanOrEqual(20);
+  it("keeps the shared south-front diorama contract", () => {
+    expect(ICE_CAMERA_LIMITS.yawDeg).toBe(35);
+    expect(ICE_CAMERA_LIMITS.pitchMinDeg).toBe(34);
+    expect(ICE_CAMERA_LIMITS.pitchMaxDeg).toBe(40);
+    for (const station of Object.values(STATIONS)) {
+      expect(station.pitchDeg).toBeGreaterThanOrEqual(34);
+      expect(station.pitchDeg).toBeLessThanOrEqual(40);
+      expect(Math.abs(station.azimuthDeg)).toBeLessThanOrEqual(35);
+    }
     expect(ICE_CAMERA_LIMITS.minDistance).toBeGreaterThanOrEqual(80);
     expect(ICE_CAMERA_LIMITS.maxDistance).toBeGreaterThanOrEqual(260);
     expect(ICE_CAMERA_LIMITS.maxDistance).toBeLessThanOrEqual(320);

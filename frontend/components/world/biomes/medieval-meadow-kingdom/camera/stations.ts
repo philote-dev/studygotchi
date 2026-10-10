@@ -20,19 +20,19 @@ export interface Station {
 }
 
 export const STATIONS: Record<StationId, Station> = {
-  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 22, azimuthDeg: 8, fov: 36, fitWidth: 0.82, targetLift: 3 },
-  overview: { id: 'overview', label: 'Overview', pitchDeg: 22, azimuthDeg: 8, fov: 36, fitWidth: 0.9, targetLift: 3 },
+  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 34, azimuthDeg: 8, fov: 36, fitWidth: 0.82, targetLift: 3 },
+  overview: { id: 'overview', label: 'Overview', pitchDeg: 38, azimuthDeg: 8, fov: 36, fitWidth: 0.9, targetLift: 3 },
   /** Frames the district shape at ~70 % of the frame width (creature size follows the scale rule). */
-  district: { id: 'district', label: 'District', pitchDeg: 20, azimuthDeg: 8, fov: 36, fitWidth: 0.8, targetLift: 2.4 },
-  resident: { id: 'resident', label: 'Resident', pitchDeg: 18, azimuthDeg: 8, fov: 36, distance: 9, targetLift: 1.2 },
+  district: { id: 'district', label: 'District', pitchDeg: 36, azimuthDeg: 8, fov: 36, fitWidth: 0.8, targetLift: 2.4 },
+  resident: { id: 'resident', label: 'Resident', pitchDeg: 34, azimuthDeg: 8, fov: 36, distance: 9, targetLift: 1.2 },
 }
 
-/** Product-land roam: preferred heading, side clamps, zoom — not a 6° pitch rail. */
+/** Product-land roam inside the shared south/front diorama contract. */
 export const CAMERA_LIMITS = {
   preferredHeadingDeg: 8,
-  yawDeg: 42,
-  pitchMinDeg: 16,
-  pitchMaxDeg: 48,
+  yawDeg: 35,
+  pitchMinDeg: 34,
+  pitchMaxDeg: 40,
   minDistance: 22,
   maxDistance: 300,
   minDolly: 0.42,

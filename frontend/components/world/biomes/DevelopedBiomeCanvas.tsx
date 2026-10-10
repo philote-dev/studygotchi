@@ -5,14 +5,16 @@ import { Canvas } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import type { IceDemoState } from "@/lib/world/demo-theater";
+import type { CanvasWorld } from "@/lib/world/types";
+import { BiomeConceptLayer } from "./BiomeConceptLayer";
 import type { LocalBiomeId } from "./types";
-import { IceTownMount } from "./ice-town/Mount";
 
 const FrontierMount = dynamic(() => import("./frontier-town/Mount").then((mod) => mod.FrontierMount), { ssr: false });
 const CoastalMount = dynamic(() => import("./coastal-ruins/Mount").then((mod) => mod.CoastalMount), { ssr: false });
 const JungleMount = dynamic(() => import("./jungle-forest-village/Mount").then((mod) => mod.JungleMount), { ssr: false });
 const MeadowMount = dynamic(() => import("./medieval-meadow-kingdom/Mount").then((mod) => mod.MeadowMount), { ssr: false });
 const NordicMount = dynamic(() => import("./nordic-volcanic-highlands/Mount").then((mod) => mod.NordicMount), { ssr: false });
+const IceTownMount = dynamic(() => import("./ice-town/Mount").then((mod) => mod.IceTownMount), { ssr: false });
 
 export function DevelopedBiomeCanvas({
   visual,
@@ -20,12 +22,24 @@ export function DevelopedBiomeCanvas({
   focusDistrict,
   iceDemo,
   onFocusDistrict,
+  world = null,
+  selectedId = null,
+  hoveredId = null,
+  changedIds,
+  onSelect = () => undefined,
+  onHover = () => undefined,
 }: {
   visual: Exclude<LocalBiomeId, "ice-golden" | "island">;
   progress: number;
   focusDistrict?: string | null;
   iceDemo?: IceDemoState;
   onFocusDistrict?: (id: string | null) => void;
+  world?: CanvasWorld | null;
+  selectedId?: string | null;
+  hoveredId?: string | null;
+  changedIds?: ReadonlySet<string>;
+  onSelect?(conceptId: string | null): void;
+  onHover?(conceptId: string | null): void;
 }) {
   const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
   const [frameloop, setFrameloop] = useState<"always" | "demand">("always");
@@ -63,6 +77,15 @@ export function DevelopedBiomeCanvas({
             onFocusDistrict={onFocusDistrict}
           />
         ) : null}
+        <BiomeConceptLayer
+          visual={visual}
+          world={world}
+          selectedId={selectedId}
+          hoveredId={hoveredId}
+          changedIds={changedIds}
+          onSelect={onSelect}
+          onHover={onHover}
+        />
       </Canvas>
     </div>
   );

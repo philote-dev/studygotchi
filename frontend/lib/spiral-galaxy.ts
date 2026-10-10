@@ -7,6 +7,8 @@
  * serialised: one SVG `<path>` per palette colour, runs merged per row.
  */
 
+export type DiskRotationMode = "rigid" | "differential";
+
 export interface SpiralGalaxyOptions {
   /** Cells across the square canvas. 64 keeps the SVG under ~20 KB. */
   grid?: number;
@@ -22,6 +24,18 @@ export interface SpiralGalaxyOptions {
   twist?: number;
   /** Optional specks placed on the spiral arms. 0 keeps the silhouette clean. */
   starCount?: number;
+  /**
+   * Radians of rotation in the disk plane (around the disk normal).
+   * Advances material angle only — the tilted ellipse stays seated.
+   */
+  diskSpin?: number;
+}
+
+/** A rest-frame galaxy pixel that can orbit the disk axis. */
+export interface SpiralPixel {
+  rho: number;
+  phi: number;
+  color: string;
 }
 
 export interface PixelRun {
@@ -44,7 +58,11 @@ export const SPIRAL_GALAXY_DEFAULTS: Required<SpiralGalaxyOptions> = {
   squash: 0.6,
   twist: 3.7,
   starCount: 0,
+  diskSpin: 0,
 };
+
+/** Screen-to-disk shrink so the ellipse sits inside the view box. */
+export const SPIRAL_DISC_SCALE = 0.94;
 
 /** Static export path (see scripts/export-spiral-svg.mts). */
 export const SPIRAL_GALAXY_SVG_SRC = "/assets/space/studygotchi-spiral.svg";
@@ -96,6 +114,112 @@ function resolve(options: SpiralGalaxyOptions = {}): Required<SpiralGalaxyOption
   return { ...SPIRAL_GALAXY_DEFAULTS, ...options };
 }
 
+export function screenToDisk(
+  nx: number,
+  ny: number,
+  options: SpiralGalaxyOptions = {},
+): { u: number; v: number; rho: number; phi: number } {
+  const o = resolve(options);
+  const cos = Math.cos(o.tilt);
+  const sin = Math.sin(o.tilt);
+  const u = (nx * cos - ny * sin) / SPIRAL_DISC_SCALE;
+  const v = (nx * sin + ny * cos) / (SPIRAL_DISC_SCALE * o.squash);
+  return { u, v, rho: Math.hypot(u, v), phi: Math.atan2(v, u) };
+}
+
+export function diskToScreen(
+  u: number,
+  v: number,
+  options: SpiralGalaxyOptions = {},
+): { nx: number; ny: number } {
+  const o = resolve(options);
+  const cos = Math.cos(o.tilt);
+  const sin = Math.sin(o.tilt);
+  const us = u * SPIRAL_DISC_SCALE;
+  const vs = v * SPIRAL_DISC_SCALE * o.squash;
+  return {
+    nx: us * cos + vs * sin,
+    ny: -us * sin + vs * cos,
+  };
+}
+
+export function projectDiskPoint(
+  rho: number,
+  phi: number,
+  options: SpiralGalaxyOptions = {},
+): { nx: number; ny: number } {
+  return diskToScreen(rho * Math.cos(phi), rho * Math.sin(phi), options);
+}
+
+/** Rigid ω = 1 keeps arms coherent across a loop. Differential is inner-faster. */
+export function diskOmega(rho: number, mode: DiskRotationMode = "rigid"): number {
+  if (mode === "differential") return 1 / (0.32 + 0.68 * Math.max(rho, 0.08));
+  return 1;
+}
+
+export function rotateDiskAngle(
+  phi: number,
+  rho: number,
+  spin: number,
+  mode: DiskRotationMode = "rigid",
+): number {
+  return phi + spin * diskOmega(rho, mode);
+}
+
+function diskNoise(u: number, v: number, seed: number): number {
+  return cellNoise(Math.round(u * 1024), Math.round(v * 1024), seed);
+}
+
+/**
+ * Sample the galaxy field at a normalised screen point in [-1, 1].
+ * `diskSpin` is subtracted from disk φ so material orbits the disk axis.
+ */
+export function sampleSpiralGalaxy(
+  nx: number,
+  ny: number,
+  options: SpiralGalaxyOptions = {},
+): string | null {
+  const o = resolve(options);
+  const disk = screenToDisk(nx, ny, o);
+  if (disk.rho > 1.02) return null;
+
+  const phi = disk.phi - o.diskSpin;
+  const n = diskNoise(disk.rho * Math.cos(phi), disk.rho * Math.sin(phi), o.seed);
+
+  let phase = ((phi - o.twist * Math.log(disk.rho + 0.04)) * o.arms) % (Math.PI * 2);
+  if (phase > Math.PI) phase -= Math.PI * 2;
+  if (phase < -Math.PI) phase += Math.PI * 2;
+  const armWidth = 1.05 + 0.4 * disk.rho;
+  const arm = Math.exp(-((phase / armWidth) ** 2));
+
+  const bulge = Math.exp(-((disk.rho / 0.18) ** 2));
+  const disc = Math.exp(-((disk.rho / 0.78) ** 2));
+  const edge = disk.rho > 0.88 ? Math.max(0, (1.02 - disk.rho) / 0.14) : 1;
+  const b =
+    bulge * 1.7 +
+    disc * (0.3 + 0.95 * arm) * edge +
+    (n - 0.5) * 0.16 * disc;
+
+  let color: string | null = null;
+  if (b >= 1.5) color = P.coreWhite;
+  else if (b >= 1.2) color = P.cream;
+  else if (b >= 0.95) color = P.gold;
+  else if (b >= 0.76) color = disk.rho < 0.34 ? P.amber : P.lilacLight;
+  else if (b >= 0.62) color = disk.rho < 0.36 ? P.amberEdge : n < 0.5 ? P.lilacLight : P.grayLight;
+  else if (b >= 0.5) color = n < 0.55 ? P.lilac : P.grayLight;
+  else if (b >= 0.4) color = n < 0.5 ? P.gray : P.lilac;
+  else if (b >= 0.3) color = P.dust;
+  else if (b >= 0.2) color = P.dustDark;
+
+  if (arm > 0.55 && disk.rho > 0.28 && disk.rho < 0.9) {
+    if (n > 0.985) color = P.star;
+    else if (n > 0.955) color = P.cyan;
+    else if (n > 0.945) color = P.pink;
+  }
+
+  return color;
+}
+
 /**
  * Paint the galaxy as a grid of colours. `null` cells are transparent:
  * everything that is not the spiral itself.
@@ -104,9 +228,6 @@ export function paintSpiralGalaxy(options: SpiralGalaxyOptions = {}): (string | 
   const o = resolve(options);
   const g = o.grid;
   const half = g / 2;
-  const cos = Math.cos(o.tilt);
-  const sin = Math.sin(o.tilt);
-  const discScale = 0.94;
   const cells: (string | null)[][] = [];
 
   for (let y = 0; y < g; y++) {
@@ -114,59 +235,68 @@ export function paintSpiralGalaxy(options: SpiralGalaxyOptions = {}): (string | 
     for (let x = 0; x < g; x++) {
       const nx = (x + 0.5 - half) / half;
       const ny = (y + 0.5 - half) / half;
-
-      const n = cellNoise(x, y, o.seed);
-
-      // Disc space: rotate by tilt, stretch the minor axis back to a circle.
-      const u = (nx * cos - ny * sin) / discScale;
-      const v = (nx * sin + ny * cos) / (discScale * o.squash);
-      const rho = Math.hypot(u, v);
-
-      if (rho > 1.02) {
-        row.push(null);
-        continue;
-      }
-
-      const phi = Math.atan2(v, u);
-      let phase = ((phi - o.twist * Math.log(rho + 0.04)) * o.arms) % (Math.PI * 2);
-      if (phase > Math.PI) phase -= Math.PI * 2;
-      if (phase < -Math.PI) phase += Math.PI * 2;
-      const armWidth = 1.05 + 0.4 * rho;
-      const arm = Math.exp(-((phase / armWidth) ** 2));
-
-      const bulge = Math.exp(-((rho / 0.18) ** 2));
-      const disc = Math.exp(-((rho / 0.78) ** 2));
-      const edge = rho > 0.88 ? Math.max(0, (1.02 - rho) / 0.14) : 1;
-      const b =
-        bulge * 1.7 +
-        disc * (0.3 + 0.95 * arm) * edge +
-        (n - 0.5) * 0.16 * disc;
-
-      let color: string | null = null;
-      if (b >= 1.5) color = P.coreWhite;
-      else if (b >= 1.2) color = P.cream;
-      else if (b >= 0.95) color = P.gold;
-      else if (b >= 0.76) color = rho < 0.34 ? P.amber : P.lilacLight;
-      else if (b >= 0.62) color = rho < 0.36 ? P.amberEdge : n < 0.5 ? P.lilacLight : P.grayLight;
-      else if (b >= 0.5) color = n < 0.55 ? P.lilac : P.grayLight;
-      else if (b >= 0.4) color = n < 0.5 ? P.gray : P.lilac;
-      else if (b >= 0.3) color = P.dust;
-      else if (b >= 0.2) color = P.dustDark;
-
-      // Sparse accents riding the arms: cyan knots, a few white speckles, rare pink.
-      if (arm > 0.55 && rho > 0.28 && rho < 0.9) {
-        if (n > 0.985) color = P.star;
-        else if (n > 0.955) color = P.cyan;
-        else if (n > 0.945) color = P.pink;
-      }
-
-      row.push(color);
+      row.push(sampleSpiralGalaxy(nx, ny, o));
     }
     cells.push(row);
   }
 
   if (o.starCount > 0) scatterStars(cells, o);
   return cells;
+}
+
+export function seedSpiralPixels(options: SpiralGalaxyOptions = {}): SpiralPixel[] {
+  const o = resolve({ ...options, diskSpin: 0 });
+  const cells = paintSpiralGalaxy(o);
+  const g = o.grid;
+  const half = g / 2;
+  const pixels: SpiralPixel[] = [];
+
+  for (let y = 0; y < g; y++) {
+    for (let x = 0; x < g; x++) {
+      const color = cells[y][x];
+      if (!color) continue;
+      const nx = (x + 0.5 - half) / half;
+      const ny = (y + 0.5 - half) / half;
+      const disk = screenToDisk(nx, ny, o);
+      pixels.push({ rho: disk.rho, phi: disk.phi, color });
+    }
+  }
+  return pixels;
+}
+
+export function projectSpiralPixel(
+  pixel: SpiralPixel,
+  spin: number,
+  options: SpiralGalaxyOptions = {},
+  mode: DiskRotationMode = "rigid",
+): { x: number; y: number; color: string } | null {
+  const o = resolve(options);
+  const phi = rotateDiskAngle(pixel.phi, pixel.rho, spin, mode);
+  const { nx, ny } = projectDiskPoint(pixel.rho, phi, o);
+  const half = o.grid / 2;
+  const x = Math.floor(nx * half + half);
+  const y = Math.floor(ny * half + half);
+  if (x < 0 || y < 0 || x >= o.grid || y >= o.grid) return null;
+  return { x, y, color: pixel.color };
+}
+
+export function paintSpiralGalaxyRgba(options: SpiralGalaxyOptions = {}): Uint8ClampedArray {
+  const cells = paintSpiralGalaxy(options);
+  const g = cells.length;
+  const data = new Uint8ClampedArray(g * g * 4);
+  for (let y = 0; y < g; y++) {
+    for (let x = 0; x < g; x++) {
+      const color = cells[y][x];
+      if (!color) continue;
+      const n = parseInt(color.slice(1), 16);
+      const i = (y * g + x) * 4;
+      data[i] = (n >> 16) & 255;
+      data[i + 1] = (n >> 8) & 255;
+      data[i + 2] = n & 255;
+      data[i + 3] = 255;
+    }
+  }
+  return data;
 }
 
 function scatterStars(cells: (string | null)[][], o: Required<SpiralGalaxyOptions>) {
@@ -192,8 +322,8 @@ function scatterStars(cells: (string | null)[][], o: Required<SpiralGalaxyOption
     const nx = (x + 0.5 - half) / half;
     const ny = (y + 0.5 - half) / half;
     if (Math.hypot(nx, ny) > 0.93) continue;
-    const u = (nx * cos - ny * sin) / 0.94;
-    const v = (nx * sin + ny * cos) / (0.94 * o.squash);
+    const u = (nx * cos - ny * sin) / SPIRAL_DISC_SCALE;
+    const v = (nx * sin + ny * cos) / (SPIRAL_DISC_SCALE * o.squash);
     if (Math.hypot(u, v) < 1.12) continue;
     if (!isSky(x, y)) continue;
 

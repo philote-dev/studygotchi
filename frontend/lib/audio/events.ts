@@ -8,7 +8,7 @@
 
 import type { BiomeId } from "@/lib/world/types";
 import { BIOME_VOICE, type SfxName, type VoiceMood, type VoiceSpecies } from "./catalog.ts";
-import { EMPTY_SCENE, makeThrottle, pickMusic, type Scene } from "./director.ts";
+import { arrivalSfx, EMPTY_SCENE, makeThrottle, pickMusic, type IslandArrival, type Scene } from "./director.ts";
 import { audio } from "./runtime.ts";
 
 export type CreaturePersonality = "sleepy" | "bold" | "curious" | "grumpy" | "shy";
@@ -16,8 +16,8 @@ export type CreaturePersonality = "sleepy" | "bold" | "curious" | "grumpy" | "sh
 export type AudioEvent =
   /** the product page mounted with the globe on screen (no gesture yet; music waits for unlock) */
   | { type: "enter-world" }
-  /** the student picked a course; called inside the click so the context can unlock. `arrival` picks the transition sound. */
-  | { type: "enter-island"; biome: BiomeId | null; arrival?: "dive" | "visit" }
+  /** the student reached a course land; `arrival` picks the transition sound (a cold `?land=` load is silent). */
+  | { type: "enter-island"; biome: BiomeId | null; arrival?: IslandArrival }
   /** the island's payload arrived or changed and we know which biome dominates it */
   | { type: "island-biome"; biome: BiomeId | null }
   | { type: "leave-island" }
@@ -127,17 +127,22 @@ export function emit(event: AudioEvent): void {
   switch (event.type) {
     case "enter-world":
       watchNight();
-      setScene({ view: "globe", night: systemNight() });
+      // The globe is the front door, unless we are already standing on an island (a cold
+      // `?land=` load announces the island first; the globe mounting underneath must not undo it).
+      if (scene.view !== "island") setScene({ view: "globe", night: systemNight() });
       audio.preloadSfx(ALWAYS_WARM);
       return;
 
-    case "enter-island":
-      void audio.unlock();
-      audio.playSfx(event.arrival === "visit" ? "visit-whoosh" : "camera-dive");
+    case "enter-island": {
+      if (event.arrival !== "direct") void audio.unlock();
+      const sfx = arrivalSfx(event.arrival);
+      if (sfx) audio.playSfx(sfx);
+      watchNight();
       setScene({ view: "island", biome: event.biome, night: systemNight() });
       audio.preloadSfx([...ALWAYS_WARM, ...ISLAND_WARM]);
       if (event.biome) audio.preloadVoice(BIOME_VOICE[event.biome]);
       return;
+    }
 
     case "island-biome":
       if (scene.view === "island" && scene.biome !== event.biome) setScene({ biome: event.biome });

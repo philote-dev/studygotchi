@@ -37,9 +37,9 @@ export function ribbonGeometry(points: Point2[], width: number, y: number): THRE
 }
 
 export function Terrain({ layout, night }: { layout: GeneratedKingdom; night: boolean }) {
-  const width = layout.worldSize[0] + 120
-  const back = layout.diorama.backZ - 20
-  const front = layout.diorama.foregroundZ
+  const width = layout.worldSize[0] + 320
+  const back = layout.diorama.backZ - 180
+  const front = layout.diorama.foregroundZ + 180
   const depth = front - back
   const centerZ = (front + back) / 2
   return (

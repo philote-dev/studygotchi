@@ -17,6 +17,7 @@ export interface CourseGlobeProps {
   onLandmarkAnchor?: (anchor: ScreenPoint | null) => void;
   arriving?: boolean;
   diving?: boolean;
+  rising?: boolean;
   diveAnchor?: ScreenPoint | null;
   decorative?: boolean;
   playMusic?: boolean;
@@ -46,6 +47,7 @@ export function CourseGlobe({
   onLandmarkAnchor,
   arriving = true,
   diving = false,
+  rising = false,
   diveAnchor = null,
   decorative = false,
   playMusic = false,
@@ -72,8 +74,9 @@ export function CourseGlobe({
       courses={courses}
       activeCourseId={focusedId}
       theme={theme}
-      arriving={arriving && !diving}
+      arriving={arriving && !diving && !rising}
       diving={diving}
+      rising={rising && !diving}
       diveAnchor={diveAnchor}
       reducedMotion={reducedMotion}
       onActiveCourseChange={(courseId) => {

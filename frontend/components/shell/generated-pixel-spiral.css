@@ -1,5 +1,6 @@
-/* Small sky object. Size/opacity/period are driven by CSS variables so a host
-   can override them without touching the component. */
+/* Small sky object. Size/opacity are driven by CSS variables so a host
+   can override them without touching the component. Rotation lives in
+   canvas pixels (disk-axis), not a CSS stamp spin. */
 .sg-pixel-spiral {
   display: block;
   width: var(--sg-spiral-size, 112px);
@@ -7,27 +8,15 @@
   opacity: var(--sg-spiral-opacity, 0.68);
   pointer-events: none;
   user-select: none;
-  transform-origin: 50% 50%;
+  image-rendering: pixelated;
 }
 
-.sg-pixel-spiral--spin {
-  animation: sg-pixel-spiral-spin var(--sg-spiral-period, 48s) linear infinite;
-  will-change: transform;
-}
-
-@keyframes sg-pixel-spiral-spin {
-  from {
-    transform: rotate(0turn);
-  }
-
-  to {
-    transform: rotate(1turn);
-  }
+.sg-pixel-spiral--live {
+  will-change: contents;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sg-pixel-spiral--spin {
-    animation: none;
+  .sg-pixel-spiral--live {
     will-change: auto;
   }
 }

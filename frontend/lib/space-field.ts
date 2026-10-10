@@ -30,7 +30,16 @@ export function fieldStarCount(width: number, height: number): number {
   return Math.round((width * height) / 3000);
 }
 
-export function spiralSpinAngle(nowMs: number): number {
+/**
+ * Shared sky clock. Pass an explicit timestamp in tests; live frames use
+ * wall time so a remount is already mid-orbit, not diskSpin = 0.
+ */
+export function skyClockMs(nowMs?: number): number {
+  return nowMs ?? Date.now();
+}
+
+export function spiralSpinAngle(nowMs: number, reduced = false): number {
+  if (reduced) return 0;
   return (nowMs / SPIRAL_SPIN_PERIOD_MS) * Math.PI * 2;
 }
 

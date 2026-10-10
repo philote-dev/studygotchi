@@ -1,23 +1,30 @@
 /**
  * Vercel fails after `next build` when `public/assets` is a symlink to
- * `../../assets` (`Cannot copy '../../assets' to a subdirectory of itself`).
- * Put a real directory of runtime files at public/assets before the build.
+ * `../../assets` (`Cannot copy '../../assets' to a subdirectory of itself`),
+ * and the whole assets tree (~410 MB) is far past what we want to upload.
+ * Put a real directory holding only the runtime files (public-assets-manifest.mjs,
+ * ~80 MB) at public/assets before the build.
+ *
+ * Runs when VERCEL or FORCE_DEREF_ASSETS is set. The ship procedure runs it with
+ * FORCE_DEREF_ASSETS=1 inside the git-archive export before `vercel --prod`, because
+ * on Vercel itself `../../assets` does not exist.
  */
 import {
   cpSync,
   existsSync,
   lstatSync,
   mkdirSync,
+  readdirSync,
   realpathSync,
   rmSync,
+  statSync,
   unlinkSync,
 } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { keepPublicAsset } from "./public-assets-manifest.mjs";
 
 const dest = resolve(dirname(fileURLToPath(import.meta.url)), "../public/assets");
-const keep = ["audio", "biomes", "growth", "landmarks", "space", "QA.md"];
-const keepCreatures = ["animated", "cc0", "tripo-cleaned"];
 
 function resolveSource() {
   try {
@@ -36,23 +43,30 @@ function resolveSource() {
   return candidates.find((path) => existsSync(path)) ?? null;
 }
 
+/** Copy only the files the manifest allows, recursing into directories that may hold some. */
 function materialize(source) {
   mkdirSync(dest, { recursive: true });
-  for (const name of keep) {
-    const from = join(source, name);
-    if (!existsSync(from)) continue;
-    cpSync(from, join(dest, name), { recursive: true, dereference: true });
-  }
-  const creaturesFrom = join(source, "creatures");
-  if (existsSync(creaturesFrom)) {
-    const creaturesTo = join(dest, "creatures");
-    mkdirSync(creaturesTo, { recursive: true });
-    for (const name of keepCreatures) {
-      const from = join(creaturesFrom, name);
-      if (!existsSync(from)) continue;
-      cpSync(from, join(creaturesTo, name), { recursive: true, dereference: true });
+  let files = 0;
+  let bytes = 0;
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const from = join(dir, entry.name);
+      const rel = relative(source, from).split("\\").join("/");
+      if (!keepPublicAsset(rel)) continue;
+      const stat = statSync(from); // follows symlinks inside the tree
+      if (stat.isDirectory()) {
+        walk(from);
+        continue;
+      }
+      const to = join(dest, rel);
+      mkdirSync(dirname(to), { recursive: true });
+      cpSync(from, to, { dereference: true });
+      files += 1;
+      bytes += stat.size;
     }
-  }
+  };
+  walk(source);
+  return { files, mb: (bytes / 1e6).toFixed(1) };
 }
 
 if (!process.env.VERCEL && !process.env.FORCE_DEREF_ASSETS) {
@@ -79,5 +93,5 @@ if (existsSync(dest)) {
   rmSync(dest, { recursive: true, force: true });
 }
 
-materialize(source);
-console.log(`materialized public/assets from ${source}`);
+const { files, mb } = materialize(source);
+console.log(`materialized public/assets from ${source}: ${files} files, ${mb} MB`);

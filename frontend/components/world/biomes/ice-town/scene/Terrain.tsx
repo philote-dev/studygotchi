@@ -1,9 +1,12 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ICE_TOWN_PALETTE as P, type BiomeLayout, type MountainProfile } from '../layout/biome-layout'
 import { ambientScatter, fbm, floePositions, forestPines, harbourShoreMask, mountainPeaks, sampleTerrain, type GroundMaterial, type Sample } from '../layout/terrain'
 import { Surf, toonRamp } from '../render/materials'
 import { IceArch, IceCave, Pine } from './Props'
+import { useStormWind } from './StormWind'
+import { treeSwayPose } from './storm-weather'
 
 /** Generic-world materials never occur on the Ice terrain; the world terrain mesh colours them from its palette. */
 const WORLD_UNUSED = { ground: P.snow, groundAlt: P.snowShadow, lawn: P.snow, paving: P.paleIce, water: P.openWater, bank: P.riverBank, shore: P.rock, plinth: P.paleIce } as const
@@ -192,24 +195,51 @@ export function Forest({ layout, seed, night }: { layout: BiomeLayout; seed: num
   const trees = useMemo(() => forestPines(layout, seed), [layout, seed])
   const trunk = useRef<THREE.InstancedMesh>(null)
   const tiers = [useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null)]
-  useLayoutEffect(() => {
-    const m = new THREE.Matrix4()
-    const q = new THREE.Quaternion()
-    const up = new THREE.Vector3(0, 1, 0)
-    trees.forEach((t, i) => {
-      q.setFromAxisAngle(up, t.yaw)
-      m.compose(new THREE.Vector3(t.x, t.y + 0.5 * t.scale, t.z), q, new THREE.Vector3(t.scale, t.scale, t.scale))
-      trunk.current?.setMatrixAt(i, m)
-      tiers.forEach((ref, k) => {
-        const tier = FOREST_TIERS[k]
-        m.compose(new THREE.Vector3(t.x, t.y + tier.y * t.scale, t.z), q, new THREE.Vector3(t.scale, t.scale, t.scale))
-        ref.current?.setMatrixAt(i, m)
-      })
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const local = useMemo(() => new THREE.Matrix4(), [])
+  const world = useMemo(() => new THREE.Matrix4(), [])
+  const settled = useRef(true)
+  const { intensityRef, reducedMotion } = useStormWind()
+
+  const writeTree = (t: (typeof trees)[number], i: number, pose: { pitch: number; roll: number }) => {
+    dummy.position.set(t.x, t.y, t.z)
+    dummy.rotation.set(pose.pitch, t.yaw, pose.roll)
+    dummy.scale.setScalar(t.scale)
+    dummy.updateMatrix()
+    local.makeTranslation(0, 0.5, 0)
+    world.multiplyMatrices(dummy.matrix, local)
+    trunk.current?.setMatrixAt(i, world)
+    tiers.forEach((ref, k) => {
+      local.makeTranslation(0, FOREST_TIERS[k].y, 0)
+      world.multiplyMatrices(dummy.matrix, local)
+      ref.current?.setMatrixAt(i, world)
     })
+  }
+
+  const markDirty = () => {
     if (trunk.current) trunk.current.instanceMatrix.needsUpdate = true
     for (const ref of tiers) if (ref.current) ref.current.instanceMatrix.needsUpdate = true
+  }
+
+  useLayoutEffect(() => {
+    trees.forEach((t, i) => writeTree(t, i, { pitch: 0, roll: 0 }))
+    markDirty()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trees])
+
+  useFrame(({ clock }) => {
+    const intensity = intensityRef.current
+    if (intensity <= 0.01) {
+      if (settled.current) return
+      trees.forEach((t, i) => writeTree(t, i, { pitch: 0, roll: 0 }))
+      markDirty()
+      settled.current = true
+      return
+    }
+    settled.current = false
+    trees.forEach((t, i) => writeTree(t, i, treeSwayPose(clock.elapsedTime, intensity, t.yaw + i, reducedMotion)))
+    markDirty()
+  })
   const ramp = toonRamp()
   const shade = night ? 0.72 : 1
   return (
@@ -238,7 +268,7 @@ export function Scatter({ layout, seed }: { layout: BiomeLayout; seed: number })
           {s.items.map((it, j) =>
             s.kind === 'grove' ? (
               <group key={j} position={[it.dx, it.y, it.dz]}>
-                <Pine scale={1.2 * it.scale} />
+                <Pine scale={1.2 * it.scale} seed={i * 7 + j * 3} />
               </group>
             ) : (
               <group key={j} position={[it.dx, it.y, it.dz]} rotation={[0, j * 1.3, 0]} scale={it.scale}>

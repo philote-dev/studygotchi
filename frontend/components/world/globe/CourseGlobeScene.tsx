@@ -6,9 +6,10 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
   type RefObject,
 } from "react";
-import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GlobeCreatures } from "./GlobeCreatures";
 import { GlobeOcean } from "./GlobeOcean";
@@ -24,6 +25,14 @@ import {
   useGlobeSurfaceResources,
 } from "./globe-materials";
 import {
+  GLOBE_PICK_SCREEN_PX,
+  globeLayoutSize,
+  globePointerNdc,
+  pickGlobeLandmark,
+  resolveGlobePointerUp,
+  type GlobePickIntent,
+} from "./globe-pick";
+import {
   PRODUCTION_PIXEL_GRAIN,
   seededCourseDirections,
 } from "./globe-spec";
@@ -37,25 +46,12 @@ import { PixelComposer } from "./PixelComposer";
 import { DIVE_MS, diveCameraPosition, easeInOutCubic } from "./globe-dive";
 import { seatedCameraPosition } from "./globe-seat";
 import { screenPointFromNdc } from "@/lib/world/earth-nav";
-import {
-  isLandmarkVisible,
-  pickNearestVisibleLandmark,
-} from "@/lib/world/landmark-hit";
+import { isLandmarkVisible } from "@/lib/world/landmark-hit";
 
 const LAYOUT_SEED = "studygotchi:production-course-globe";
 const FOCUS_DIRECTION = new THREE.Vector3(-0.55, 0.48, 1).normalize();
 const SNAP_DAMPING = 7.5;
 const DRAG_THRESHOLD_PX = 8;
-
-interface R3FPointerCaptureTarget extends EventTarget {
-  hasPointerCapture(pointerId: number): boolean;
-  setPointerCapture(pointerId: number): void;
-  releasePointerCapture(pointerId: number): void;
-}
-
-function pointerCaptureTarget(event: ThreeEvent<PointerEvent>) {
-  return event.target as R3FPointerCaptureTarget | null;
-}
 
 function landmarkPinWorld(
   direction: UnitDirection,
@@ -68,71 +64,43 @@ function landmarkPinWorld(
     .applyMatrix4(globe.matrixWorld);
 }
 
-function courseLandmarkVisible(
-  direction: UnitDirection,
+function pickLandmarkAtPointer(
   camera: THREE.Camera,
-  globe: THREE.Object3D,
-): boolean {
-  globe.updateWorldMatrix(true, false);
-  const pin = landmarkPinWorld(direction, globe);
-  return isLandmarkVisible({
-    pin,
-    camera: camera.position,
-    planetCenter: globe.getWorldPosition(new THREE.Vector3()),
-    planetRadius: GLOBE_RADIUS,
-  });
-}
-
-function nearestLandmarkToPointer(
-  camera: THREE.Camera,
-  clientX: number,
-  clientY: number,
-  size: { left: number; top: number; width: number; height: number },
+  offsetX: number,
+  offsetY: number,
+  viewport: { width: number; height: number },
   directions: ReadonlyMap<string, UnitDirection>,
   globe: THREE.Object3D,
+  intent: GlobePickIntent,
 ): string | null {
-  const ndc = new THREE.Vector2(
-    ((clientX - size.left) / Math.max(1, size.width)) * 2 - 1,
-    -((clientY - size.top) / Math.max(1, size.height)) * 2 + 1,
-  );
+  const ndc = globePointerNdc(offsetX, offsetY, viewport);
   const raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(ndc, camera);
+  raycaster.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), camera);
   globe.updateWorldMatrix(true, false);
   const planetCenter = globe.getWorldPosition(new THREE.Vector3());
   const landmarks = [];
   for (const [courseId, direction] of directions) {
-    landmarks.push({ id: courseId, pin: landmarkPinWorld(direction, globe) });
+    const pin = landmarkPinWorld(direction, globe);
+    const projected = pin.clone().project(camera);
+    landmarks.push({
+      id: courseId,
+      position: { x: pin.x, y: pin.y, z: pin.z },
+      screen: {
+        x: ((projected.x + 1) * viewport.width) / 2,
+        y: ((1 - projected.y) * viewport.height) / 2,
+      },
+    });
   }
-  return pickNearestVisibleLandmark({
+  return pickGlobeLandmark({
     rayOrigin: raycaster.ray.origin,
     rayDirection: raycaster.ray.direction,
     landmarks,
     camera: camera.position,
-    planetCenter,
-    planetRadius: GLOBE_RADIUS,
+    globeCenter: planetCenter,
+    intent,
+    pointer: { x: offsetX, y: offsetY },
+    maxScreenPx: GLOBE_PICK_SCREEN_PX,
   });
-}
-
-function landmarkFromIntersections(
-  intersections: readonly { object: THREE.Object3D }[],
-  camera: THREE.Camera,
-  globe: THREE.Object3D,
-  directions: ReadonlyMap<string, UnitDirection>,
-): string | null {
-  for (const hit of intersections) {
-    let current: THREE.Object3D | null = hit.object;
-    while (current) {
-      const courseId = current.userData.courseLandmark;
-      if (typeof courseId === "string" && courseId) {
-        const direction = directions.get(courseId);
-        if (direction && courseLandmarkVisible(direction, camera, globe)) {
-          return courseId;
-        }
-      }
-      current = current.parent;
-    }
-  }
-  return null;
 }
 
 export type { GlobeTownOpenEvent } from "./GlobeTown";
@@ -358,7 +326,6 @@ function OrbitingGlobe({
   theme,
   reducedMotion,
   onActiveCourseChange,
-  onCourseTownOpen,
   onLandmarkAnchor,
   onPointerInteractionChange,
   spinApi,
@@ -372,11 +339,23 @@ function OrbitingGlobe({
   const dragMoved = useRef(false);
   const camera = useThree((state) => state.camera);
   const size = useThree((state) => state.size);
+  const gl = useThree((state) => state.gl);
   const cameraRight = useRef(new THREE.Vector3());
   const yawRotation = useRef(new THREE.Quaternion());
   const pitchRotation = useRef(new THREE.Quaternion());
   const resources = useGlobeSurfaceResources(courses, directions);
   const courseIds = useMemo(() => courses.map((course) => course.id), [courses]);
+  const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const host =
+      gl.domElement.closest<HTMLElement>(".course-globe-stage") ??
+      gl.domElement;
+    host.dataset.globeHover = hoveredCourseId ?? "";
+    return () => {
+      host.dataset.globeHover = "";
+    };
+  }, [gl.domElement, hoveredCourseId]);
 
   useEffect(() => {
     if (!activeCourseId) return;
@@ -473,112 +452,117 @@ function OrbitingGlobe({
   };
 
   useImperativeHandle(spinApi, () => ({ spin, settle }));
+  const spinRef = useRef(spin);
+  const settleRef = useRef(settle);
+  spinRef.current = spin;
+  settleRef.current = settle;
 
-  const pointerDown = (event: ThreeEvent<PointerEvent>) => {
-    event.stopPropagation();
-    dragging.current = true;
-    dragMoved.current = false;
-    lastPointer.current = {
-      x: event.nativeEvent.clientX,
-      y: event.nativeEvent.clientY,
+  useEffect(() => {
+    const el = gl.domElement;
+
+    const pickAt = (event: PointerEvent, intent: GlobePickIntent) => {
+      if (!group.current) return null;
+      return pickLandmarkAtPointer(
+        camera,
+        event.offsetX,
+        event.offsetY,
+        globeLayoutSize(el),
+        directions,
+        group.current,
+        intent,
+      );
     };
-    dragOrigin.current = lastPointer.current;
-    pointerCaptureTarget(event)?.setPointerCapture(event.pointerId);
-  };
 
-  const pointerMove = (event: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) return;
-    event.stopPropagation();
-    const x = event.nativeEvent.clientX;
-    const y = event.nativeEvent.clientY;
-    if (!dragMoved.current) {
-      const travel = Math.hypot(x - dragOrigin.current.x, y - dragOrigin.current.y);
-      if (travel < DRAG_THRESHOLD_PX) return;
-      dragMoved.current = true;
-      interacting.current = true;
-      onPointerInteractionChange(true);
-      document.body.style.cursor = "grabbing";
-    }
-    const dx = x - lastPointer.current.x;
-    const dy = y - lastPointer.current.y;
-    lastPointer.current = { x, y };
-    spin(dx * 0.006, dy * 0.006);
-  };
+    const hoverAt = (event: PointerEvent) => {
+      const courseId = pickAt(event, "hover");
+      setHoveredCourseId(courseId);
+      return courseId;
+    };
 
-  const finishPointerDrag = (event: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) return;
-    event.stopPropagation();
-    const moved = dragMoved.current;
-    dragging.current = false;
-    dragMoved.current = false;
-    const captureTarget = pointerCaptureTarget(event);
-    if (captureTarget?.hasPointerCapture(event.pointerId)) {
-      captureTarget.releasePointerCapture(event.pointerId);
-    }
-    document.body.style.cursor = "grab";
-    if (!moved) {
-      const courseId =
-        (group.current
-          ? landmarkFromIntersections(
-              event.intersections,
-              camera,
-              group.current,
-              directions,
-            )
-          : null) ??
-        (group.current
-          ? nearestLandmarkToPointer(
-              camera,
-              event.nativeEvent.clientX,
-              event.nativeEvent.clientY,
-              size,
-              directions,
-              group.current,
-            )
-          : null);
-      if (courseId && group.current) {
-        group.current.updateWorldMatrix(true, false);
-        const direction = directions.get(courseId);
-        const projected = (
-          direction
-            ? new THREE.Vector3(...direction)
-                .normalize()
-                .multiplyScalar(GLOBE_RADIUS)
-                .applyMatrix4(group.current.matrixWorld)
-            : group.current.getWorldPosition(new THREE.Vector3())
-        ).project(camera);
-        onActiveCourseChange(courseId);
-        onCourseTownOpen({
-          courseId,
-          anchor: {
-            x: size.left + ((projected.x + 1) * size.width) / 2,
-            y: size.top + ((1 - projected.y) * size.height) / 2,
-          },
-        });
+    const pointerDown = (event: PointerEvent) => {
+      if (event.button !== 0) return;
+      dragging.current = true;
+      dragMoved.current = false;
+      lastPointer.current = { x: event.clientX, y: event.clientY };
+      dragOrigin.current = lastPointer.current;
+      el.setPointerCapture(event.pointerId);
+    };
+
+    const pointerMove = (event: PointerEvent) => {
+      if (!dragging.current) {
+        const courseId = hoverAt(event);
+        document.body.style.cursor = courseId ? "pointer" : "grab";
+        return;
       }
-    } else {
-      settle();
-    }
-    interacting.current = false;
-    onPointerInteractionChange(false);
-  };
+      const x = event.clientX;
+      const y = event.clientY;
+      if (!dragMoved.current) {
+        const travel = Math.hypot(x - dragOrigin.current.x, y - dragOrigin.current.y);
+        if (travel < DRAG_THRESHOLD_PX) {
+          hoverAt(event);
+          return;
+        }
+        dragMoved.current = true;
+        setHoveredCourseId(null);
+        interacting.current = true;
+        onPointerInteractionChange(true);
+        document.body.style.cursor = "grabbing";
+      }
+      const dx = x - lastPointer.current.x;
+      const dy = y - lastPointer.current.y;
+      lastPointer.current = { x, y };
+      spinRef.current(dx * 0.006, dy * 0.006);
+    };
+
+    const pointerUp = (event: PointerEvent) => {
+      if (!dragging.current) return;
+      dragging.current = false;
+      dragMoved.current = false;
+      if (el.hasPointerCapture(event.pointerId)) {
+        el.releasePointerCapture(event.pointerId);
+      }
+      const courseId = pickAt(event, "click");
+      const travel = Math.hypot(
+        event.clientX - dragOrigin.current.x,
+        event.clientY - dragOrigin.current.y,
+      );
+      const action = resolveGlobePointerUp({
+        facingLandmarkId: courseId,
+        travelPx: travel,
+      });
+      setHoveredCourseId(courseId);
+      document.body.style.cursor = courseId ? "pointer" : "grab";
+      if (action.type === "select") {
+        onActiveCourseChange(action.courseId);
+      } else if (action.type === "settle") {
+        settleRef.current();
+      }
+      interacting.current = false;
+      onPointerInteractionChange(false);
+    };
+
+    const pointerLeave = () => {
+      if (dragging.current) return;
+      setHoveredCourseId(null);
+      document.body.style.cursor = "auto";
+    };
+
+    el.addEventListener("pointerdown", pointerDown);
+    el.addEventListener("pointermove", pointerMove);
+    el.addEventListener("pointerup", pointerUp);
+    el.addEventListener("pointercancel", pointerUp);
+    el.addEventListener("pointerleave", pointerLeave);
+    return () => {
+      el.removeEventListener("pointerdown", pointerDown);
+      el.removeEventListener("pointermove", pointerMove);
+      el.removeEventListener("pointerup", pointerUp);
+      el.removeEventListener("pointercancel", pointerUp);
+      el.removeEventListener("pointerleave", pointerLeave);
+    };
+  }, [camera, directions, gl.domElement, onActiveCourseChange, onPointerInteractionChange]);
 
   return (
-    <group
-      ref={group}
-      position={[0, -0.7, 0]}
-      onPointerDown={pointerDown}
-      onPointerMove={pointerMove}
-      onPointerUp={finishPointerDrag}
-      onPointerCancel={finishPointerDrag}
-      onLostPointerCapture={finishPointerDrag}
-      onPointerOver={() => {
-        if (!dragging.current) document.body.style.cursor = "grab";
-      }}
-      onPointerOut={() => {
-        if (!dragging.current) document.body.style.cursor = "auto";
-      }}
-    >
+    <group ref={group} position={[0, -0.7, 0]}>
       {resources ? (
         <>
           <GlobeTerrain
@@ -603,9 +587,8 @@ function OrbitingGlobe({
         courses={courses}
         directions={directions}
         activeCourseId={activeCourseId}
+        hoveredCourseId={hoveredCourseId}
         night={theme === "dark"}
-        onActiveCourseChange={onActiveCourseChange}
-        onCourseTownOpen={onCourseTownOpen}
       />
       <GlobeCreatures
         courses={courses}
@@ -613,13 +596,7 @@ function OrbitingGlobe({
         activeCourseId={activeCourseId}
         reducedMotion={reducedMotion}
       />
-      <mesh
-        onPointerDown={pointerDown}
-        onPointerMove={pointerMove}
-        onPointerUp={finishPointerDrag}
-        onPointerCancel={finishPointerDrag}
-        onLostPointerCapture={finishPointerDrag}
-      >
+      <mesh>
         <sphereGeometry args={[GLOBE_RADIUS + 2.4, 48, 32]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>

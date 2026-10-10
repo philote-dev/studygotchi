@@ -3,6 +3,7 @@ import {
   edgeBackboneScore,
   fieldStarCount,
   keepBackboneEdge,
+  skyClockMs,
   SPIRAL_SPIN_PERIOD_MS,
   spiralPlacement,
   spiralSpinAngle,
@@ -27,7 +28,19 @@ describe("shared space backdrop", () => {
     expect(SPIRAL_SPIN_PERIOD_MS).toBeLessThanOrEqual(60_000);
     // Quarter turn after a quarter period.
     expect(spiralSpinAngle(SPIRAL_SPIN_PERIOD_MS / 4)).toBeCloseTo(Math.PI / 2, 6);
+    expect(spiralSpinAngle(SPIRAL_SPIN_PERIOD_MS / 2, true)).toBe(0);
     expect(fieldStarCount(1200, 800)).toBeGreaterThan(Math.round((1200 * 800) / 5200));
+  });
+
+  it("samples a shared sky clock so a remount is already mid-orbit", () => {
+    const later = 40_000;
+    expect(skyClockMs(later)).toBe(later);
+    const angle = spiralSpinAngle(skyClockMs(later));
+    const remount = spiralSpinAngle(skyClockMs(later));
+    expect(angle).toBeCloseTo(remount, 8);
+    expect(Math.abs(angle)).toBeGreaterThan(1);
+    expect(spiralSpinAngle(skyClockMs(0))).toBe(0);
+    expect(spiralSpinAngle(skyClockMs(later), true)).toBe(0);
   });
 
   it("keeps the strongest backbone at Fit and reveals weaker edges as zoom grows", () => {

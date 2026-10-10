@@ -31,6 +31,16 @@
   animation: course-globe-dive-reduced 100ms linear both;
 }
 
+.course-globe-stage[data-rising="true"][data-reduced-motion="false"] {
+  transform-origin: 78% 58%;
+  animation: course-globe-rise var(--a-t-aperture, 720ms) var(--a-ease-aperture, cubic-bezier(0.83, 0, 0.17, 1))
+    both;
+}
+
+.course-globe-stage[data-rising="true"][data-reduced-motion="true"] {
+  animation: course-globe-arrive-reduced var(--a-t-quick, 100ms) linear both;
+}
+
 .course-globe-canvas,
 .course-globe-fallback {
   width: 100%;
@@ -93,6 +103,16 @@
 
   to {
     opacity: 0;
+  }
+}
+
+@keyframes course-globe-rise {
+  from {
+    transform: scale(2.55);
+  }
+
+  to {
+    transform: scale(1);
   }
 }
 

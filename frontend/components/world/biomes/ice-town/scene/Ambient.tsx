@@ -10,6 +10,16 @@ import {
   whaleStateAt,
 } from '../layout/biome-layout'
 import { Surf } from '../render/materials'
+import { useStormWind } from './StormWind'
+import {
+  HAIL_COUNT,
+  STORM_WIND,
+  WIND_STREAK_COUNT,
+  hailAfterImpact,
+  hailFallSpeed,
+  stormStreakOpacity,
+  windGustSpeed,
+} from './storm-weather'
 
 const CLOUD_ALTITUDE = 16
 
@@ -88,13 +98,16 @@ export function Snowfall({
     if (!points.current) return
     const attr = points.current.geometry.attributes.position as THREE.BufferAttribute
     const arr = attr.array as Float32Array
-    const gust = storm ? 1.1 + Math.max(0, Math.sin(clock.elapsedTime * 1.05)) * 1.6 : 0.6
+    const gust = storm
+      ? windGustSpeed(clock.elapsedTime, 2.4, 1, false) * 0.18
+      : 0.6
     const visible = Math.floor(count * Math.min(1, storm ? 1 : density))
     points.current.geometry.setDrawRange(0, visible)
-    const fall = storm ? 1.25 : 1
+    const fall = storm ? 1.05 : 1
     for (let i = 0; i < visible; i++) {
       arr[i * 3 + 1] -= speeds[i] * delta * fall
-      arr[i * 3] += Math.sin(clock.elapsedTime * 0.9 + i * 0.15) * delta * gust
+      arr[i * 3] += (STORM_WIND.x * gust + Math.sin(clock.elapsedTime * 0.9 + i * 0.15) * 0.35) * delta
+      arr[i * 3 + 2] += STORM_WIND.z * gust * delta
       if (arr[i * 3 + 1] < -1) {
         arr[i * 3 + 1] = 22
         arr[i * 3] = (arr[i * 3] + span * 0.5) % span - span * 0.5
@@ -109,11 +122,11 @@ export function Snowfall({
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color={storm ? '#f4f8ff' : '#ffffff'}
-        size={storm ? 1.15 : 0.26}
+        color={storm ? '#dce8f4' : '#ffffff'}
+        size={storm ? 0.34 : 0.26}
         sizeAttenuation
         transparent
-        opacity={storm ? 0.72 : 0.7}
+        opacity={storm ? 0.52 : 0.7}
         depthWrite={false}
       />
     </points>
@@ -124,29 +137,39 @@ export function Snowfall({
 export function GustRibbons({ layout }: { layout: BiomeLayout }) {
   const group = useRef<THREE.Group>(null)
   const span = layout.frameRadius
+  const { intensityRef, reducedMotion } = useStormWind()
+  const yaw = Math.atan2(STORM_WIND.x, STORM_WIND.z)
   const ribbons = useMemo(() => {
     const rng = seeded(41)
-    return Array.from({ length: 9 }, (_, i) => ({
-      x: (rng() - 0.5) * span * 2.2,
-      y: 3 + rng() * 14,
-      z: (rng() - 0.5) * span * 1.8,
-      len: 22 + rng() * 18,
-      fat: 0.22 + rng() * 0.28,
-      speed: 7 + rng() * 5,
-      phase: i * 0.7,
-    }))
+    return Array.from({ length: WIND_STREAK_COUNT }, (_, i) => {
+      const low = i % 2 === 0
+      return {
+        x: (rng() - 0.5) * span * 2.2,
+        y: low ? 1.2 + rng() * 4.4 : 6 + rng() * 10,
+        z: (rng() - 0.5) * span * 1.8,
+        len: low ? 16 + rng() * 12 : 28 + rng() * 16,
+        fat: low ? 0.2 + rng() * 0.18 : 0.24 + rng() * 0.28,
+        speed: 9 + rng() * 7,
+        phase: i * 0.7,
+      }
+    })
   }, [span])
 
   useFrame(({ clock }, delta) => {
     if (!group.current) return
-    const pulse = 0.2 + Math.max(0, Math.sin(clock.elapsedTime * 1.15)) * 0.22
+    const intensity = intensityRef.current
     group.current.children.forEach((child, i) => {
       const ribbon = ribbons[i]
-      child.position.x += ribbon.speed * delta
-      child.position.y = ribbon.y + Math.sin(clock.elapsedTime * 1.4 + ribbon.phase) * 0.35
-      if (child.position.x > span * 1.6) child.position.x = -span * 1.6
+      const speed = windGustSpeed(clock.elapsedTime + ribbon.phase, ribbon.speed, intensity, reducedMotion)
+      child.position.x += STORM_WIND.x * speed * delta
+      child.position.z += STORM_WIND.z * speed * delta
+      child.position.y = ribbon.y + Math.sin(clock.elapsedTime * 1.8 + ribbon.phase) * 0.45
+      if (child.position.x > span * 1.7) {
+        child.position.x = -span * 1.7
+        child.position.z = ribbon.z
+      }
       const material = (child as THREE.Mesh).material as THREE.MeshBasicMaterial
-      if (material) material.opacity = pulse + (i % 3) * 0.04
+      if (material) material.opacity = stormStreakOpacity(clock.elapsedTime, i, intensity)
     })
   })
 
@@ -156,11 +179,11 @@ export function GustRibbons({ layout }: { layout: BiomeLayout }) {
         <mesh
           key={i}
           position={[ribbon.x, ribbon.y, ribbon.z]}
-          rotation={[0.08, 0.18, -0.22]}
+          rotation={[0.06, yaw, -0.28]}
         >
           <planeGeometry args={[ribbon.len, ribbon.fat]} />
           <meshBasicMaterial
-            color="#eaf3ff"
+            color={i % 3 === 0 ? '#f4f8ff' : '#d7e6f4'}
             transparent
             opacity={0.28}
             depthWrite={false}
@@ -169,6 +192,69 @@ export function GustRibbons({ layout }: { layout: BiomeLayout }) {
         </mesh>
       ))}
     </group>
+  )
+}
+
+/** Fast ice pellets with a bounce — denser than drizzle, with gaps so the town stays a picture. */
+export function Hailfall({ layout }: { layout: BiomeLayout }) {
+  const points = useRef<THREE.Points>(null)
+  const { intensityRef, reducedMotion } = useStormWind()
+  const span = layout.frameRadius * 2.1
+  const ground = layout.groundHeight
+  const { positions, velocities } = useMemo(() => {
+    const rng = seeded(17)
+    const positions = new Float32Array(HAIL_COUNT * 3)
+    const velocities = new Float32Array(HAIL_COUNT)
+    for (let i = 0; i < HAIL_COUNT; i++) {
+      positions[i * 3] = (rng() - 0.5) * span
+      positions[i * 3 + 1] = rng() * 20
+      positions[i * 3 + 2] = (rng() - 0.5) * span
+      velocities[i] = -(12 + rng() * 8)
+    }
+    return { positions, velocities }
+  }, [span])
+
+  useFrame(({ clock }, delta) => {
+    if (!points.current) return
+    const intensity = intensityRef.current
+    const attr = points.current.geometry.attributes.position as THREE.BufferAttribute
+    const arr = attr.array as Float32Array
+    const fall = hailFallSpeed(intensity, reducedMotion)
+    const drift = windGustSpeed(clock.elapsedTime, 3.2, intensity, reducedMotion)
+    const visible = reducedMotion ? Math.floor(HAIL_COUNT * 0.35) : HAIL_COUNT
+    points.current.geometry.setDrawRange(0, visible)
+    if (fall <= 0) return
+    for (let i = 0; i < visible; i++) {
+      velocities[i] -= 42 * delta
+      arr[i * 3] += STORM_WIND.x * drift * delta * 0.55
+      arr[i * 3 + 2] += STORM_WIND.z * drift * delta * 0.55
+      arr[i * 3 + 1] += velocities[i] * delta
+      const hit = hailAfterImpact(arr[i * 3 + 1], velocities[i], ground)
+      arr[i * 3 + 1] = hit.y
+      velocities[i] = hit.vy
+      if (hit.settled) {
+        arr[i * 3 + 1] = 16 + (i % 5) * 0.8
+        arr[i * 3] = ((arr[i * 3] + span * 0.5) % span) - span * 0.5
+        velocities[i] = -fall * (0.85 + (i % 4) * 0.08)
+      }
+    }
+    attr.needsUpdate = true
+  })
+
+  return (
+    <points ref={points}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#e8f2fb"
+        size={0.5}
+        sizeAttenuation
+        transparent
+        opacity={0.82}
+        depthWrite={false}
+      />
+    </points>
   )
 }
 
