@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ICE_TOWN_LAYOUT as layout } from "./layout/biome-layout";
+import { ICE_TOWN_LAYOUT as layout, districtOrder } from "./layout/biome-layout";
+import { adjacentCourseId, isInteractiveKeyboardTarget, keyboardNavigationStep } from "@/components/world/globe/globe-input";
 import { STATIONS, defaultOverride } from "./camera/stations";
 import { BiomeScene } from "./scene/BiomeScene";
 import { catastropheSteps } from "./scene/catastrophe-sequence";
 import type { CatastrophePhase, LabState } from "./state";
 import type { IceDemoState } from "@/lib/world/demo-theater";
 import { useReducedMotion, useSpaceAttribute } from "@/components/shell/useSpaceAttribute";
+import { useEdgeLab } from "./edge/use-edge-lab";
 
 /**
  * Plays the locked catastrophe sequence (blizzard → bang → ruin, recovery → calm) off the demo
@@ -54,8 +56,13 @@ export function IceTownMount({
   const night = useSpaceAttribute() === "dark";
   const reducedMotion = useReducedMotion();
   const phase = useCatastrophePhase(iceDemo?.event, reducedMotion);
+  // Edge lab (`?edge=`): free camera, optional outer-world technique and comparison pose.
+  const edgeLab = useEdgeLab();
   const state = useMemo<LabState>(
     () => ({
+      edgeLab: edgeLab.active,
+      edge: edgeLab.technique,
+      pose: edgeLab.pose,
       progress: Object.fromEntries(layout.districts.map((district) => [district.id, fraction])),
       residents: 0,
       seed: 7,
@@ -76,7 +83,7 @@ export function IceTownMount({
       },
       diving: false,
     }),
-    [focus, fraction, night, phase],
+    [edgeLab.active, edgeLab.pose, edgeLab.technique, focus, fraction, night, phase],
   );
   const onPickDistrict = useCallback(
     (id: string) => {
@@ -87,19 +94,39 @@ export function IceTownMount({
     [focus, onFocusDistrict],
   );
 
-  // Escape returns from the district station to the overview (ship handoff §6 ii).
+  // Keyboard: Escape returns from the district station to the overview (ship handoff §6 ii);
+  // Left / Right step through the districts in topic order, the same idiom the globe uses for
+  // courses. Typing targets are left alone.
+  const focusRef = useRef(focus);
+  focusRef.current = focus;
   useEffect(() => {
-    if (!focus) return;
+    const order = districtOrder(layout).map((district) => district.id);
     const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || event.defaultPrevented) return;
-      const target = event.target as HTMLElement | null;
-      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
-      setLocalFocus(null);
-      onFocusDistrict?.(null);
+      if (event.defaultPrevented || isInteractiveKeyboardTarget(event.target)) return;
+      if (event.key === "Escape") {
+        if (!focusRef.current) return;
+        setLocalFocus(null);
+        onFocusDistrict?.(null);
+        return;
+      }
+      const step = keyboardNavigationStep({
+        key: event.key,
+        altKey: event.altKey,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+        interactiveTarget: false,
+      });
+      if (step === null) return;
+      const next = adjacentCourseId(order, focusRef.current, step);
+      if (!next) return;
+      event.preventDefault();
+      setLocalFocus(next);
+      onFocusDistrict?.(next);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [focus, onFocusDistrict]);
+  }, [onFocusDistrict]);
 
   return (
     <BiomeScene

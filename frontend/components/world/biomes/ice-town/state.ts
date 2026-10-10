@@ -1,5 +1,7 @@
 import type { DistrictProgress } from './layout/biome-layout'
 import type { CameraOverride, StationId } from './camera/stations'
+import type { EdgePoseId } from './edge/poses'
+import type { EdgeTechniqueId } from './edge/types'
 
 export type CatastrophePhase = 'calm' | 'blizzard' | 'bang' | 'ruin' | 'recovering'
 
@@ -25,6 +27,10 @@ export interface LabState {
   camera: CameraOverride
   catastrophe: CatastropheState
   diving: boolean
+  /** Edge lab (`?edge=`): free camera on, optional technique and fixed comparison pose. */
+  edgeLab?: boolean
+  edge?: EdgeTechniqueId | null
+  pose?: EdgePoseId | null
 }
 
 export const PHASE_SECONDS: Record<CatastrophePhase, number> = {

@@ -512,6 +512,12 @@ input {
   width: 100% !important;
   height: 100% !important;
   image-rendering: pixelated;
+  cursor: grab;
+  touch-action: none;
+}
+
+.planet-canvas canvas:active {
+  cursor: grabbing;
 }
 
 .planet-caption {

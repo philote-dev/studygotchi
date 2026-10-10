@@ -6,10 +6,11 @@ import { STATIONS as meadow } from "./medieval-meadow-kingdom/camera/stations";
 import { STATIONS as nordic } from "./nordic-volcanic-highlands/camera/stations";
 import { STATIONS as ice } from "./ice-town/camera/stations";
 
-const BIOMES = { ice, frontier, coastal, jungle, meadow, nordic };
+// The five sandbox biomes keep the diorama contract from frontend-biome-integration-handoff.md.
+const DIORAMA_BIOMES = { frontier, coastal, jungle, meadow, nordic };
 
 describe("local biome camera contract", () => {
-  it.each(Object.entries(BIOMES))(
+  it.each(Object.entries(DIORAMA_BIOMES))(
     "%s stays south/front with the required pitch and yaw",
     (_name, stations) => {
       for (const station of Object.values(stations)) {
@@ -19,4 +20,13 @@ describe("local biome camera contract", () => {
       }
     },
   );
+
+  // Ice (the shipped biome) uses the lab stations: SHIP-HANDOFF §6/§7, Philote 2026-10-10.
+  it("ice uses the lab stations (pitch 18–36°, FOV 26, free azimuth)", () => {
+    expect(ice.arrival.pitchDeg).toBe(30);
+    expect(ice.overview.pitchDeg).toBe(36);
+    expect(ice.district.pitchDeg).toBe(30);
+    expect(ice.resident.pitchDeg).toBe(18);
+    for (const station of Object.values(ice)) expect(station.fov).toBe(26);
+  });
 });

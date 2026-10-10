@@ -40,7 +40,7 @@ const PLACEMENTS: readonly BouquetPlacement[] = BOUQUET_PLACEMENTS.map((entry) =
 type GroupRef = RefObject<THREE.Group | null>
 
 function GantryCrane({ night, trolley }: { night: boolean; trolley: GroupRef }) {
-  const place = placementFor('hero')
+  const place = placementFor('hero', PLACEMENTS)
   const scale = place.height / 16
   const legs = [-1, 1] as const
   return (
@@ -84,16 +84,16 @@ function GantryCrane({ night, trolley }: { night: boolean; trolley: GroupRef }) 
             <Surf color={P.ink} />
           </mesh>
         </group>
-        <mesh position={[-7.4, 11.6, 1.3]} castShadow>
-          <boxGeometry args={[3.8, 3.2, 3.2]} />
+        <mesh position={[-7.6, 11.5, 1.4]} castShadow>
+          <boxGeometry args={[4.4, 3.4, 3.4]} />
           <Surf color={P.orange} />
         </mesh>
-        <mesh position={[-7.4, 11.85, 2.95]}>
-          <boxGeometry args={[2.8, 1.5, 0.12]} />
+        <mesh position={[-7.6, 11.8, 3.15]}>
+          <boxGeometry args={[3.2, 1.6, 0.12]} />
           <Glow color={P.window} on={night} />
         </mesh>
-        <mesh position={[-7.4, 10.0, 1.3]} castShadow>
-          <boxGeometry args={[4.1, 0.4, 3.5]} />
+        <mesh position={[-7.6, 9.8, 1.4]} castShadow>
+          <boxGeometry args={[4.7, 0.4, 3.7]} />
           <Surf color={P.ink} />
         </mesh>
       </group>
@@ -105,7 +105,7 @@ function GantryCrane({ night, trolley }: { night: boolean; trolley: GroupRef }) 
 /* P2 · chimney-stack pair: two cream shafts on a boiler block, one fat puff. */
 
 function ChimneyPair() {
-  const place = placementFor('front-left')
+  const place = placementFor('front-left', PLACEMENTS)
   const scale = place.height / 14
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
@@ -118,31 +118,31 @@ function ChimneyPair() {
           <boxGeometry args={[6, 0.6, 4.4]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[-1.3, 7.8, 0.2]} castShadow>
+        <mesh position={[-0.5, 7.8, 0.2]} castShadow>
           <cylinderGeometry args={[0.95, 1.35, 9.8, 8]} />
           <Surf color={P.cream} />
         </mesh>
-        <mesh position={[-1.3, 13.35, 0.2]} castShadow>
+        <mesh position={[-0.5, 13.35, 0.2]} castShadow>
           <cylinderGeometry args={[1.2, 1.0, 1.3, 8]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[-1.3, 5.4, 0.2]} castShadow>
-          <cylinderGeometry args={[1.26, 1.3, 0.7, 8]} />
-          <Surf color={P.steel} />
+        <mesh position={[-0.5, 14.02, 0.2]}>
+          <cylinderGeometry args={[0.8, 0.8, 0.1, 8]} />
+          <Surf color={P.ink} />
         </mesh>
-        <mesh position={[1.7, 6.5, -0.6]} castShadow>
+        <mesh position={[2.1, 6.5, -0.6]} castShadow>
           <cylinderGeometry args={[0.85, 1.2, 7.2, 8]} />
           <Surf color={P.cream} />
         </mesh>
-        <mesh position={[1.7, 10.6, -0.6]} castShadow>
+        <mesh position={[2.1, 10.6, -0.6]} castShadow>
           <cylinderGeometry args={[1.08, 0.9, 1.1, 8]} />
           <Surf color={P.steel} />
         </mesh>
-        <mesh position={[-1.2, 15.0, 0.3]} scale={[1.9, 1.45, 1.7]} castShadow>
+        <mesh position={[0.2, 15.1, -0.9]} scale={[1.9, 1.45, 1.7]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.smoke} />
         </mesh>
-        <mesh position={[-3.0, 16.1, -0.3]} scale={[1.15, 0.95, 1.05]} castShadow>
+        <mesh position={[2.0, 16.2, -2.1]} scale={[1.15, 0.95, 1.05]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.smoke} />
         </mesh>
@@ -201,7 +201,7 @@ function PistonPress({ ram }: { ram: GroupRef }) {
 /* P4 · pipe elbow run: three fat knuckles, the top run spouts past the edge. */
 
 function PipeRun() {
-  const place = placementFor('front-right')
+  const place = placementFor('front-right', PLACEMENTS)
   const scale = place.height / 12
   return (
     <group position={place.position} rotation={outwardRotation(place)}>
@@ -346,6 +346,7 @@ export const heavyIndustry: BiomeBouquet = {
     rim: 'Riveted steel edge band: a thin plum-steel ring with 12 rivet studs and 12 orange chevron wedges, one every 30 degrees.',
     exaggeration: 'The gantry beam is 38 m long on a 32 m plinth, so the T overhangs both plinth edges; its orange cab is a whole room wide.',
     closestProtected: 'No Kirby pedestal is industrial; nearest read is a generic "chemical plant" level with blue tubes. Ours is warm concrete, plum steel, a single orange cab and a riveted rim.',
+    placements: PLACEMENTS,
   },
   Props,
   Rim,

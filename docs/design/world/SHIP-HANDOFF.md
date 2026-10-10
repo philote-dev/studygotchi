@@ -149,3 +149,5 @@ Defaults for unanswered lab decisions (use, do not ask):
 1. Which ships first: Ice / Chilly Town from `prototypes/biome-lab` (reviewed four times, 43 tests green, screenshots exist) or the five off-roster sandboxes in `frontend-biome-integration-handoff.md` (no PNG evidence, one typecheck failure, different camera contract)? Default: Ice only.
 2. Camera for the shipped biome: lab stations (30/36/30/18°, free azimuth) or the other handoff's 34–40° pitch / ±35° yaw? Default: lab stations.
 3. Residents from hatched concepts (available now) or finished psets (needs a backend field)? Default: hatched.
+
+2026-10-10 Philote: camera contract = lab stations; ±35° yaw clamp removed.

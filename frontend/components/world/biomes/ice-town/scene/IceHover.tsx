@@ -98,10 +98,13 @@ function DistrictMark({
     <group position={[cx, y, cz]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} raycast={() => undefined}>
         <shapeGeometry args={[shape]} />
+        {/* A wash, not a slab: the ground stays snow (fix plan §4); the outline carries the shape.
+            Blending happens in linear space, so a light colour over dark water reads far stronger
+            than its alpha; the accent (dark) stays quiet on both snow and water. */}
         <meshBasicMaterial
-          color={selected ? P.light : district.accent}
+          color={district.accent}
           transparent
-          opacity={selected ? 0.3 : hovered ? 0.22 : 0}
+          opacity={selected ? 0.06 : hovered ? 0.05 : 0}
           depthWrite={false}
         />
       </mesh>

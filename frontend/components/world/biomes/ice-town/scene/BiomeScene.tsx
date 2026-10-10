@@ -23,6 +23,7 @@ import { Residents } from './Residents'
 import { Districts, Paths } from './Structures'
 import { Floes, Forest, Landforms, Scatter, Terrain, Water } from './Terrain'
 import { WorldScene } from '../world/WorldScene'
+import { edgeTechnique } from '../edge'
 
 interface BiomeSceneProps {
   layout: BiomeLayout
@@ -70,21 +71,23 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
 
   const world = layout.world
   const reducedMotion = usePrefersReducedMotion()
+  // Edge lab: an outer-world technique may add geometry and retune sky / fog / camera.
+  const edge = state.edgeLab ? edgeTechnique(state.edge) : null
   // Sky, fog and lights crossfade over 1.2 s between day / night / storm (bible §6).
-  const skyGrade = useMemo(
-    () =>
-      skyGradeFor(night, storm ? stormGrade(1) : null, {
-        sky: world?.colours.sky ?? P.sky,
-        skyNight: world?.colours.skyNight ?? P.skyNight,
-      }),
-    [night, storm, world],
-  )
+  const skyGrade = useMemo(() => {
+    const base = skyGradeFor(night, storm ? stormGrade(1) : null, {
+      sky: world?.colours.sky ?? P.sky,
+      skyNight: world?.colours.skyNight ?? P.skyNight,
+    })
+    return edge?.sky ? edge.sky(base, { night, storm }) : base
+  }, [edge, night, storm, world])
 
   return (
     <>
       <SkyBlend grade={skyGrade} instant={reducedMotion} />
 
       <StormWindProvider storm={storm} reducedMotion={reducedMotion}>
+      {edge ? <edge.Scene layout={layout} night={night} storm={storm} seed={state.seed} reducedMotion={reducedMotion} /> : null}
       {world ? (
         <WorldScene layout={layout} world={world} progress={state.progress} seed={state.seed} night={night} darkDistrict={darkDistrict} />
       ) : (
@@ -125,7 +128,14 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
         onPick={onPickDistrict}
       />
 
-      <LockedOverviewCamera layout={layout} focusDistrict={state.focusDistrict} />
+      <LockedOverviewCamera
+        layout={layout}
+        focusDistrict={state.focusDistrict}
+        free={state.edgeLab ?? false}
+        poseId={state.pose ?? null}
+        limitsOverride={edge?.camera}
+        readyKey={state.edge ?? 'none'}
+      />
       </StormWindProvider>
       {state.pixel && <PixelComposer />}
     </>

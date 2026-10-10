@@ -36,10 +36,10 @@ interface StrokeSegment {
 }
 
 const STROKE_SEGMENTS: readonly StrokeSegment[] = [
-  { length: 6.2, tilt: 0.1, top: 2.4, bottom: 3.4, wash: false },
-  { length: 5.0, tilt: 0.3, top: 1.6, bottom: 2.5, wash: false },
-  { length: 4.4, tilt: 0.52, top: 0.9, bottom: 1.7, wash: false },
-  { length: 4.2, tilt: 0.78, top: 0, bottom: 1.0, wash: true },
+  { length: 6.2, tilt: 0.1, top: 3.3, bottom: 4.7, wash: false },
+  { length: 5.0, tilt: 0.3, top: 2.3, bottom: 3.4, wash: false },
+  { length: 4.4, tilt: 0.52, top: 1.3, bottom: 2.4, wash: false },
+  { length: 4.2, tilt: 0.78, top: 0, bottom: 1.4, wash: true },
 ]
 
 const STROKE = (() => {
@@ -57,7 +57,7 @@ const STROKE = (() => {
 })()
 
 const PEAK_AUTHORED_HEIGHT = 17.8
-const STROKE_FLATNESS = 0.3
+const STROKE_FLATNESS = 0.36
 
 function Bristle({ from, tilt, length }: { from: readonly [number, number]; tilt: number; length: number }) {
   const dx = -Math.sin(tilt)
@@ -77,7 +77,7 @@ function BrushPeak() {
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / PEAK_AUTHORED_HEIGHT}>
         {/* the press: an ink pool where the brush first touched the paper */}
-        <mesh position={[0.3, 0.28, 0.2]} scale={[4.9, 0.55, 2.7]} rotation={[0, 0.35, 0]} castShadow>
+        <mesh position={[0.6, 0.3, 0.9]} scale={[6.2, 0.6, 3.4]} rotation={[0, 0.35, 0]} castShadow>
           <dodecahedronGeometry args={[1, 0]} />
           <Surf color={P.ink} />
         </mesh>
@@ -92,11 +92,11 @@ function BrushPeak() {
           </mesh>
         ))}
         {/* dry-brush split at the tip */}
-        <Bristle from={tip.start} tilt={tip.tilt - 0.32} length={3.4} />
-        <Bristle from={tip.start} tilt={tip.tilt + 0.3} length={2.6} />
-        {/* the wash ghost: a second, fainter peak behind and to the right */}
-        <mesh position={[4.2, 5.2, -2.2]} rotation={[0, 0, -0.14]} scale={[1, 1, 0.26]} castShadow>
-          <coneGeometry args={[2.8, 10.6, 6]} />
+        <Bristle from={tip.start} tilt={tip.tilt - 0.34} length={3.8} />
+        <Bristle from={tip.start} tilt={tip.tilt + 0.3} length={2.8} />
+        {/* the wash ghost: a second, fainter peak behind, between the stroke and the pine */}
+        <mesh position={[2.6, 6.4, -2.6]} rotation={[0, 0, -0.12]} scale={[1, 1, 0.28]} castShadow>
+          <coneGeometry args={[3.2, 13, 6]} />
           <Surf color={P.wash} />
         </mesh>
         {/* splatter dots */}
@@ -140,29 +140,35 @@ function PaperPavilion() {
           <Surf color={P.stack} />
         </mesh>
         <mesh position={[0, 2.9, 0]} castShadow>
-          <boxGeometry args={[4.6, 4.6, 4.6]} />
+          <boxGeometry args={[4.2, 4.6, 4.2]} />
           <Surf color={P.paper} />
         </mesh>
-        <mesh position={[0, 1.75, 2.34]}>
+        <mesh position={[0, 1.75, 2.14]}>
           <boxGeometry args={[1.3, 2.3, 0.14]} />
           <Surf color={P.ink} />
         </mesh>
+        {[-1.3, 1.3].map((x) => (
+          <mesh key={x} position={[x, 3.6, 2.14]}>
+            <boxGeometry args={[0.7, 1.1, 0.12]} />
+            <Surf color={P.ink} />
+          </mesh>
+        ))}
         <mesh position={[0, 6.5, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
           <coneGeometry args={[6.2, 2.6, 4]} />
-          <Surf color={P.paper} />
+          <Surf color={P.stack} />
         </mesh>
-        <InkLine radius={6.0} y={5.3} tube={0.24} />
-        <InkLine radius={3.3} y={6.55} tube={0.16} />
+        <InkLine radius={6.0} y={5.3} tube={0.3} />
+        <InkLine radius={3.3} y={6.55} tube={0.2} />
         <mesh position={[0, 8.7, 0]} castShadow>
-          <boxGeometry args={[3.0, 2.6, 3.0]} />
+          <boxGeometry args={[2.8, 2.6, 2.8]} />
           <Surf color={P.paper} />
         </mesh>
         <mesh position={[0, 11.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
           <coneGeometry args={[4.4, 2.6, 4]} />
-          <Surf color={P.paper} />
+          <Surf color={P.stack} />
         </mesh>
-        <InkLine radius={4.25} y={10.1} tube={0.2} />
-        <InkLine radius={2.1} y={11.5} tube={0.14} />
+        <InkLine radius={4.25} y={10.1} tube={0.26} />
+        <InkLine radius={2.1} y={11.5} tube={0.18} />
         <mesh position={[0, 13.3, 0]} castShadow>
           <coneGeometry args={[0.55, 1.8, 6]} />
           <Surf color={P.ink} />
@@ -206,14 +212,14 @@ function InkBlotPine() {
           <cylinderGeometry args={[0.36, 0.58, 6.4, 6]} />
           <Surf color={P.ink} />
         </mesh>
-        <mesh position={[-0.55, 9.0, 0]} rotation={[0, 0, 0.13]} castShadow>
+        <mesh position={[0.55, 9.0, 0]} rotation={[0, 0, -0.13]} castShadow>
           <cylinderGeometry args={[0.24, 0.38, 6.2, 6]} />
           <Surf color={P.ink} />
         </mesh>
-        <Blot position={[0.2, 4.8, 0.2]} scale={[3.5, 0.9, 2.7]} spin={0.4} />
-        <Blot position={[-0.6, 8.5, 0.3]} scale={[2.7, 0.8, 2.1]} spin={1.3} />
-        <Blot position={[-1.15, 11.7, 0]} scale={[1.9, 0.72, 1.55]} spin={2.1} />
-        <mesh position={[-1.35, 13.4, 0]} rotation={[0, 0, 0.13]} castShadow>
+        <Blot position={[0.3, 4.8, 0.2]} scale={[3.2, 0.85, 2.5]} spin={0.4} />
+        <Blot position={[0.7, 8.5, 0.3]} scale={[2.5, 0.75, 1.95]} spin={1.3} />
+        <Blot position={[1.15, 11.7, 0]} scale={[1.8, 0.7, 1.45]} spin={2.1} />
+        <mesh position={[1.35, 13.4, 0]} rotation={[0, 0, -0.13]} castShadow>
           <coneGeometry args={[0.65, 2.4, 5]} />
           <Surf color={P.ink} />
         </mesh>
@@ -222,7 +228,7 @@ function InkBlotPine() {
           <sphereGeometry args={[1, 5, 4]} />
           <Surf color={P.ink} />
         </mesh>
-        <mesh position={[-2.6, 7.6, 0.6]} scale={[0.32, 0.6, 0.32]}>
+        <mesh position={[-1.6, 7.6, 0.6]} scale={[0.32, 0.6, 0.32]}>
           <sphereGeometry args={[1, 5, 4]} />
           <Surf color={P.ink} />
         </mesh>
@@ -323,11 +329,11 @@ function SealStamp() {
 // Rim · deckle (torn) paper edge with one 0.4 m brush-stroke band.
 // ---------------------------------------------------------------------------
 
-const BAND_CENTRE = -0.45
+const BAND_CENTRE = -0.4
 const BAND_PIECES: readonly { start: number; arc: number; tube: number }[] = [
-  { start: BAND_CENTRE - 0.82, arc: 0.38, tube: 0.1 },
-  { start: BAND_CENTRE - 0.5, arc: 1.0, tube: 0.2 },
-  { start: BAND_CENTRE + 0.44, arc: 0.38, tube: 0.1 },
+  { start: BAND_CENTRE - 0.85, arc: 0.42, tube: 0.11 },
+  { start: BAND_CENTRE - 0.55, arc: 1.1, tube: 0.2 },
+  { start: BAND_CENTRE + 0.43, arc: 0.42, tube: 0.11 },
 ]
 
 function BrushBand({ color }: { color: string }) {
@@ -335,8 +341,8 @@ function BrushBand({ color }: { color: string }) {
     <group>
       {BAND_PIECES.map((piece, index) => (
         <group key={index} rotation={[0, piece.start - Math.PI / 2, 0]}>
-          <mesh position={[0, BASE_TOP - 0.3, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[BASE_RADIUS + 0.22, piece.tube, 4, 14, piece.arc]} />
+          <mesh position={[0, BASE_TOP - 0.42, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[BASE_RADIUS + 0.34, piece.tube, 4, 14, piece.arc]} />
             <Surf color={color} />
           </mesh>
         </group>

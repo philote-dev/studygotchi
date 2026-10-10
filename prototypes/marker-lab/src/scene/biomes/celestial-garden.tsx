@@ -21,7 +21,13 @@ const P = {
   gold: '#f8d24a',
   stem: '#8fc9d8',
   water: '#9fd3e0',
+  ink: '#3a2f45',
 } as const
+
+/** The accent bloom stays gold by day and emits the same gold at night. */
+function Bloom({ night }: { night: boolean }) {
+  return <Surf color={P.gold} emissive={night ? P.gold : '#000000'} emissiveIntensity={night ? 1.6 : 0} />
+}
 
 // ---------------------------------------------------------------------------
 // P1 · armillary orbit ring on a post (hero, 32 m)
@@ -31,7 +37,8 @@ const P = {
 
 const ARMILLARY_AUTHORED_HEIGHT = 14
 const HUB_Y = 8.6
-const ORBIT_RADIUS = 7.4
+const ORBIT_RADIUS = 7.3
+const ORBIT_TUBE = 1.0
 
 function Armillary() {
   const place = placementFor('hero')
@@ -59,16 +66,22 @@ function Armillary() {
           <sphereGeometry args={[1.15, 7, 5]} />
           <Surf color={P.cream} />
         </mesh>
-        {/* the orbit: tilted up toward the back-left, dipping toward the front-right */}
-        <group position={[0, HUB_Y, 0]} rotation={[0, 0, -0.55]}>
-          <group rotation={[-Math.PI / 2 + 0.35, 0, 0]}>
+        {/* the orbit: high at the back, dipping toward the viewer so its front arc crosses the indigo terrain */}
+        <group position={[0, HUB_Y, 0]} rotation={[0, 0, -0.3]}>
+          <group rotation={[-Math.PI / 2 + 0.3, 0, 0]}>
             <mesh castShadow>
-              <torusGeometry args={[ORBIT_RADIUS, 0.95, 8, 24]} />
+              <torusGeometry args={[ORBIT_RADIUS, ORBIT_TUBE, 8, 24]} />
               <Surf color={P.pale} />
             </mesh>
+            {/* ink orbit line hugging the outer edge so the hoop reads against a pale sky */}
+            <mesh>
+              <torusGeometry args={[ORBIT_RADIUS + ORBIT_TUBE * 0.98, 0.4, 6, 24]} />
+              <Surf color={P.ink} />
+            </mesh>
+            {/* a small soil-dark planet riding the orbit */}
             <mesh position={[ORBIT_RADIUS * 0.72, ORBIT_RADIUS * 0.69, 0]} castShadow>
-              <dodecahedronGeometry args={[1.25, 0]} />
-              <Surf color={P.pale} />
+              <dodecahedronGeometry args={[1.35, 0]} />
+              <Surf color={P.soil} />
             </mesh>
           </group>
         </group>
@@ -76,16 +89,11 @@ function Armillary() {
         <group ref={precess} position={[0, HUB_Y, 0]}>
           <group rotation={[0, 0, 0.85]}>
             <mesh rotation={[-0.5, 0, 0]} castShadow>
-              <torusGeometry args={[5.0, 0.6, 8, 24]} />
+              <torusGeometry args={[3.6, 0.45, 8, 24]} />
               <Surf color={P.pale} />
             </mesh>
           </group>
         </group>
-        {/* meridian ring */}
-        <mesh position={[0, HUB_Y, 0]} rotation={[0.25, 0.6, 0]} castShadow>
-          <torusGeometry args={[3.0, 0.42, 6, 16]} />
-          <Surf color={P.pale} />
-        </mesh>
       </group>
     </group>
   )
@@ -124,14 +132,14 @@ function StarFlower({ night }: { night: boolean }) {
         <group position={[-1.3, 12.0, 0.7]} rotation={[0.55, 0, 0.25]}>
           <mesh castShadow>
             <sphereGeometry args={[1.6, 7, 5]} />
-            <Glow color={P.gold} on={night} />
+            <Bloom night={night} />
           </mesh>
           {Array.from({ length: PETAL_COUNT }, (_, index) => {
             const angle = (index / PETAL_COUNT) * Math.PI * 2 + Math.PI / 2
             return (
               <mesh key={index} position={[Math.cos(angle) * 2.7, Math.sin(angle) * 2.7, 0]} rotation={[0, 0, angle - Math.PI / 2]} castShadow>
                 <coneGeometry args={[1.4, 4.4, 4]} />
-                <Glow color={P.gold} on={night} />
+                <Bloom night={night} />
               </mesh>
             )
           })}
@@ -148,7 +156,7 @@ function StarFlower({ night }: { night: boolean }) {
 // ---------------------------------------------------------------------------
 
 const GAZEBO_AUTHORED_HEIGHT = 13.8
-const GAZEBO_RADIUS = 3.3
+const GAZEBO_RADIUS = 4.0
 const POST_TOP = 9.6
 const APEX_Y = 12.6
 const RIB_LENGTH = Math.hypot(GAZEBO_RADIUS, APEX_Y - POST_TOP)
@@ -160,20 +168,20 @@ function ConstellationGazebo({ night }: { night: boolean }) {
     <group position={place.position} rotation={outwardRotation(place)}>
       <group scale={place.height / GAZEBO_AUTHORED_HEIGHT}>
         <mesh position={[0, 0.3, 0]} castShadow>
-          <cylinderGeometry args={[4.2, 4.6, 0.6, 6]} />
+          <cylinderGeometry args={[4.9, 5.3, 0.6, 6]} />
           <Surf color={P.pale} />
         </mesh>
         {Array.from({ length: 6 }, (_, index) => {
           const angle = (index / 6) * Math.PI * 2
           return (
             <mesh key={index} position={[Math.cos(angle) * GAZEBO_RADIUS, POST_TOP / 2 + 0.3, Math.sin(angle) * GAZEBO_RADIUS]} castShadow>
-              <cylinderGeometry args={[0.34, 0.42, POST_TOP - 0.6, 6]} />
+              <cylinderGeometry args={[0.42, 0.52, POST_TOP - 0.6, 6]} />
               <Surf color={P.pale} />
             </mesh>
           )
         })}
         <mesh position={[0, POST_TOP, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[GAZEBO_RADIUS, 0.24, 4, 6]} />
+          <torusGeometry args={[GAZEBO_RADIUS, 0.3, 4, 6]} />
           <Glow color={P.pale} on={night} />
         </mesh>
         {[0, 2, 4].map((index) => {
@@ -181,14 +189,14 @@ function ConstellationGazebo({ night }: { night: boolean }) {
           return (
             <group key={index} rotation={[0, -angle, 0]}>
               <mesh position={[GAZEBO_RADIUS / 2, (POST_TOP + APEX_Y) / 2, 0]} rotation={[0, 0, RIB_TILT]}>
-                <cylinderGeometry args={[0.18, 0.18, RIB_LENGTH, 5]} />
+                <cylinderGeometry args={[0.24, 0.24, RIB_LENGTH, 5]} />
                 <Glow color={P.pale} on={night} />
               </mesh>
             </group>
           )
         })}
         <mesh position={[0, APEX_Y + 0.4, 0]} castShadow>
-          <dodecahedronGeometry args={[0.95, 0]} />
+          <dodecahedronGeometry args={[1.05, 0]} />
           <Glow color={P.pale} on={night} />
         </mesh>
       </group>
@@ -222,16 +230,16 @@ function MoonPond() {
           <cylinderGeometry args={[4.9, 1.7, 2.6, 8]} />
           <Surf color={P.pale} />
         </mesh>
-        <mesh position={[0, 14.2, 0]} castShadow>
-          <cylinderGeometry args={[5.4, 4.9, 1.3, 8]} />
+        <mesh position={[0, 14.0, 0]} castShadow>
+          <cylinderGeometry args={[5.6, 5.0, 0.9, 8]} />
           <Surf color={P.pale} />
         </mesh>
-        <mesh position={[0, 14.6, 0]}>
-          <cylinderGeometry args={[4.8, 4.8, 0.32, 8]} />
+        <mesh position={[0, 14.32, 0]}>
+          <cylinderGeometry args={[5.05, 5.05, 0.3, 8]} />
           <Surf color={P.water} />
         </mesh>
-        <mesh position={[0.4, 15.7, 0.3]} rotation={[0, 0, 0.9]} castShadow>
-          <torusGeometry args={[2.3, 0.55, 6, 16, 3.6]} />
+        <mesh position={[0.4, 15.5, 0.3]} rotation={[0, 0, 0.9]} castShadow>
+          <torusGeometry args={[2.4, 0.6, 6, 16, 3.6]} />
           <Surf color={P.cream} />
         </mesh>
       </group>
@@ -293,5 +301,5 @@ export const celestialGarden: BiomeBouquet = {
   },
   Props: CelestialProps,
   Rim: StarRim,
-  terrain: { primary: P.moss, secondary: P.pale, rocks: true },
+  terrain: { primary: P.moss, secondary: P.soil, rocks: true },
 }

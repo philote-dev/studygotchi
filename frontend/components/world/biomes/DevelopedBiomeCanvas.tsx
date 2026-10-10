@@ -15,6 +15,17 @@ const JungleMount = dynamic(() => import("./jungle-forest-village/Mount").then((
 const MeadowMount = dynamic(() => import("./medieval-meadow-kingdom/Mount").then((mod) => mod.MeadowMount), { ssr: false });
 const NordicMount = dynamic(() => import("./nordic-volcanic-highlands/Mount").then((mod) => mod.NordicMount), { ssr: false });
 const IceTownMount = dynamic(() => import("./ice-town/Mount").then((mod) => mod.IceTownMount), { ssr: false });
+const EdgeLabPanel = dynamic(() => import("./ice-town/edge/EdgeLabPanel").then((mod) => mod.EdgeLabPanel), { ssr: false });
+
+/** `?edge=` on the ice land opens the edge lab (free camera, technique switcher, fixed poses). */
+function useEdgeLabRequested(visual: string): boolean {
+  const [requested, setRequested] = useState(false);
+  useEffect(() => {
+    if (visual !== "ice-town") return;
+    setRequested(new URLSearchParams(window.location.search).has("edge"));
+  }, [visual]);
+  return requested;
+}
 
 export function DevelopedBiomeCanvas({
   visual,
@@ -43,6 +54,7 @@ export function DevelopedBiomeCanvas({
 }) {
   const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
   const [frameloop, setFrameloop] = useState<"always" | "demand">("always");
+  const edgeLab = useEdgeLabRequested(visual);
 
   useEffect(() => {
     const onVis = () => setFrameloop(document.hidden ? "demand" : "always");
@@ -51,12 +63,19 @@ export function DevelopedBiomeCanvas({
   }, []);
 
   return (
-    <div className="absolute inset-0 min-h-0 min-w-0" data-land-mount={visual}>
+    <div
+      className="absolute inset-0 min-h-0 min-w-0"
+      data-land-mount={visual}
+      role="application"
+      aria-label="Course land. Drag to look around; pick a place from the Land panel; Escape returns to the overview."
+    >
       <Canvas
         dpr={dpr}
         frameloop={frameloop}
         camera={{ position: [18, 78, 188], fov: 36, near: 0.5, far: 3000 }}
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        // Every land runs the 2 px pixel pass, which draws through an offscreen target; MSAA on
+        // the default framebuffer would only cost bandwidth (the globe canvas is set up the same).
+        gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl, camera }) => {
           gl.setClearColor("#dbe2ee");
           camera.lookAt(2, 2.4, 8);
@@ -87,6 +106,7 @@ export function DevelopedBiomeCanvas({
           onHover={onHover}
         />
       </Canvas>
+      {edgeLab ? <EdgeLabPanel /> : null}
     </div>
   );
 }

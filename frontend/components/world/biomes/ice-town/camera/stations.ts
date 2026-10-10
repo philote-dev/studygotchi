@@ -19,12 +19,22 @@ export interface Station {
   targetLift: number
 }
 
+/**
+ * Lab camera contract (SHIP-HANDOFF §6 / §7 Q2, Philote 2026-10-10): pitches 30 / 36 / 30 / 18,
+ * fit widths 0.7 / 0.7 / 0.75, resident distance 9, FOV 26, free azimuth; values as in
+ * prototypes/biome-lab/src/camera/stations.ts. Not the 34–40° / ±35° diorama contract.
+ */
 export const STATIONS: Record<StationId, Station> = {
-  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 34, azimuthDeg: 16, fov: 34, fitWidth: 0.62, targetLift: 3 },
-  overview: { id: 'overview', label: 'Overview', pitchDeg: 38, azimuthDeg: 16, fov: 36, fitWidth: 0.6, targetLift: 2.6 },
-  /** Frames the district shape at ~70 % of the frame width (creature size follows the scale rule). */
-  district: { id: 'district', label: 'District', pitchDeg: 36, azimuthDeg: 30, fov: 26, fitWidth: 0.75, targetLift: 1.6 },
-  resident: { id: 'resident', label: 'Resident', pitchDeg: 34, azimuthDeg: 20, fov: 26, distance: 9, targetLift: 1.2 },
+  arrival: { id: 'arrival', label: 'Arrival', pitchDeg: 30, azimuthDeg: 16, fov: 26, fitWidth: 0.7, targetLift: 3 },
+  overview: { id: 'overview', label: 'Overview', pitchDeg: 36, azimuthDeg: 16, fov: 26, fitWidth: 0.7, targetLift: 2.6 },
+  /** Frames the district shape at ~75 % of the frame width along its `stationAzimuth` (creature size follows the scale rule). */
+  district: { id: 'district', label: 'District', pitchDeg: 30, azimuthDeg: 30, fov: 26, fitWidth: 0.75, targetLift: 1.6 },
+  resident: { id: 'resident', label: 'Resident', pitchDeg: 18, azimuthDeg: 20, fov: 26, distance: 9, targetLift: 1.2 },
+}
+
+/** District station azimuth: the layout's per-district `stationAzimuth`, else the station default. */
+export function districtStationAzimuth(district: { stationAzimuth?: number } | null | undefined): number {
+  return district?.stationAzimuth ?? STATIONS.district.azimuthDeg
 }
 
 export interface CameraOverride {
@@ -38,38 +48,91 @@ export function defaultOverride(station: Station): CameraOverride {
   return { pitchDeg: station.pitchDeg, azimuthDeg: station.azimuthDeg, dolly: 1, fov: station.fov }
 }
 
-/** Product roam: whole mainland in frame, harbour through mountains, still boxed. */
-export const ICE_CAMERA_LIMITS = {
+export interface IceCameraLimits {
+  preferredAzimuthDeg: number
+  /** Half yaw range in degrees; 180 means unlimited orbit. */
+  yawDeg: number
+  pitchMinDeg: number
+  pitchMaxDeg: number
+  minDistance: number
+  maxDistance: number
+  /** Keep the camera south of the look-at (the product diorama contract). */
+  southOnly: boolean
+}
+
+export interface Box {
+  min: [number, number, number]
+  max: [number, number, number]
+}
+
+/**
+ * Product roam: whole mainland in frame, harbour through mountains, still boxed. Free azimuth
+ * (yawDeg 180 = no CameraControls azimuth clamp); pitch range is the lab rig's polar clamp
+ * (0.35–1.25 rad → 18–70°) so every lab station pitch is reachable.
+ */
+export const ICE_CAMERA_LIMITS: IceCameraLimits = {
   preferredAzimuthDeg: 16,
-  yawDeg: 35,
-  pitchMinDeg: 34,
-  pitchMaxDeg: 40,
+  yawDeg: 180,
+  pitchMinDeg: 18,
+  pitchMaxDeg: 70,
   minDistance: 88,
-  maxDistance: 280,
-} as const
+  maxDistance: 360,
+  southOnly: false,
+}
+
+/**
+ * Edge lab (`?edge=`): the camera may orbit all the way round, drop low enough to see the
+ * horizon, and truck to every coast so each edge technique is judged where it is weakest.
+ * World bounds still exist; the techniques must make them invisible from every reachable pose.
+ */
+export const ICE_FREE_CAMERA_LIMITS: IceCameraLimits = {
+  preferredAzimuthDeg: 16,
+  yawDeg: 180,
+  pitchMinDeg: 12,
+  pitchMaxDeg: 64,
+  minDistance: 40,
+  maxDistance: 380,
+  southOnly: false,
+}
 
 /** Mainland centre: town plus a little south so the range stays the back edge. */
 export const ICE_LOOK_AT: [number, number, number] = [2, 2.4, 8]
 export const ICE_OVERVIEW_CHORD = 176
 
 /** CameraControls.setBoundary clamps the look-at, not the camera. This box is the land. */
-export const ICE_LOOK_BOX = {
-  min: [-128, -1, -82] as [number, number, number],
-  max: [128, 24, 102] as [number, number, number],
+export const ICE_LOOK_BOX: Box = {
+  min: [-128, -1, -82],
+  max: [128, 24, 102],
 }
 
-/** Where the camera may sit: further south and wider so a truck covers the mainland. */
-export const ICE_CAMERA_BOX = {
-  min: [-160, 20, 24] as [number, number, number],
-  max: [196, 148, 300] as [number, number, number],
+/** Where the camera may sit: wide enough for every station pose (overview at 36° / 0.82, oblique district azimuths). */
+export const ICE_CAMERA_BOX: Box = {
+  min: [-160, 20, -20],
+  max: [196, 220, 300],
 }
 
-export function clampLookTarget(x: number, y: number, z: number): [number, number, number] {
+/** Edge lab look box: every coast of the terrain plate, so the look-at can sit on an edge. */
+export const ICE_FREE_LOOK_BOX: Box = {
+  min: [-150, -1, -150],
+  max: [150, 40, 150],
+}
+
+/** Edge lab camera box: all round the land, low enough for a horizon shot. */
+export const ICE_FREE_CAMERA_BOX: Box = {
+  min: [-460, 10, -460],
+  max: [460, 300, 460],
+}
+
+function clampToBox(box: Box, x: number, y: number, z: number): [number, number, number] {
   return [
-    Math.min(ICE_LOOK_BOX.max[0], Math.max(ICE_LOOK_BOX.min[0], x)),
-    Math.min(ICE_LOOK_BOX.max[1], Math.max(ICE_LOOK_BOX.min[1], y)),
-    Math.min(ICE_LOOK_BOX.max[2], Math.max(ICE_LOOK_BOX.min[2], z)),
+    Math.min(box.max[0], Math.max(box.min[0], x)),
+    Math.min(box.max[1], Math.max(box.min[1], y)),
+    Math.min(box.max[2], Math.max(box.min[2], z)),
   ]
+}
+
+export function clampLookTarget(x: number, y: number, z: number, box: Box = ICE_LOOK_BOX): [number, number, number] {
+  return clampToBox(box, x, y, z)
 }
 
 export function clampCameraPosition(
@@ -77,13 +140,13 @@ export function clampCameraPosition(
   y: number,
   z: number,
   targetZ: number,
+  box: Box = ICE_CAMERA_BOX,
+  southOnly = true,
 ): [number, number, number] {
-  const south = Math.max(z, targetZ + 28, ICE_CAMERA_BOX.min[2])
-  return [
-    Math.min(ICE_CAMERA_BOX.max[0], Math.max(ICE_CAMERA_BOX.min[0], x)),
-    Math.min(ICE_CAMERA_BOX.max[1], Math.max(ICE_CAMERA_BOX.min[1], y)),
-    Math.min(ICE_CAMERA_BOX.max[2], south),
-  ]
+  const clamped = clampToBox(box, x, y, z)
+  if (!southOnly) return clamped
+  const south = Math.max(z, targetZ + 28, box.min[2])
+  return [clamped[0], clamped[1], Math.min(box.max[2], south)]
 }
 
 /** Distance so that a chord of `width` metres fills `fraction` of the frame width. */
