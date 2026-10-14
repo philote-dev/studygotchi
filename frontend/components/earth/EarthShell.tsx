@@ -1,33 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, ViewTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { api, type WorldEvent } from "@/lib/api";
 import { emit } from "@/lib/audio/events";
 import { selectCourse, useIdentity } from "@/lib/identity";
 import { useStore } from "@/lib/store";
-import { useShellNav } from "@/components/shell/shell-nav";
+import { useHop } from "@/components/stage/hop/HopProvider";
 import type { WorldRegion, WorldResponse } from "@/lib/world/types";
 import { CourseGlobe } from "@/components/world/globe/CourseGlobe";
-import { diveDurationMs } from "@/components/world/globe/globe-dive";
-import type { ScreenPoint } from "@/components/world/globe/globe-types";
+import { visualForGlobeBiome } from "@/components/world/biomes/types";
 import { biomeForGlobeCourse, isOwnedCourse, rosterBiome, toGlobeCourses, withEarthCourses } from "@/lib/world/globe-courses";
 import { DEMO_HERO_CODE } from "@/lib/world/demo-courses";
-import { ICE_DEMO_DEFAULT, type IceDemoState } from "@/lib/world/demo-theater";
-import { STAGE_MS } from "@/lib/stage-motion";
-import {
-  galaxyHrefForConcept,
-  isConceptId,
-  landHref,
-  landParamFromSearch,
-  planetHref,
-  resolveLandCourseId,
-} from "@/lib/world/earth-nav";
+import { prefetchLand } from "@/lib/world/land-prefetch";
+import { isConceptId, landParamFromSearch, resolveLandCourseId } from "@/lib/world/earth-nav";
 import { BiomeLand } from "./BiomeLand";
 import { ConceptCard } from "./ConceptCard";
 import { ConceptRail } from "./ConceptRail";
 import { CourseNavigator } from "./CourseNavigator";
-import { DemoTheater } from "./DemoTheater";
 import { LandmarkFlag } from "./LandmarkFlag";
 import { useCourseOverviewCache } from "./useCourseOverviewCache";
 import "./earth-integration.css";
@@ -36,37 +26,29 @@ import "./earth-integration.css";
  * The product page. Level 1: the globe with one pin per course. Level 2: the
  * course's island on the right and an interactive panel on the left. Hovering
  * the island shows a marker; clicking moves the concept into the panel.
+ *
+ * Every move between the two levels is the stage's (gate 4, 2026-10-13): a
+ * landmark click or the flag's Land button runs the cloud dive
+ * (`hop.land`), which pushes `/earth?land=` at the press so the land mounts
+ * and compiles under the deck, and "The planet", Escape and the Courses pill
+ * run the rise (`hop.courses`), whose route follows once the clouds have
+ * closed over the land. This page only mirrors the route into its state.
  */
 export function EarthShell() {
   const { selectedId, select, ingestVersion, focusConcept } = useStore();
   const identity = useIdentity();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const nav = useShellNav();
+  const hop = useHop();
   const [activeCourseId, setActiveCourseId] = useState<string | null>(
     () => identity.courseId || identity.courses[0]?.id || null,
   );
   const [enteredCourseId, setEnteredCourseId] = useState<string | null>(() =>
     resolveLandCourseId(landParamFromSearch(searchParams), withEarthCourses(identity.courses)),
   );
-  const [diving, setDiving] = useState<{
-    courseId: string;
-    anchor: ScreenPoint | null;
-  } | null>(null);
-  const [rising, setRising] = useState(false);
-  const enterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const riseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const roseFromLand = useRef(false);
   const [world, setWorld] = useState<WorldResponse | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [events, setEvents] = useState<WorldEvent[]>([]);
-  const [flag, setFlag] = useState<{
-    courseId: string;
-    anchor: ScreenPoint | null;
-  } | null>(null);
-  const [iceDemo, setIceDemo] = useState<IceDemoState>(ICE_DEMO_DEFAULT);
   const [focusDistrict, setFocusDistrict] = useState<string | null>(null);
-  const [landArriving, setLandArriving] = useState(false);
 
   const courses = useMemo(() => withEarthCourses(identity.courses), [identity.courses]);
   const landCourseId = resolveLandCourseId(landParamFromSearch(searchParams), courses);
@@ -122,6 +104,16 @@ export function EarthShell() {
     for (const course of courses) void overviewCache.load(course.id);
   }, [courses, overviewCache.load]);
 
+  // Warm a land before the dive: its code chunk and its world payload, on landmark hover and settle.
+  const warmLand = useCallback(
+    (courseId: string | null) => {
+      if (!courseId) return;
+      const biome = globeCourses.find((course) => course.id === courseId)?.biome ?? biomeForGlobeCourse(courseId, courses.find((course) => course.id === courseId)?.code);
+      prefetchLand(courseId, visualForGlobeBiome(biome), () => api.getWorldForCourse(courseId));
+    },
+    [courses, globeCourses],
+  );
+
   const focusCourse = useCallback(
     (courseId: string) => {
       if (!isOwnedCourse(courseId, courses) && !courses.some((course) => course.id === courseId)) {
@@ -129,103 +121,69 @@ export function EarthShell() {
       }
       setActiveCourseId(courseId);
       void overviewCache.load(courseId);
+      warmLand(courseId);
     },
-    [courses, overviewCache.load],
+    [courses, overviewCache.load, warmLand],
   );
 
+  /** The cloud dive into a course's world: one director request, the land's route pushed at the press. */
   const enterCourse = useCallback(
-    (courseId: string, anchor: ScreenPoint | null = null) => {
+    (courseId: string) => {
       const onGlobe = globeCourses.some((course) => course.id === courseId);
-      if (!onGlobe || diving || enteredCourseId) return;
+      if (!onGlobe || enteredCourseId || hop.runtime.flight?.to === "world") return;
       if (isOwnedCourse(courseId, courses)) {
         focusCourse(courseId);
         selectCourse(courseId);
       } else {
         setActiveCourseId(courseId);
       }
-      setDiving({ courseId, anchor });
-      roseFromLand.current = false;
       select(null);
-      const biome = globeCourses.find((course) => course.id === courseId)?.biome ?? null;
+      const course = globeCourses.find((entry) => entry.id === courseId) ?? null;
+      warmLand(courseId);
+      if (!hop.land(courseId, course?.code ?? courseId)) return;
       emit({
         type: "enter-island",
-        biome: biome ? rosterBiome(biome) : null,
+        biome: course?.biome ? rosterBiome(course.biome) : null,
         arrival: "dive",
       });
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (enterTimer.current) clearTimeout(enterTimer.current);
-      enterTimer.current = setTimeout(() => {
-        const code = globeCourses.find((course) => course.id === courseId)?.code ?? courseId;
-        router.replace(landHref(code));
-        setEnteredCourseId(courseId);
-        setDiving(null);
-        setLandArriving(true);
-        setFocusDistrict(null);
-        enterTimer.current = null;
-      }, diveDurationMs(reduced));
     },
-    [courses, diving, enteredCourseId, focusCourse, globeCourses, router, select],
+    [courses, enteredCourseId, focusCourse, globeCourses, hop, select, warmLand],
   );
 
   const land = useCallback(
     (courseId?: string) => {
-      const target = courseId ?? flag?.courseId ?? activeCourseId;
+      const target = courseId ?? activeCourseId;
       if (!target) return;
-      setFlag(null);
-      enterCourse(target, flag?.courseId === target ? flag.anchor : null);
+      enterCourse(target);
     },
-    [activeCourseId, enterCourse, flag],
+    [activeCourseId, enterCourse],
   );
 
-  const startGlobeRise = useCallback(() => {
-    roseFromLand.current = true;
-    setRising(true);
-    if (riseTimer.current) clearTimeout(riseTimer.current);
-    riseTimer.current = setTimeout(() => {
-      setRising(false);
-      riseTimer.current = null;
-    }, STAGE_MS.aperture);
-  }, []);
-
+  /** The rise back to the planet, settling on the land's landmark (Courses' rule from the world). */
   const leave = useCallback(() => {
-    if (enterTimer.current) {
-      clearTimeout(enterTimer.current);
-      enterTimer.current = null;
-    }
     select(null);
-    setDiving(null);
-    if (enteredRef.current) startGlobeRise();
-    setEnteredCourseId(null);
-    setWorld(null);
-    setHovered(null);
-    setIceDemo(ICE_DEMO_DEFAULT);
-    setFocusDistrict(null);
-    setLandArriving(false);
+    if (!hop.courses()) return;
     emit({ type: "leave-island" });
-    if (landParamFromSearch(searchParams)) router.replace(planetHref());
-  }, [router, searchParams, select, startGlobeRise]);
+  }, [hop, select]);
 
+  // The route is the land's state: `?land=` opens it (the dive pushed it at the press; a reload or a
+  // cold link lands directly), its absence closes it (the rise's route follows the clouds).
   useEffect(() => {
-    if (nav.leavingTo === planetHref() || (!landCourseId && !diving)) {
+    if (!landCourseId) {
       if (enteredRef.current) {
-        startGlobeRise();
-        // Header nav back to Courses skips `leave()`; tell the director here. The other way
-        // in (no land param yet, mid-dive) is a transient re-render, not a departure.
-        if (nav.leavingTo === planetHref()) emit({ type: "leave-island" });
+        // The globe settles on the landmark the land was risen from (S4-3).
+        if (courses.some((course) => course.id === enteredRef.current)) setActiveCourseId(enteredRef.current);
       }
       setEnteredCourseId(null);
       setWorld(null);
       setHovered(null);
-      setIceDemo(ICE_DEMO_DEFAULT);
       setFocusDistrict(null);
-      setLandArriving(false);
       return;
     }
-    if (landCourseId) {
-      setEnteredCourseId(landCourseId);
-      if (isOwnedCourse(landCourseId, courses)) selectCourse(landCourseId);
-    }
-  }, [courses, diving, landCourseId, nav.leavingTo, startGlobeRise]);
+    setEnteredCourseId(landCourseId);
+    setFocusDistrict(null);
+    if (isOwnedCourse(landCourseId, courses)) selectCourse(landCourseId);
+  }, [courses, landCourseId]);
 
   // The dive announces its island inside the click (so the whoosh can play). A cold `?land=`
   // load or a reload never dives, so announce it here too, silently. Re-announcing the same
@@ -236,14 +194,6 @@ export function EarthShell() {
     const biome = globeCourses.find((course) => course.id === enteredCourseId)?.biome ?? null;
     emit({ type: "enter-island", biome: biome ? rosterBiome(biome) : null, arrival: "direct" });
   }, [enteredCourseId, globeCourses]);
-
-  useEffect(
-    () => () => {
-      if (enterTimer.current) clearTimeout(enterTimer.current);
-      if (riseTimer.current) clearTimeout(riseTimer.current);
-    },
-    [],
-  );
 
   // What changed since the page opened, newest first. Polled after every ingest.
   useEffect(() => {
@@ -302,13 +252,11 @@ export function EarthShell() {
               enteredCourse?.biome ??
               biomeForGlobeCourse(enteredCourseId, current?.code)
             }
-            arriving={landArriving}
             focusDistrict={focusDistrict}
             onFocusDistrict={setFocusDistrict}
             onWorld={setWorld}
             hoveredId={hovered}
             onHover={setHovered}
-            iceDemo={iceLandOpen ? iceDemo : undefined}
           />
         ) : (
           <ViewTransition name="studygotchi-earth" share="earth-morph" default="none">
@@ -316,23 +264,14 @@ export function EarthShell() {
               <CourseGlobe
                 courses={globeCourses}
                 activeCourseId={activeCourseId}
-                arriving={!rising && !roseFromLand.current}
-                rising={rising}
-                diving={diving !== null}
-                diveAnchor={diving?.anchor ?? null}
                 onActiveCourseChange={focusCourse}
-                onCourseTownOpen={(courseId, anchor) => {
-                  enterCourse(courseId, anchor);
-                }}
+                onHoverCourse={warmLand}
+                onCourseTownOpen={(courseId) => enterCourse(courseId)}
               />
             </div>
           </ViewTransition>
         )}
       </div>
-
-      {iceLandOpen ? (
-        <DemoTheater enabled demo={iceDemo} onChange={setIceDemo} />
-      ) : null}
 
       {!entered ? (
         <div className="earth-planet-chrome">
@@ -359,6 +298,7 @@ export function EarthShell() {
               }
               record={overviewCache.records.get(activeCourseId)}
               onLand={() => land(activeCourseId)}
+              onWarm={() => warmLand(activeCourseId)}
             />
           ) : null}
         </div>
@@ -381,11 +321,13 @@ export function EarthShell() {
           activeConceptId={selectedId}
           activePlaceId={focusDistrict}
           iceLand={iceLandOpen}
+          // "The planet" is the Courses rule: the rise to the planet, the land's page following under the clouds.
           onLeave={leave}
+          // A concept from the rail: the merged rise into the constellation, focused on it.
           onSelectConcept={(conceptId) => {
             emit({ type: "ui", kind: "tap" });
             if (isConceptId(conceptId)) focusConcept(conceptId);
-            nav.go(galaxyHrefForConcept(conceptId));
+            hop.information();
           }}
           onVisitPlace={(placeId) => {
             emit({ type: "ui", kind: "tap" });

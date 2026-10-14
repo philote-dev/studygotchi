@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from 'react'
 import type { MarkerDefinition } from './markers'
 import { Surf } from './materials'
 import { bouquetFor } from './biomes'
@@ -21,7 +22,8 @@ const SCATTER_ROCKS: readonly (readonly [number, number, number, number])[] = [
   [1.2, BASE_TOP + 0.55, 7.4, 0.9],
 ]
 
-export function BouquetBase({ marker }: { marker: MarkerDefinition }) {
+/** The pedestal under a town (memoised: it only depends on the marker definition, a module constant). */
+export const BouquetBase = memo(function BouquetBase({ marker }: { marker: MarkerDefinition }) {
   const bouquet = bouquetFor(marker.id)
   const Rim = bouquet.Rim ?? PlainRim
   const terrain = bouquet.terrain
@@ -65,4 +67,4 @@ export function BouquetBase({ marker }: { marker: MarkerDefinition }) {
         ))}
     </group>
   )
-}
+})

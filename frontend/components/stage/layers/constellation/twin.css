@@ -1,0 +1,51 @@
+/* The constellation twin (T-2; the one constellation renderer since gate 2,
+   2026-10-13). Standalone mode: its own transparent WebGL canvas in the box of
+   the knowledge page, below the page's chrome (.sg-constellation comes later
+   in the DOM) and above the stage sky (.sg-stage is z 0 behind .sg-page at
+   z 10). It is the input surface: pan, zoom, hover, select, node drag,
+   cluster-label focus and file drop. */
+.sg-twin {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.sg-twin canvas {
+  display: block;
+}
+
+.sg-twin-labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* One label: `textBaseline: middle` = a line-height-1 box whose top is
+   y − size/2 (set inline); stroke 3 px halo under the fill (paint-order).
+   No subpixel smoothing differences: the page already asks for antialiased text. */
+.sg-twin-label {
+  position: absolute;
+  display: block;
+  white-space: nowrap;
+  padding: 0;
+  margin: 0;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The constellation page's wrappers let every pointer event fall through to the
+   twin underneath; the page's own chrome (toolbar, docks, camera controls,
+   tooltip, panels, dialog) takes them back. */
+.sg-constellation,
+.sg-constellation-canvas {
+  pointer-events: none;
+}
+
+.sg-constellation > :not(.sg-constellation-canvas),
+.sg-constellation-canvas > * {
+  pointer-events: auto;
+}

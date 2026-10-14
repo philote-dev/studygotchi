@@ -2,24 +2,18 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { MEADOW_PALETTE as P, seeded, type GeneratedKingdom } from '../layout/biome-layout'
+import { cloudDriftHalfWidth, cloudPlacements } from '../layout/terrain'
 import { Surf } from '../render/materials'
 
 export function Clouds({ layout, night }: { layout: GeneratedKingdom; night: boolean }) {
   const group = useRef<THREE.Group>(null)
-  const clouds = useMemo(() => {
-    const rng = seeded(91)
-    return Array.from({ length: 8 }, () => ({
-      x: (rng() - 0.5) * layout.worldSize[0] * 1.3,
-      y: 24 + rng() * 12,
-      z: (rng() - 0.5) * layout.worldSize[1],
-      scale: 3 + rng() * 3,
-      speed: 0.6 + rng() * 0.4,
-    }))
-  }, [layout])
+  // Placement and altitude live in layout/terrain.ts (cloudPlacements) so the edge lab can test them against the poses.
+  const clouds = useMemo(() => cloudPlacements(layout), [layout])
+  const halfWidth = cloudDriftHalfWidth(layout)
   useFrame((_, delta) => {
     group.current?.children.forEach((child, index) => {
       child.position.x += clouds[index].speed * delta
-      if (child.position.x > layout.worldSize[0] * 0.75) child.position.x = -layout.worldSize[0] * 0.75
+      if (child.position.x > halfWidth) child.position.x = -halfWidth
     })
   })
   return (

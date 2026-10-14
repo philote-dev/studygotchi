@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react'
-import type { BiomeLayout } from '../layout/biome-layout'
+import type { BiomeLayout, MountainProfile } from '../layout/biome-layout'
 import type { IceCameraLimits } from '../camera/stations'
 import type { SkyGrade } from '../scene/sky-blend'
 
@@ -25,6 +25,12 @@ export interface EdgeSceneProps {
   storm: boolean
   seed: number
   reducedMotion: boolean
+  /**
+   * The mountain profile the authored plate is built with, when the caller knows it (the product
+   * scene always does): techniques that seat on the plate's rows then build in the first render
+   * instead of reading the plate back from the scene graph after a commit.
+   */
+  profile?: MountainProfile
 }
 
 export interface EdgeTechnique {

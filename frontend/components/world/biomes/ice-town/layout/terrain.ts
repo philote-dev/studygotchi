@@ -9,6 +9,7 @@ import {
   districtField,
   districtRadius,
   maxBuildings,
+  mountainProfile,
   populationFor,
   seeded,
 } from './biome-layout'
@@ -17,6 +18,48 @@ import { distToPolyline, fbm, hash2, pointAlong, polylineCrossings, polylineLeng
 import { sampleWorldTerrain, worldSlots } from '../world/world-terrain'
 
 export { distToPolyline, fbm, pointAlong, polylineCrossings, polylineLength, smoothstep }
+
+/* ---------- per-layout memo ---------- */
+
+const layoutMemos = new WeakMap<BiomeLayout, Map<string, unknown>>()
+
+/**
+ * The pure placements below (slots, props, paths, pines, scatter, floes) are deterministic in
+ * (layout, seed): computed once per layout and kept, so a land that mounts again (the cloud dive
+ * after a rise) pays nothing, and the land build Worker can hand its results in (`primeLayoutMemo`).
+ */
+function layoutMemo<T>(layout: BiomeLayout, key: string, compute: () => T): T {
+  let per = layoutMemos.get(layout)
+  if (!per) {
+    per = new Map()
+    layoutMemos.set(layout, per)
+  }
+  if (per.has(key)) return per.get(key) as T
+  const value = compute()
+  per.set(key, value)
+  return value
+}
+
+/** Install values computed elsewhere (the Worker) under the memo keys the functions below use. */
+export function primeLayoutMemo(layout: BiomeLayout, entries: Readonly<Record<string, unknown>>): void {
+  let per = layoutMemos.get(layout)
+  if (!per) {
+    per = new Map()
+    layoutMemos.set(layout, per)
+  }
+  for (const [key, value] of Object.entries(entries)) per.set(key, value)
+}
+
+/** Whether every placement of (layout, seed) is already memoised (primed or computed). */
+export function layoutScatterReady(layout: BiomeLayout, seed: number): boolean {
+  const per = layoutMemos.get(layout)
+  if (!per) return false
+  return layoutScatterKeys(layout, seed).every((k) => per.has(k))
+}
+
+export function layoutScatterKeys(layout: BiomeLayout, seed: number): string[] {
+  return [...layout.districts.map((d) => `slots:${d.id}`), `props:${seed}`, 'paths', `pines:${seed}`, `scatter:${seed}`, `floes:${seed}:34`]
+}
 
 /* ---------- noise ---------- */
 
@@ -235,7 +278,7 @@ function cone(h: number, r: number, d: number, sharp = 1.1): number {
 export type MountainRow = 0 | 1 | 2 | 3
 
 /** Peaks alone (the foothill belt underneath is added by the terrain sample). */
-function mountainHeight(peaks: Peak[], x: number, z: number): { height: number; peakFrac: number; row: MountainRow } {
+export function mountainHeight(peaks: Peak[], x: number, z: number): { height: number; peakFrac: number; row: MountainRow } {
   let max = 0
   let sum = 0
   let dominant = 1
@@ -277,6 +320,160 @@ export function foothill(layout: BiomeLayout, x: number, z: number): { k: number
   const threshold = 0.13 - 0.05 * k
   const rock = k > 0.1 && rockN > threshold ? (rockN - threshold) * 9 : 0
   return { k, height: k * layout.range.footRise + relief * k + rock, rock }
+}
+
+/* ---------- the back of the range ---------- */
+
+/**
+ * Where the back land begins easing toward the outer world, in metres behind the range's centre
+ * line, as a function of x. Everything the overview pose can see keeps the authored heightfield,
+ * so the onset follows the overview frustum's top edge across the plate: measured per 20 m of x
+ * against the exact frustum (`back-of-range.test.ts`, which also checks it with occlusion by the
+ * peaks in front), plus a 4–6 m margin. The camera sits south-south-east, so the frame top
+ * crosses the back land farther north toward the east (118 m behind the arc at x ≈ 110) and
+ * again at the far west corner (78 m at x ≈ −160).
+ */
+const BACK_FADE_ONSET: ReadonlyArray<readonly [number, number]> = [
+  [-170, 78],
+  [-150, 78],
+  [-130, 74],
+  [-110, 64],
+  [-90, 56],
+  [-70, 50],
+  [-50, 46],
+  [-30, 48],
+  [-10, 56],
+  [10, 60],
+  [30, 66],
+  [50, 78],
+  [70, 92],
+  [90, 108],
+  [110, 118],
+  [130, 120],
+  [170, 120],
+]
+
+export function backFadeOnset(x: number): number {
+  const table = BACK_FADE_ONSET
+  if (x <= table[0][0]) return table[0][1]
+  for (let i = 1; i < table.length; i++) {
+    const [x1, y1] = table[i]
+    if (x <= x1) {
+      const [x0, y0] = table[i - 1]
+      return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0)
+    }
+  }
+  return table[table.length - 1][1]
+}
+
+/** How far behind the range: 0 under the peaks (and anywhere the overview sees), 1 past the skirts. */
+export function backFade(layout: BiomeLayout, x: number, z: number): number {
+  const onset = backFadeOnset(x)
+  return smoothstep(onset, onset + 80, rangeArcZ(layout, x) - z)
+}
+
+/** How much of the foothill belt survives behind the range: it eases down to a low snowfield. */
+export const BACK_BELT_KEEP = 0.2
+
+/** The belt's height after the back easing: the belt keeps 20 %, its rock knuckles fade out faster (they are 1–3 m knobs). */
+export function easedBeltHeight(foot: { height: number; rock: number }, fade: number): number {
+  const keep = 1 - (1 - BACK_BELT_KEEP) * fade
+  return (foot.height - foot.rock) * keep + foot.rock * (1 - fade) * (1 - fade)
+}
+
+/**
+ * The overview comparison pose (`edge/poses.ts` overview: target ICE_LOOK_AT (2, 2.4, 8), pitch
+ * 38°, azimuth 16°, 250 m; FOV 26° on a 16:9 frame), as a camera basis. The lab captures and the
+ * product's overview station both look from here; `back-of-range.test.ts` checks these numbers
+ * against the pose maths.
+ */
+const OVERVIEW_CAMERA = (() => {
+  const pos = [56.3, 156.32, 197.37] as const
+  const target = [2, 2.4, 8] as const
+  const f = [target[0] - pos[0], target[1] - pos[1], target[2] - pos[2]]
+  const fl = Math.hypot(f[0], f[1], f[2])
+  const forward = [f[0] / fl, f[1] / fl, f[2] / fl]
+  // right = forward × up, up' = right × forward (no roll).
+  const r = [-forward[2], 0, forward[0]]
+  const rl = Math.hypot(r[0], r[2])
+  const right = [r[0] / rl, 0, r[2] / rl]
+  const up = [right[1] * forward[2] - right[2] * forward[1], right[2] * forward[0] - right[0] * forward[2], right[0] * forward[1] - right[1] * forward[0]]
+  const tanV = Math.tan((26 * Math.PI) / 360)
+  return { pos, forward, right, up, tanV, tanH: tanV * (16 / 9) }
+})()
+
+/**
+ * Metres a point lies outside the overview frustum's side and bottom planes (negative inside). The
+ * top plane is deliberately left out: behind the range the easing must grow gradually with
+ * `backFade` (the capes' notch coast sits 7–25 m past the seam, and a full ramp there would pull
+ * the back land at the seam down to the waterline).
+ */
+function overviewFrustumOutside(x: number, y: number, z: number): number {
+  const c = OVERVIEW_CAMERA
+  const dx = x - c.pos[0]
+  const dy = y - c.pos[1]
+  const dz = z - c.pos[2]
+  const depth = dx * c.forward[0] + dy * c.forward[1] + dz * c.forward[2]
+  const across = dx * c.right[0] + dy * c.right[1] + dz * c.right[2]
+  const upward = dx * c.up[0] + dy * c.up[1] + dz * c.up[2]
+  if (depth <= 0) return 1e3
+  const lateral = (Math.abs(across) - depth * c.tanH) / Math.hypot(1, c.tanH)
+  const below = (-upward - depth * c.tanV) / Math.hypot(1, c.tanV)
+  return Math.max(lateral, below)
+}
+
+/** Heights checked above every ground point: the sea, a house, the lighthouse; plus the full range where a peak stands. */
+export const OVERVIEW_COLUMN = [-0.4, 6, 14] as const
+
+const fullRangePeaks = new WeakMap<BiomeLayout, Peak[]>()
+
+/** The tallest the authored range can be at (x, z) (band 4), so a peak's ground is in frame whenever its summit is. */
+export function peakColumn(layout: BiomeLayout, x: number, z: number): number {
+  let peaks = fullRangePeaks.get(layout)
+  if (!peaks) {
+    peaks = mountainPeaks(layout, mountainProfile(1))
+    fullRangePeaks.set(layout, peaks)
+  }
+  const foot = foothill(layout, x, z)
+  return foot.k > 0.05 ? mountainHeight(peaks, x, z).height + layout.range.footRise + 6 : 0
+}
+
+/**
+ * Metres a ground point lies outside the overview pose's frame, 0 inside it. Conservative in
+ * height: the point counts as in frame if anything standing on it is (a house, the lighthouse,
+ * or the peak that rises from it), so terrain the overview can see is never eased.
+ */
+export function overviewOutside(layout: BiomeLayout, x: number, z: number): number {
+  let outside = Number.POSITIVE_INFINITY
+  for (const y of OVERVIEW_COLUMN) outside = Math.min(outside, overviewFrustumOutside(x, y, z))
+  const peak = peakColumn(layout, x, z)
+  if (peak > 0) outside = Math.min(outside, overviewFrustumOutside(x, 14 + peak, z))
+  return Math.max(0, outside)
+}
+
+/**
+ * How far a point is from anything the overview can see: 0 inside the frame (with a 6 m margin),
+ * 1 from 24 m outside it or well behind the range. Everything that softens the plate's cut
+ * edges for the free camera (coast ramps, the shelf front, the cliff colour) is scaled by this,
+ * so the overview pose stays pixel-identical.
+ */
+export function overviewEase(layout: BiomeLayout, x: number, z: number): number {
+  return Math.max(backFade(layout, x, z), smoothstep(6, 24, overviewOutside(layout, x, z)))
+}
+
+/**
+ * Coast width: the authored 1.6 m ice cliff, widening to a 36 m snow ramp wherever the overview
+ * cannot see (behind the range, past its lateral frame edges) so the land slides into the outer
+ * world instead of ending in a cookie-cutter wall. The land field's noise has a gradient of ~2 per
+ * metre at the cape shores, so 36 m of field is ~18 m of ground: a 6 m drop stays under 20°.
+ */
+export function coastRampWidth(layout: BiomeLayout, x: number, z: number): number {
+  return 1.6 + (36 - 1.6) * overviewEase(layout, x, z)
+}
+
+/** The glacier shelf's front: a 1.4 m lip where the overview sees it, a 24 m sloping, breaking apron elsewhere. */
+export function shelfRampWidth(layout: BiomeLayout, x: number, z: number): number {
+  return 1.4 + 22 * overviewEase(layout, x, z)
 }
 
 /* ---------- terrain sample ---------- */
@@ -390,7 +587,10 @@ export function sampleTerrain(layout: BiomeLayout, x: number, z: number, profile
     // The land field wobbles with noise, so along a straight line inland it is not monotonic; the
     // harbour beach climbs on a low-passed depth so the slope is one clean incline, no dips.
     const depth = shore > 0 || rise > 0 ? smoothLandDepth(layout, x, z, land) : land
-    const cliffK = smoothstep(0, 1.6, land)
+    // Where the overview cannot see, the coast is a snow ramp, not a cliff (see `coastRampWidth`);
+    // the headland rock and the research island keep their plinth cliffs everywhere.
+    const plinth = headlandField(layout, x, z) > -4 || miniIslandField(layout, x, z) > -4
+    const cliffK = smoothstep(0, plinth ? 1.6 : coastRampWidth(layout, x, z), land)
     // Harbour: the coast is a beach that climbs from the water over `slopeLength` metres.
     const slopeK = smoothstep(-2.5, layout.harbourShore.slopeLength - 2.5, depth)
     const landK = cliffK * (1 - shore) + slopeK * shore
@@ -429,8 +629,10 @@ export function sampleTerrain(layout: BiomeLayout, x: number, z: number, profile
     // Foothill belt behind the back-land boundary; the range grows out of it. Districts calm it.
     const foot = foothill(layout, x, z)
     if (foot.k > 0) {
-      ground += foot.height * (1 - flat * 0.85)
-      if (foot.rock > 0.25 && material === 'snow' && flat < 0.5) material = 'rock'
+      // Past the range the belt eases down to a low snowfield that the outer world continues.
+      const fade = backFade(layout, x, z)
+      ground += easedBeltHeight(foot, fade) * (1 - flat * 0.85)
+      if (foot.rock * (1 - fade) * (1 - fade) > 0.25 && material === 'snow' && flat < 0.5) material = 'rock'
     }
     if (profile && foot.k > 0.05) {
       const m = mountainHeight(peaks ?? mountainPeaks(layout, profile), x, z)
@@ -469,7 +671,7 @@ export function sampleTerrain(layout: BiomeLayout, x: number, z: number, profile
   // Glacier shelf: Worley plates. Near the mainland the seams are narrow grooves that stay above
   // the water; toward the open sea the plates get smaller and the seams open to dark water, so the
   // field fades into floes.
-  const shelfK = smoothstep(0, 1.4, shelf)
+  const shelfK = smoothstep(0, shelfRampWidth(layout, x, z), shelf)
   const wx = x + fbm(z * 0.05, 7.7) * 6
   const wz = z + fbm(x * 0.05, 2.2) * 6
   const glacier = layout.districts.find((c) => c.id === 'glacier')
@@ -521,6 +723,11 @@ export function harbourFixtures(layout: BiomeLayout): HarbourFixtures {
   const out = computeHarbourFixtures(layout)
   fixturesCache.set(layout, out)
   return out
+}
+
+/** Install harbour fixtures computed elsewhere (the Worker). */
+export function primeHarbourFixtures(layout: BiomeLayout, fixtures: HarbourFixtures): void {
+  fixturesCache.set(layout, fixtures)
 }
 
 /** Land-field depth of the quay lane, the stilt-house row, the back row, and the dock root. */
@@ -666,6 +873,10 @@ function nearHarbourFixtures(layout: BiomeLayout, x: number, z: number, margin: 
  * along the shore contour for the harbour, rings or pairs for the others.
  */
 export function districtSlots(layout: BiomeLayout, district: DistrictDef): Slot[] {
+  return layoutMemo(layout, `slots:${district.id}`, () => computeDistrictSlots(layout, district))
+}
+
+function computeDistrictSlots(layout: BiomeLayout, district: DistrictDef): Slot[] {
   if (layout.world) return worldSlots(layout, layout.world, district)
   const n = maxBuildings(district)
   const candidates: Array<{ x: number; z: number; yaw: number; rank: number; overWater?: boolean }> = []
@@ -915,6 +1126,10 @@ const forestFixturesCache = new WeakMap<BiomeLayout, Placement[]>()
  * fenced plots in the outer band between the house rows and the pines. Not seeded: they are
  * landmarks of the district, not clutter.
  */
+export function primeForestFixtures(layout: BiomeLayout, fixtures: Placement[]): void {
+  forestFixturesCache.set(layout, fixtures)
+}
+
 export function forestFixtures(layout: BiomeLayout): Placement[] {
   const cached = forestFixturesCache.get(layout)
   if (cached) return cached
@@ -995,6 +1210,10 @@ export function footbridges(layout: BiomeLayout): Placement[] {
 
 /** Scatter props per district, deterministic by seed; every prop carries the band it appears at. */
 export function propPlacements(layout: BiomeLayout, seed: number): Placement[] {
+  return layoutMemo(layout, `props:${seed}`, () => computePropPlacements(layout, seed))
+}
+
+function computePropPlacements(layout: BiomeLayout, seed: number): Placement[] {
   const out: Placement[] = []
   if (layout.world) return out
   for (const district of layout.districts) {
@@ -1088,6 +1307,10 @@ function pathHeights(layout: BiomeLayout, points: Array<[number, number]>, lift:
 
 /** Plan §2: 1–3 short paths per district, no inter-district route. */
 export function localPaths(layout: BiomeLayout): LocalPath[] {
+  return layoutMemo(layout, 'paths', () => computeLocalPaths(layout))
+}
+
+function computeLocalPaths(layout: BiomeLayout): LocalPath[] {
   const out: LocalPath[] = []
   if (layout.world) return out
   const deck = layout.seaLevel + 1.0
@@ -1208,6 +1431,10 @@ export function residentSeats(layout: BiomeLayout, progress: DistrictProgress, c
 /* ---------- floes ---------- */
 
 export function floePositions(layout: BiomeLayout, seed: number, count = 34): Array<[number, number, number, number]> {
+  return layoutMemo(layout, `floes:${seed}:${count}`, () => computeFloePositions(layout, seed, count))
+}
+
+function computeFloePositions(layout: BiomeLayout, seed: number, count: number): Array<[number, number, number, number]> {
   const rng = seeded(seed + 17)
   const out: Array<[number, number, number, number]> = []
   let guard = 0
@@ -1251,6 +1478,10 @@ export function forestField(layout: BiomeLayout, x: number, z: number): number {
  * ragged outer edge, climbing the foothills behind but never onto the range or into the river.
  */
 export function forestPines(layout: BiomeLayout, seed: number): Tree[] {
+  return layoutMemo(layout, `pines:${seed}`, () => computeForestPines(layout, seed))
+}
+
+function computeForestPines(layout: BiomeLayout, seed: number): Tree[] {
   const forest = layout.districts.find((d) => d.id === 'forest')
   if (!forest) return []
   const rng = seeded(seed * 11 + 3)
@@ -1319,6 +1550,10 @@ function clearOfDistricts(layout: BiomeLayout, x: number, z: number, margin: num
  * between districts. Ambient, never progress. (The forest belt itself is `forestPines`.)
  */
 export function ambientScatter(layout: BiomeLayout, seed: number): Scatter[] {
+  return layoutMemo(layout, `scatter:${seed}`, () => computeAmbientScatter(layout, seed))
+}
+
+function computeAmbientScatter(layout: BiomeLayout, seed: number): Scatter[] {
   const rng = seeded(seed * 5 + 29)
   const out: Scatter[] = []
   const tryPlace = (kind: Scatter['kind'], x: number, z: number, count: number, spread: number, itemScale = 1): boolean => {
@@ -1373,4 +1608,42 @@ export function ambientScatter(layout: BiomeLayout, seed: number): Scatter[] {
 export function visibleProps(placements: Placement[], layout: BiomeLayout, progress: DistrictProgress): Placement[] {
   const bands = new Map<string, number>(layout.districts.map((c) => [c.id, populationFor(c, progress[c.id] ?? 0).band]))
   return placements.filter((p) => p.minBand <= (bands.get(p.districtId) ?? 0))
+}
+
+/* ---------- the whole scatter of a layout (the land build) ---------- */
+
+/** Every placement the ice scene derives from (layout, seed): plain data, so a Worker can build it and the main thread install it. */
+export interface LayoutScatter {
+  seed: number
+  slots: Record<string, Slot[]>
+  placements: Placement[]
+  paths: LocalPath[]
+  pines: Tree[]
+  scatter: Scatter[]
+  floes: Array<[number, number, number, number]>
+  harbour: HarbourFixtures | null
+  forestFixtures: Placement[]
+}
+
+export function buildLayoutScatter(layout: BiomeLayout, seed: number): LayoutScatter {
+  return {
+    seed,
+    slots: Object.fromEntries(layout.districts.map((d) => [d.id, districtSlots(layout, d)])),
+    placements: propPlacements(layout, seed),
+    paths: localPaths(layout),
+    pines: forestPines(layout, seed),
+    scatter: ambientScatter(layout, seed),
+    floes: floePositions(layout, seed),
+    harbour: layout.world ? null : harbourFixtures(layout),
+    forestFixtures: forestFixtures(layout),
+  }
+}
+
+/** Install a built scatter so the functions above return it without computing. */
+export function primeLayoutScatter(layout: BiomeLayout, data: LayoutScatter): void {
+  const entries: Record<string, unknown> = { [`props:${data.seed}`]: data.placements, paths: data.paths, [`pines:${data.seed}`]: data.pines, [`scatter:${data.seed}`]: data.scatter, [`floes:${data.seed}:34`]: data.floes }
+  for (const [id, slots] of Object.entries(data.slots)) entries[`slots:${id}`] = slots
+  primeLayoutMemo(layout, entries)
+  if (data.harbour) primeHarbourFixtures(layout, data.harbour)
+  primeForestFixtures(layout, data.forestFixtures)
 }

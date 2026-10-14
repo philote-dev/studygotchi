@@ -9,8 +9,12 @@ import { emit, type AudioEvent } from "@/lib/audio/events";
 import { dominantBiome } from "@/lib/audio/director";
 import { useIdentity } from "@/lib/identity";
 import { WORLD_CHANGE_PRIORITY, asWorldResponse, changedRegions, describeChanges, toCanvasWorld, type WorldChange } from "@/lib/world/adapter";
+import { landOutcome } from "@/lib/world/land-outcome";
+import { takePrefetchedWorld } from "@/lib/world/land-prefetch";
+import { landProgressOf } from "@/lib/world/land-progress";
 import type { BiomeId, WorldResponse } from "@/lib/world/types";
-import { demoProgress, type IceDemoState } from "@/lib/world/demo-theater";
+import { LandConfetti } from "./LandConfetti";
+import type { CatastropheEvent } from "./biomes/ice-town/scene/catastrophe-sequence";
 import type { LocalBiomeId } from "./biomes/types";
 
 /** at most this many one-shots per payload, 120 ms apart, loudest news first, three of a kind */
@@ -74,15 +78,17 @@ const DevelopedBiomeCanvas = dynamic(
 
 export type WorldSource = { kind: "own" } | { kind: "visit"; token: string };
 
+/** The default source, one object: a fresh literal per render re-ran the load effect (and re-fetched the world) on every parent render. */
+const OWN_SOURCE: WorldSource = { kind: "own" };
+
 export function WorldPage({
-  source = { kind: "own" },
+  source = OWN_SOURCE,
   courseId: courseIdOverride,
   visual = "island",
   readOnly = false,
   onWorld,
   hoveredId,
   onHover,
-  iceDemo,
   focusDistrict,
   onFocusDistrict,
   landBiome = null,
@@ -98,7 +104,6 @@ export function WorldPage({
   onWorld?: (world: WorldResponse | null) => void;
   hoveredId?: string | null;
   onHover?: (conceptId: string | null) => void;
-  iceDemo?: IceDemoState;
   focusDistrict?: string | null;
   onFocusDistrict?: (id: string | null) => void;
 }) {
@@ -111,6 +116,10 @@ export function WorldPage({
   const setHovered = onHover ?? setOwnHover;
   const [world, setWorld] = useState<WorldResponse | null>(null);
   const [changed, setChanged] = useState<Set<string>>(new Set());
+  // The latest result that landed on this course (a resident went weak, or came back): the land
+  // storms or heals, and every pass gets one confetti burst.
+  const [result, setResult] = useState<CatastropheEvent>("idle");
+  const [passes, setPasses] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const previous = useRef<WorldResponse | null>(null);
@@ -125,6 +134,8 @@ export function WorldPage({
     previous.current = null;
     setWorld(null);
     setChanged(new Set());
+    setResult("idle");
+    setPasses(0);
   }, [source.kind, courseId, studentId]);
 
   useEffect(() => {
@@ -134,7 +145,8 @@ export function WorldPage({
     const load = async () => {
       try {
         if (source.kind === "visit") return api.getSharedWorld(source.token);
-        if (courseIdOverride) return api.getWorldForCourse(courseIdOverride);
+        // A land warmed before the cloud dive (landmark hover / settle) is taken once; later loads fetch fresh.
+        if (courseIdOverride) return takePrefetchedWorld(courseIdOverride) ?? api.getWorldForCourse(courseIdOverride);
         return api.getWorld();
       } catch (err) {
         if (source.kind === "own" && courseId && (USE_MOCK || DEV_STUDENT_ID)) {
@@ -151,7 +163,13 @@ export function WorldPage({
         const delta = changedRegions(previous.current, parsed);
         // The first paint is not a change; only later deltas should pulse (and sound).
         setChanged(previous.current ? delta : new Set());
-        playChanges(describeChanges(previous.current, parsed));
+        const changes = describeChanges(previous.current, parsed);
+        playChanges(changes);
+        const outcome = landOutcome(changes);
+        if (outcome) {
+          setResult(outcome);
+          if (outcome === "pass") setPasses((n) => n + 1);
+        }
         previous.current = parsed;
         setWorld(parsed);
         setError(null);
@@ -191,16 +209,10 @@ export function WorldPage({
     emit({ type: "island-biome", biome: landBiome ?? dominantBiome(canvasWorld.places) });
   }, [canvasWorld, landBiome]);
 
-  const reached = world ? world.regions.filter((region) => region.semantic_state !== "frontier").length : 0;
-  const total = world ? world.regions.length + world.hidden_concept_count : 0;
-  const liveProgress = total > 0 ? reached / total : 0.68;
-  // Growth follows the real course fraction (ship handoff §2); the 8.223 demo theater's beat wins
-  // for the hero, and the legacy golden scene stays pinned at 100 %.
-  const progress = iceDemo
-    ? demoProgress(iceDemo.beat)
-    : visual === "ice-golden"
-      ? 1
-      : liveProgress;
+  const liveProgress = landProgressOf(world);
+  // Growth follows the real course fraction (ship handoff §2); only the legacy golden scene stays
+  // pinned at 100 %.
+  const progress = visual === "ice-golden" ? 1 : liveProgress;
 
   if (visual === "ice-golden") {
     return (
@@ -209,7 +221,7 @@ export function WorldPage({
           visual="ice-town"
           progress={progress}
           focusDistrict={focusDistrict}
-          iceDemo={iceDemo}
+          result={result}
           onFocusDistrict={onFocusDistrict}
           world={canvasWorld}
           selectedId={selectedId}
@@ -218,6 +230,7 @@ export function WorldPage({
           onSelect={select}
           onHover={setHovered}
         />
+        <LandConfetti burst={passes} />
         {error ? (
           <p className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-paper-card px-3 py-1 text-[12px] text-paper-soft">
             {error}
@@ -241,7 +254,7 @@ export function WorldPage({
           visual={visual}
           progress={progress}
           focusDistrict={focusDistrict}
-          iceDemo={iceDemo}
+          result={result}
           onFocusDistrict={onFocusDistrict}
           world={canvasWorld}
           selectedId={selectedId}
@@ -250,6 +263,7 @@ export function WorldPage({
           onSelect={select}
           onHover={setHovered}
         />
+        <LandConfetti burst={passes} />
         {error ? (
           <p className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-paper-card px-3 py-1 text-[12px] text-paper-soft">
             {error}

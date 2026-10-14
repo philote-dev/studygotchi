@@ -1,0 +1,21 @@
+/** `@/lib/light`: the shared light module (GLSL chunk, TS mirrors, ramp helpers). */
+export {
+  bayer,
+  bSersic,
+  DEFAULT_DITHER_MODE,
+  DITHER_MODE,
+  DITHER_MODES,
+  ditherQuantize,
+  ditherThreshold,
+  expDisc,
+  gaussianBand,
+  glowRamp,
+  glowUniforms,
+  GLSL_LIGHT,
+  ign,
+  MAX_GLOW_STEPS,
+  sersic,
+  setGlowRamp,
+  type DitherMode,
+  type GlowParams,
+} from "./glow.glsl";

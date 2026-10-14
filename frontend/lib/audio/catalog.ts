@@ -58,6 +58,45 @@ export function sfxFile(name: SfxName): string {
   return `${AUDIO_BASE}/sfx/${name}.wav`;
 }
 
+// ---------- the stage spring (lib/stage/audio-cues.ts) ----------
+
+/**
+ * Cues the altitude spring raises. Each maps to a kit one-shot, or to `null`: registered, no
+ * asset yet, so the director logs the cue in dev and plays nothing. Arrivals are tiered by
+ * importance the way game-feel tiers juice: the planet is a tick, the constellation a star,
+ * the galaxy the big chord.
+ */
+export type StageCueKind =
+  | "riser"
+  | "hop-up"
+  | "hop-down"
+  | "arrive-world"
+  | "arrive-planet"
+  | "arrive-constellation"
+  | "arrive-galaxy"
+  | "galaxy-ambience";
+
+export const STAGE_CUE_SFX: Record<StageCueKind, SfxName | null> = {
+  /** continuous; needs a loopable riser bed, which the kit does not have yet */
+  riser: null,
+  "hop-up": "camera-rise",
+  "hop-down": "camera-dive",
+  "arrive-world": "ui-confirm",
+  "arrive-planet": "progress-tick",
+  "arrive-constellation": "star-select",
+  "arrive-galaxy": "progress-level-up",
+  /** the astral music layer; no music file yet (gate only) */
+  "galaxy-ambience": null,
+};
+
+/** Playback trims per arrival so the tiers read: small, medium, large. */
+export const STAGE_ARRIVE_GAIN: Record<"world" | "planet" | "constellation" | "galaxy", number> = {
+  world: 0.7,
+  planet: 0.6,
+  constellation: 0.8,
+  galaxy: 0.9,
+};
+
 // ---------- voices (tools/sound-factory/blips.mjs; assets/audio/voices/manifest.json) ----------
 
 export const VOICE_SPECIES = ["peach", "coral", "mint", "olive", "lilac"] as const;

@@ -1,0 +1,49 @@
+# Reference ledger: space objects
+
+References for the space objects gallery at `/lab/cosmos/objects` (`frontend/components/lab/cosmos/objects/**`). Same rules as `LEDGER.md`: reference use is for palette, structure and motion only; every object is procedural (points, banded quads, shaders), nothing is sampled as a bitmap. Screensize JPEGs (1280 px wide) fetched with `curl` on 2026-10-11; all are public-domain NASA material or CC BY 4.0 ESA/Hubble and ESO releases, and the credit lines below must travel with any reuse. The objects also lean on files 07, 08, 09, 10, 15, 16, 17 from `LEDGER.md`.
+
+| file | object in the gallery | take | leave | date |
+|---|---|---|---|---|
+| [`18-ring-nebula-m57-hubble.jpg`](18-ring-nebula-m57-hubble.jpg) | Planetary nebula, `ring` | Oval ring: translucent blue-green inside, yellow-green then orange then red outward, soft dim halo, one white dwarf dead centre. Ring thickness about 45 percent of the outer radius. | Filament detail inside the ring, the faint outer loops. | 2026-10-11 |
+| [`19-butterfly-ngc6302-hubble.jpg`](19-butterfly-ngc6302-hubble.jpg) | Planetary nebula, `butterfly` | Two lobes pinched at a dark dust waist, orange core to pink to magenta outward, radial streaks. | The torn edge detail; the lobes stay smooth capsules at 32 px. | 2026-10-11 |
+| [`20-cats-eye-ngc6543-hubble.jpg`](20-cats-eye-ngc6543-hubble.jpg) | Planetary nebula, `cat` | Nested ellipses, each rotated a little more than the last, teal and cream inside, orange outside, concentric halo rings. | The jets and knots; four ellipses is the cap. | 2026-10-11 |
+| [`21-crab-nebula-m1-hubble.jpg`](21-crab-nebula-m1-hubble.jpg) | Supernova remnant `crab`, pulsar | A cage of orange, red and yellow-green filaments around a blue-white synchrotron heart with the pulsar at its centre; the whole thing is an oval. | Filament count (a dozen arcs is plenty), the fine lace. | 2026-10-11 |
+| [`22-pleiades-spitzer-nasa.jpg`](22-pleiades-spitzer-nasa.jpg) | Star cluster `open` | A loose clump of bright blue-white stars with wisps of reflection nebula streaked around the brightest ones. (Infrared, so the haze reads pink here; the gallery uses the visible-light blue.) | The infrared colour, the full-frame haze. | 2026-10-11 |
+| [`23-horsehead-hubble-ir.jpg`](23-horsehead-hubble-ir.jpg) | Dark nebula | A column with a head and a snout silhouetted against glowing haze, a thin lit rim on the side facing the star, stars only outside the silhouette. | Infrared translucency of the cloud; the gallery keeps it opaque for the cut-out read. | 2026-10-11 |
+| [`24-hl-tau-alma-eso.jpg`](24-hl-tau-alma-eso.jpg) | Protoplanetary disc | A tilted orange-cream disc with sharp dark gaps and a hot centre; the near side is brighter. | The sub-structure inside gaps; three to four gaps is the cap. | 2026-10-11 |
+| [`25-omega-centauri-hubble.jpg`](25-omega-centauri-hubble.jpg) | Star cluster `globular` | Hundreds of cream-yellow points on a steeply concentrated profile, a few orange giants and blue stragglers, a core that reads as one gold ball from afar. | The true count (millions); 800 points is the budget. | 2026-10-11 |
+| [`26-comet-neowise-nasa-hq.jpg`](26-comet-neowise-nasa-hq.jpg) | Comet | Two tails: a broad curved cream dust tail that lags the motion and a straight faint blue ion tail pointing exactly away from the sun; a small bright coma. | The landscape, the twilight gradient. | 2026-10-11 |
+
+## Physics references (comet tails, pulsar geometry, binary sizes)
+
+Added 2026-10-11 for the second pass (Philote: "the trail is not following the path", "a pulsar has a rotation axis not perpendicular to the beams, it wiggles").
+
+| file / page | used for | what was taken | license |
+|---|---|---|---|
+| [`27-crab-pulsar-chandra.jpg`](27-crab-pulsar-chandra.jpg) | Pulsar (remnant version) | Chandra X-ray view of the Crab pulsar wind nebula: a tilted equatorial torus with an inner ring and thin polar jets along the rotation axis. The gallery draws the torus as an ellipse perpendicular to omega, an inner ring, and jets along +-omega. Credit: NASA/CXC/SAO/F. Seward et al. Source: [chandra.harvard.edu/photo/2008/crab](https://chandra.harvard.edu/photo/2008/crab/) (792 px). | Public domain (NASA/CXC) |
+| [NASA Imagine the Universe: Pulsars](https://imagine.gsfc.nasa.gov/science/objects/pulsars1.html) | Pulsar | The lighthouse model: beams from the magnetic poles, magnetic axis inclined to the rotation axis, a pulse each time a beam sweeps across the line of sight. | NASA text, public domain |
+| [ATNF (CSIRO): Introduction to pulsars](https://www.atnf.csiro.au/outreach/education/everyone/pulsars/index.html) | Pulsar | Oblique rotator geometry (inclination alpha between magnetic and spin axes, impact angle to the observer), periods from ms to seconds; the gallery seeds alpha 25-70 degrees and keeps the viewer within 8 degrees of a beam cone (half-angle 12 degrees). | CSIRO outreach page, referenced only |
+| [Chandra 2002: Crab torus and jet](https://chandra.harvard.edu/photo/2002/0052/) | Pulsar (remnant) | The torus / jet structure and its orientation relative to the pulsar spin axis. | Public domain (NASA/CXC) |
+| [NASA Science: Comets](https://science.nasa.gov/solar-system/comets/) and [Comet facts](https://science.nasa.gov/solar-system/comets/facts/) | Comet | Two tails: a straight ion tail blown directly away from the Sun by the solar wind, and a broad curved dust tail that lags along the orbit because grains follow their own orbits while radiation pressure pushes them outward; both grow near perihelion. | NASA text, public domain |
+| [ESA Rosetta](https://www.esa.int/Science_Exploration/Space_Science/Rosetta) and file `26-comet-neowise-nasa-hq.jpg` | Comet | 67P activity growing toward perihelion; NEOWISE's curved dust tail next to the straight blue ion tail. | ESA pages referenced only; NEOWISE credit above |
+| Eggleton, P. P. (1983), ApJ 268, 368 | Binary star | Roche-lobe radius r_L / a = 0.49 q^(2/3) / (0.6 q^(2/3) + ln(1 + q^(1/3))): the donor is drawn at the size of the lobe it fills; both stars circle the barycentre with one period, r_A / r_B = m_B / m_A (the lighter donor on the larger orbit, the Algol paradox). | Formula, cited |
+
+## Stylised game references used
+
+Super Mario Galaxy (painted skies with two or three hue zones, toy planets, prankster comets), Kirby (candy rings, pastel sparkle stars, the Warp Star trail), Outer Wilds (the Ash Twin / Ember Twin sand column for the binary's mass-transfer stream, the Sun Station sweep for the pulsar), Astroneer (two-band planets with one rim light), Katamari (flat concentric targets), Spore (galaxy-map dot clumps and far smudges). No assets from these games are used; they set the shape vocabulary only.
+
+## Source provenance
+
+| file | object | credit (must accompany reuse) | license | source page | direct image |
+|---|---|---|---|---|---|
+| `18-ring-nebula-m57-hubble.jpg` | Messier 57, Ring Nebula | NASA, ESA and the Hubble Heritage (STScI/AURA)-ESA/Hubble Collaboration | CC BY 4.0 (ESA/Hubble) | [heic1310a](https://esahubble.org/images/heic1310a/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic1310a.jpg) |
+| `19-butterfly-ngc6302-hubble.jpg` | NGC 6302, Butterfly Nebula | NASA, ESA and the Hubble SM4 ERO Team | CC BY 4.0 (ESA/Hubble) | [heic0910h](https://esahubble.org/images/heic0910h/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic0910h.jpg) |
+| `20-cats-eye-ngc6543-hubble.jpg` | NGC 6543, Cat's Eye Nebula | NASA, ESA, HEIC, and The Hubble Heritage Team (STScI/AURA) | CC BY 4.0 (ESA/Hubble) | [heic0414a](https://esahubble.org/images/heic0414a/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic0414a.jpg) |
+| `21-crab-nebula-m1-hubble.jpg` | Messier 1, Crab Nebula | NASA, ESA and Allison Loll/Jeff Hester (Arizona State University). Acknowledgement: Davide De Martin (ESA/Hubble) | CC BY 4.0 (ESA/Hubble) | [heic0515a](https://esahubble.org/images/heic0515a/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic0515a.jpg) |
+| `22-pleiades-spitzer-nasa.jpg` | The Pleiades (Spitzer, infrared) | NASA/JPL-Caltech/J. Stauffer (SSC/Caltech) | Public domain (NASA) | [PIA09262](https://photojournal.jpl.nasa.gov/catalog/PIA09262) | [NASA Image Library](https://images-assets.nasa.gov/image/PIA09262/PIA09262~medium.jpg) |
+| `23-horsehead-hubble-ir.jpg` | Barnard 33, Horsehead Nebula (WFC3 infrared) | NASA, ESA, and The Hubble Heritage Team (STScI/AURA) | CC BY 4.0 (ESA/Hubble) | [heic1307a](https://esahubble.org/images/heic1307a/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic1307a.jpg) |
+| `24-hl-tau-alma-eso.jpg` | HL Tauri protoplanetary disc (ALMA) | ALMA (ESO/NAOJ/NRAO) | CC BY 4.0 (ESO) | [eso1436a](https://www.eso.org/public/images/eso1436a/) | [screen jpg](https://cdn.eso.org/images/screen/eso1436a.jpg) |
+| `25-omega-centauri-hubble.jpg` | Omega Centauri core (ACS/WFC3) | NASA, ESA and the Hubble SM4 ERO Team | CC BY 4.0 (ESA/Hubble) | [heic0809a](https://esahubble.org/images/heic0809a/) | [screen jpg](https://cdn.esahubble.org/archives/images/screen/heic0809a.jpg) |
+| `26-comet-neowise-nasa-hq.jpg` | Comet C/2020 F3 NEOWISE over Washington | NASA/Bill Ingalls | Public domain (NASA) | [NHQ202007120001](https://images.nasa.gov/details/NHQ202007120001) | [NASA Image Library](https://images-assets.nasa.gov/image/NHQ202007120001/NHQ202007120001~medium.jpg) |
+
+Credit lines for the ESA/Hubble files are as listed on their source pages at fetch time; confirm against the page before any public reuse. License notes are the same as in `LEDGER.md`: ESA/Hubble [copyright](https://esahubble.org/public/copyright/) (CC BY 4.0), ESO [copyright](https://www.eso.org/public/outreach/copyright/) (CC BY 4.0), NASA [image use policy](https://www.nasa.gov/nasa-brand-center/images-and-media/).

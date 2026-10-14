@@ -1,0 +1,32 @@
+/* The land's pass celebration (LandConfetti.tsx): one long fall over the land it belongs to. */
+
+.land-confetti {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+}
+
+.land-confetti i {
+  position: absolute;
+  top: -18px;
+  width: 8px;
+  height: 12px;
+  border-radius: 1px;
+  animation: land-confetti-fall 4.4s ease-in both;
+}
+
+@keyframes land-confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--sway, 18px), 118vh, 0) rotate(540deg);
+    opacity: 0.15;
+  }
+}

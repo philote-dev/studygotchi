@@ -1,0 +1,334 @@
+/* Space objects gallery chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.cosmos-lab {
+  --cl-bg: #080716;
+  --cl-panel: rgba(16, 14, 34, 0.86);
+  --cl-ink: #efe9ff;
+  --cl-muted: #9b94b8;
+  --cl-line: rgba(198, 186, 236, 0.22);
+  --cl-accent: #ffd36a;
+  --cl-accent-ink: #1b1530;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--cl-bg);
+  color: var(--cl-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.cosmos-lab[data-theme="light"] {
+  --cl-bg: #cfd6e4;
+  --cl-panel: rgba(244, 241, 251, 0.9);
+  --cl-ink: #17151d;
+  --cl-muted: #5b5884;
+  --cl-line: rgba(23, 21, 29, 0.18);
+  --cl-accent: #d9a92e;
+  --cl-accent-ink: #17151d;
+}
+
+.cosmos-lab[data-chrome="0"] .cosmos-lab__chrome {
+  display: none;
+}
+
+.cosmos-lab[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.cosmos-lab__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--cl-line);
+  background: var(--cl-panel);
+  backdrop-filter: blur(6px);
+  z-index: 3;
+}
+
+.cosmos-lab__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+}
+
+.cosmos-lab__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cl-muted);
+  white-space: nowrap;
+}
+
+.cosmos-lab__field input[type="text"] {
+  width: 9em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--cl-line);
+  background: transparent;
+  color: var(--cl-ink);
+  font: inherit;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+}
+
+.cosmos-lab__field input[type="range"] {
+  width: 96px;
+  accent-color: var(--cl-accent);
+}
+
+.cosmos-lab__field select {
+  padding: 3px 6px;
+  border-radius: 7px;
+  border: 1px solid var(--cl-line);
+  background: transparent;
+  color: var(--cl-ink);
+  font: inherit;
+}
+
+.cosmos-lab__btn {
+  appearance: none;
+  border: 1px solid var(--cl-line);
+  background: transparent;
+  color: var(--cl-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cosmos-lab__btn:hover {
+  border-color: var(--cl-accent);
+}
+
+.cosmos-lab__btn--primary,
+.cosmos-lab__btn[aria-pressed="true"] {
+  background: var(--cl-accent);
+  color: var(--cl-accent-ink);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.cosmos-lab__stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cosmos-lab__stage canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.cosmos-lab__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cosmos-lab__tile {
+  position: absolute;
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cl-ink);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+}
+
+.cosmos-lab__tile:hover,
+.cosmos-lab__tile:focus-visible {
+  border-color: var(--cl-line);
+  outline: none;
+}
+
+.cosmos-lab__tile-label {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 6px;
+  display: grid;
+  gap: 1px;
+  pointer-events: none;
+}
+
+.cosmos-lab__tile-label strong {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--cl-ink);
+  text-shadow: 0 1px 0 var(--cl-bg), 0 0 6px var(--cl-bg);
+}
+
+.cosmos-lab__tile-label span {
+  font-size: 11px;
+  color: var(--cl-muted);
+  text-shadow: 0 1px 0 var(--cl-bg);
+}
+
+.cosmos-lab__caption {
+  position: absolute;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cosmos-lab__explain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cosmos-lab__explain-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--cl-ink);
+  text-shadow: 0 0 2px var(--cl-bg), 0 0 4px var(--cl-bg), 1px 1px 0 var(--cl-bg), -1px -1px 0 var(--cl-bg), 1px -1px 0 var(--cl-bg), -1px 1px 0 var(--cl-bg);
+  will-change: transform;
+}
+
+.cosmos-lab__explain-label[data-tone="accent"] {
+  color: var(--cl-accent);
+}
+
+.cosmos-lab__explain-label[data-tone="muted"] {
+  color: var(--cl-muted);
+}
+
+.cosmos-lab__explain-legend {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--cl-line);
+  border-radius: 8px;
+  background: var(--cl-panel);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--cl-ink);
+}
+
+.cosmos-lab__explain-legend span {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.3;
+}
+
+.cosmos-lab__explain-legend i {
+  margin-top: 2px;
+}
+
+.cosmos-lab__explain-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--cl-line);
+  flex: none;
+}
+
+.cosmos-lab__scalebar {
+  display: inline-block;
+  height: 6px;
+  border-left: 1px solid var(--cl-accent);
+  border-right: 1px solid var(--cl-accent);
+  background: linear-gradient(var(--cl-accent), var(--cl-accent)) center / 100% 1px no-repeat;
+}
+
+.cosmos-lab__frame {
+  position: absolute;
+  border: 1px dashed var(--cl-line);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.cosmos-lab__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 296px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--cl-line);
+  border-radius: 12px;
+  background: var(--cl-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+  z-index: 2;
+}
+
+.cosmos-lab__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+}
+
+.cosmos-lab__side p {
+  margin: 0;
+  color: var(--cl-muted);
+}
+
+.cosmos-lab__side .cosmos-lab__field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  white-space: normal;
+}
+
+.cosmos-lab__side .cosmos-lab__field input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.cosmos-lab__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.cosmos-lab__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  margin: 0;
+}
+
+.cosmos-lab__kv dt {
+  color: var(--cl-muted);
+}
+
+.cosmos-lab__kv dd {
+  margin: 0;
+}

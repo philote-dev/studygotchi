@@ -1,0 +1,7 @@
+# shared/light
+
+One light language for the cosmos exhibits: a physically shaped brightness profile (Sérsic bulge, exponential disc, Gaussian arm band) mapped through 3–8 palette steps with ordered dithering in pixel-cell space, instead of hard concentric bands. `glow.glsl.ts` exports the GLSL chunk `GLSL_LIGHT` (`sersic`, `expDisc`, `gaussianBand`, `bayer`, `ign`, `ditherQuantize`, `glowSprite`, `glowRamp`) plus TS mirrors and ramp helpers; `light.test.ts` checks monotonic profiles, the Bayer matrices and that dithering preserves the mean.
+
+To adopt it in a material: (1) include `${GLSL_LIGHT}` in the fragment shader and spread `glowUniforms({ anchors, steps, alphaMax, mode })` into `uniforms`; (2) compute a profile `p` in [0, 1] from your geometry (`sersic(r, re, n)`, `expDisc(r, h)`, `gaussianBand(d, sigma)`); (3) output `glowSprite(p, uSteps, uPal, uAlphaMax, gl_FragCoord.xy, uDither)` (or `glowRamp(p, steps, dim, bright, ...)` for instanced sprites with a per-instance colour). Always pass `gl_FragCoord.xy` of the pixel-pass target so one dither dot is one cell and the pattern is stable under the 2 px pass; pick `mode` `bayer8` by default, `ign` for a blue-noise-like grain, `bands` to see the old look. On the light theme call `setGlowRamp(uniforms, inkAnchors, steps)` and switch to `NormalBlending`.
+
+Rules: profiles are normalised to 1 at the centre; never add a bloom pass; keep steps ≤ 8; feather any edge with the profile, not a `step()`, so the dither fades it.

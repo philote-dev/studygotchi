@@ -35,6 +35,7 @@ export interface CameraOverride {
   fov: number
 }
 
+/** Station override clamps (the diorama contract the station values are tested against). */
 export const CAMERA_LIMITS = {
   pitchMin: 34,
   pitchMax: 40,
@@ -43,6 +44,58 @@ export const CAMERA_LIMITS = {
   dollyMax: 1.6,
   horizonMaxDolly: 1.55,
 } as const
+
+export interface FreeCameraLimits {
+  /** Half yaw range in degrees; 180 means unlimited orbit. */
+  yawDeg: number
+  pitchMinDeg: number
+  pitchMaxDeg: number
+  minDistance: number
+  maxDistance: number
+}
+
+export interface Box {
+  min: [number, number, number]
+  max: [number, number, number]
+}
+
+/**
+ * Free roam (Philote, ice direction 2026-10-10): full orbit, pitch 12–64°, distance 40–560 (the
+ * overview needs 333 at 16:9 and more on narrow screens). The stations keep their values; these
+ * only bound where the user may take the camera from them.
+ */
+export const FREE_CAMERA_LIMITS: FreeCameraLimits = {
+  yawDeg: 180,
+  pitchMinDeg: 12,
+  pitchMaxDeg: 64,
+  minDistance: 40,
+  maxDistance: 560,
+}
+
+/** CameraControls.setBoundary clamps the look-at: this box is the authored land (328 × 300 m). */
+export const LOOK_BOX: Box = {
+  min: [-165, -1, -150],
+  max: [165, 40, 150],
+}
+
+/** Where the camera may sit: every lab pose must be inside; the outer world must hide its ends from anywhere in it. */
+export const CAMERA_BOX: Box = {
+  min: [-460, 10, -460],
+  max: [460, 300, 460],
+}
+
+export function clampToBox(box: Box, x: number, y: number, z: number): [number, number, number] {
+  return [
+    Math.min(box.max[0], Math.max(box.min[0], x)),
+    Math.min(box.max[1], Math.max(box.min[1], y)),
+    Math.min(box.max[2], Math.max(box.min[2], z)),
+  ]
+}
+
+export function insideBox(box: Box, x: number, y: number, z: number): boolean {
+  const [cx, cy, cz] = clampToBox(box, x, y, z)
+  return cx === x && cy === y && cz === z
+}
 
 export function clampCameraOverride(override: CameraOverride): CameraOverride {
   return {

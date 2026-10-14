@@ -32,24 +32,19 @@ import {
   resolveGlobePointerUp,
   type GlobePickIntent,
 } from "./globe-pick";
-import {
-  PRODUCTION_PIXEL_GRAIN,
-  seededCourseDirections,
-} from "./globe-spec";
+import { seededCourseDirections } from "./globe-spec";
 import type {
   CourseGlobeCourse,
   ScreenPoint,
   SpaceTheme,
   UnitDirection,
 } from "./globe-types";
-import { PixelComposer } from "./PixelComposer";
-import { DIVE_MS, diveCameraPosition, easeInOutCubic } from "./globe-dive";
-import { seatedCameraPosition } from "./globe-seat";
+import { GLOBE_FOCUS_DIRECTION, seatedCameraPosition } from "./globe-seat";
 import { screenPointFromNdc } from "@/lib/world/earth-nav";
 import { isLandmarkVisible } from "@/lib/world/landmark-hit";
 
 const LAYOUT_SEED = "studygotchi:production-course-globe";
-const FOCUS_DIRECTION = new THREE.Vector3(-0.55, 0.48, 1).normalize();
+const FOCUS_DIRECTION = new THREE.Vector3(...GLOBE_FOCUS_DIRECTION).normalize();
 const SNAP_DAMPING = 7.5;
 const DRAG_THRESHOLD_PX = 8;
 
@@ -114,13 +109,22 @@ export interface CourseGlobeSceneProps {
   courses: CourseGlobeCourse[];
   activeCourseId: string | null;
   theme: SpaceTheme;
-  diving: boolean;
   reducedMotion: boolean;
   onActiveCourseChange(courseId: string): void;
   onCourseTownOpen(event: GlobeTownOpenEvent): void;
   onLandmarkAnchor?(anchor: ScreenPoint | null): void;
+  /** The landmark under the pointer changed (null when none): the earth page prefetches that course's land. */
+  onHoverCourse?(courseId: string | null): void;
   onPointerInteractionChange(interacting: boolean): void;
   spinApi: RefObject<GlobeSpinApi | null>;
+  /**
+   * Element the pointer listeners attach to: the stage's page-side host
+   * (`.course-globe-stage`). The scene renders as a layer of the persistent
+   * stage canvas (`PlanetLayer`), whose composer owns the pixel pass; null
+   * falls back to the canvas's own `.course-globe-stage` ancestor or the
+   * canvas itself (a lab preview with its own canvas).
+   */
+  host?: HTMLElement | null;
 }
 
 export function shortestFocusQuaternion(
@@ -190,13 +194,12 @@ function Lights({ theme }: { theme: SpaceTheme }) {
   );
 }
 
-function AutoFitCamera({ locked }: { locked: boolean }) {
+function AutoFitCamera() {
   const width = useThree((state) => state.size.width);
   const height = useThree((state) => state.size.height);
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 
   useLayoutEffect(() => {
-    if (locked) return;
     const seat = seatedCameraPosition(
       { width, height },
       camera.fov,
@@ -208,50 +211,7 @@ function AutoFitCamera({ locked }: { locked: boolean }) {
     camera.far = Math.max(80, seat.position[2] + 80);
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
-  }, [camera, height, locked, width]);
-
-  return null;
-}
-
-function DiveCamera({
-  diving,
-  reducedMotion,
-}: {
-  diving: boolean;
-  reducedMotion: boolean;
-}) {
-  const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
-  const start = useRef(new THREE.Vector3());
-  const dest = useRef(new THREE.Vector3());
-  const progress = useRef(0);
-  const active = useRef(false);
-
-  useLayoutEffect(() => {
-    if (!diving) {
-      active.current = false;
-      progress.current = 0;
-      return;
-    }
-    start.current.copy(camera.position);
-    dest.current.set(
-      ...diveCameraPosition([
-        camera.position.x,
-        camera.position.y,
-        camera.position.z,
-      ]),
-    );
-    progress.current = 0;
-    active.current = true;
-  }, [camera, diving]);
-
-  useFrame((_, delta) => {
-    if (!active.current || reducedMotion) return;
-    progress.current = Math.min(1, progress.current + delta / (DIVE_MS / 1000));
-    const t = easeInOutCubic(progress.current);
-    camera.position.lerpVectors(start.current, dest.current, t);
-    camera.lookAt(0, -0.7, 0);
-    camera.updateMatrixWorld();
-  });
+  }, [camera, height, width]);
 
   return null;
 }
@@ -315,8 +275,10 @@ interface OrbitingGlobeProps {
   onActiveCourseChange(courseId: string): void;
   onCourseTownOpen(event: GlobeTownOpenEvent): void;
   onLandmarkAnchor?(anchor: ScreenPoint | null): void;
+  onHoverCourse?(courseId: string | null): void;
   onPointerInteractionChange(interacting: boolean): void;
   spinApi: RefObject<GlobeSpinApi | null>;
+  host?: HTMLElement | null;
 }
 
 function OrbitingGlobe({
@@ -327,8 +289,10 @@ function OrbitingGlobe({
   reducedMotion,
   onActiveCourseChange,
   onLandmarkAnchor,
+  onHoverCourse,
   onPointerInteractionChange,
   spinApi,
+  host = null,
 }: OrbitingGlobeProps) {
   const group = useRef<THREE.Group>(null);
   const target = useRef(new THREE.Quaternion());
@@ -348,14 +312,18 @@ function OrbitingGlobe({
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
 
   useEffect(() => {
-    const host =
+    const target =
+      host ??
       gl.domElement.closest<HTMLElement>(".course-globe-stage") ??
       gl.domElement;
-    host.dataset.globeHover = hoveredCourseId ?? "";
+    target.dataset.globeHover = hoveredCourseId ?? "";
     return () => {
-      host.dataset.globeHover = "";
+      target.dataset.globeHover = "";
     };
-  }, [gl.domElement, hoveredCourseId]);
+  }, [gl.domElement, host, hoveredCourseId]);
+  useEffect(() => {
+    onHoverCourse?.(hoveredCourseId);
+  }, [hoveredCourseId, onHoverCourse]);
 
   useEffect(() => {
     if (!activeCourseId) return;
@@ -458,7 +426,8 @@ function OrbitingGlobe({
   settleRef.current = settle;
 
   useEffect(() => {
-    const el = gl.domElement;
+    // The globe's own canvas, or the stage's page-side host (same box, so offsets and sizes match).
+    const el: HTMLElement = host ?? gl.domElement;
 
     const pickAt = (event: PointerEvent, intent: GlobePickIntent) => {
       if (!group.current) return null;
@@ -559,7 +528,7 @@ function OrbitingGlobe({
       el.removeEventListener("pointercancel", pointerUp);
       el.removeEventListener("pointerleave", pointerLeave);
     };
-  }, [camera, directions, gl.domElement, onActiveCourseChange, onPointerInteractionChange]);
+  }, [camera, directions, gl.domElement, host, onActiveCourseChange, onPointerInteractionChange]);
 
   return (
     <group ref={group} position={[0, -0.7, 0]}>
@@ -608,13 +577,14 @@ export function CourseGlobeScene({
   courses,
   activeCourseId,
   theme,
-  diving,
   reducedMotion,
   onActiveCourseChange,
   onCourseTownOpen,
   onLandmarkAnchor,
+  onHoverCourse,
   onPointerInteractionChange,
   spinApi,
+  host = null,
 }: CourseGlobeSceneProps) {
   const layoutKey = courses
     .map((course) => course.id)
@@ -639,8 +609,7 @@ export function CourseGlobeScene({
     <>
       <SceneTheme theme={theme} />
       <Lights theme={theme} />
-      <AutoFitCamera locked={diving} />
-      <DiveCamera diving={diving} reducedMotion={reducedMotion} />
+      <AutoFitCamera />
       <StarField theme={theme} />
       <OrbitingGlobe
         courses={courses}
@@ -651,10 +620,11 @@ export function CourseGlobeScene({
         onActiveCourseChange={onActiveCourseChange}
         onCourseTownOpen={onCourseTownOpen}
         onLandmarkAnchor={onLandmarkAnchor}
+        onHoverCourse={onHoverCourse}
         onPointerInteractionChange={onPointerInteractionChange}
         spinApi={spinApi}
+        host={host}
       />
-      <PixelComposer pixelSize={PRODUCTION_PIXEL_GRAIN} />
     </>
   );
 }

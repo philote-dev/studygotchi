@@ -7,7 +7,8 @@
  */
 
 import type { BiomeId } from "@/lib/world/types";
-import { BIOME_VOICE, type SfxName, type VoiceMood, type VoiceSpecies } from "./catalog.ts";
+import type { Rung } from "@/lib/stage/rungs";
+import { BIOME_VOICE, STAGE_ARRIVE_GAIN, STAGE_CUE_SFX, type SfxName, type StageCueKind, type VoiceMood, type VoiceSpecies } from "./catalog.ts";
 import { arrivalSfx, EMPTY_SCENE, makeThrottle, pickMusic, type IslandArrival, type Scene } from "./director.ts";
 import { audio } from "./runtime.ts";
 
@@ -46,7 +47,18 @@ export type AudioEvent =
   | { type: "recover" }
   | { type: "visit" }
   | { type: "evidence-ingested" }
-  | { type: "error" };
+  | { type: "error" }
+  /**
+   * The stage spring (lib/stage/audio-cues.ts). `stage-riser` is continuous: level 0..1 that
+   * follows speed and height, at most 10 updates/s, and a run always ends with 0.
+   */
+  | { type: "stage-riser"; intensity: number }
+  /** a request changed the spring's target: the hop begins (`up` = towards the galaxy) */
+  | { type: "stage-hop"; from: Rung; to: Rung; up: boolean }
+  /** the spring settled on a rung after a hop: one hit note, tiered by rung */
+  | { type: "stage-arrive"; rung: Rung }
+  /** the astral music layer gate (L >= 2.6); on/off edges only */
+  | { type: "stage-galaxy-ambience"; on: boolean };
 
 const UI_SFX: Record<"tap" | "confirm" | "cancel" | "hover", SfxName> = {
   tap: "ui-tap",
@@ -94,6 +106,20 @@ export const STAR_HOVER_GAP_MS = 110;
 const starHoverAllowed = makeThrottle(STAR_HOVER_GAP_MS);
 /** One whoosh per arrival, even when dev StrictMode mounts the page twice. */
 const spaceEnterAllowed = makeThrottle(1500);
+
+/** A stage cue with no asset yet is noted in dev, so the wiring is visible before the sound exists. */
+function logStageCue(kind: StageCueKind, detail: string) {
+  if (process.env.NODE_ENV !== "production") console.debug(`[audio] stage cue ${kind} (no asset) ${detail}`);
+}
+
+/** Plays the stage cue's one-shot, or logs it when the kind is registered without an asset. */
+function playStageCue(kind: StageCueKind, detail: string, opts?: Parameters<typeof audio.playSfx>[1]) {
+  const sfx = STAGE_CUE_SFX[kind];
+  if (sfx) audio.playSfx(sfx, opts);
+  else logStageCue(kind, detail);
+}
+
+let riserOn = false;
 
 let scene: Scene = EMPTY_SCENE;
 let nightOverride: boolean | null = null;
@@ -251,6 +277,32 @@ export function emit(event: AudioEvent): void {
 
     case "error":
       audio.playSfx("error-soft");
+      return;
+
+    case "stage-riser": {
+      // Continuous level. Until a loopable riser exists only the on/off edges are noted, so
+      // ten updates a second never become ten log lines a second.
+      const on = event.intensity > 0;
+      if (STAGE_CUE_SFX.riser) {
+        if (on) audio.playSfx(STAGE_CUE_SFX.riser, { gain: event.intensity });
+      } else if (on !== riserOn) {
+        logStageCue("riser", on ? `on ${event.intensity.toFixed(2)}` : "off");
+      }
+      riserOn = on;
+      return;
+    }
+
+    case "stage-hop":
+      playStageCue(event.up ? "hop-up" : "hop-down", `${event.from} -> ${event.to}`, { gain: 0.7 });
+      return;
+
+    case "stage-arrive":
+      playStageCue(`arrive-${event.rung}`, event.rung, { gain: STAGE_ARRIVE_GAIN[event.rung] });
+      return;
+
+    case "stage-galaxy-ambience":
+      // The gate for the future astral layer: no music file yet, so it is only noted.
+      playStageCue("galaxy-ambience", event.on ? "open" : "closed");
       return;
   }
 }

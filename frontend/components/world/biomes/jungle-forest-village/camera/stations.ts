@@ -1,6 +1,8 @@
 /**
- * Front-facing biome diorama stations. The camera always remains south/front (+z), looking
- * north/back. Pitch is restricted to 34–40° and yaw to ±35°; district stations retarget only.
+ * Biome stations (the diorama contract: pitch 34–40°, yaw ±35°, camera south/front looking
+ * north/back) plus the free-camera limits of the expansive-world direction: the user may orbit
+ * all the way round, drop to 12° and zoom out to 380 m, the look-at is boxed to the land, and
+ * the outer world (edge/) must hide every plate edge from any pose inside the camera box.
  */
 
 export type StationId = 'arrival' | 'overview' | 'district' | 'resident'
@@ -35,6 +37,67 @@ export interface CameraOverride {
 
 export function clampBiomeYaw(azimuthDeg: number): number {
   return Math.min(35, Math.max(-35, azimuthDeg))
+}
+
+export interface JungleCameraLimits {
+  /** Half yaw range in degrees; 180 means unlimited orbit. */
+  yawDeg: number
+  pitchMinDeg: number
+  pitchMaxDeg: number
+  minDistance: number
+  maxDistance: number
+}
+
+/** Free camera: full orbit, 12–64° pitch, 40–380 m. The stations stay inside this envelope. */
+export const JUNGLE_CAMERA_LIMITS: JungleCameraLimits = {
+  yawDeg: 180,
+  pitchMinDeg: 12,
+  pitchMaxDeg: 64,
+  minDistance: 40,
+  maxDistance: 380,
+}
+
+export interface Box {
+  min: [number, number, number]
+  max: [number, number, number]
+}
+
+/** What the overview looks at (the product pose) and how far it stands. */
+export const JUNGLE_LOOK_AT: [number, number, number] = [0, 4, 0]
+export const OVERVIEW_DISTANCE = 270
+export const ARRIVAL_DISTANCE = 205
+export const DISTRICT_DISTANCE = 74
+export const RESIDENT_DISTANCE = 10
+
+/** The lab camera frame: the overview station's FOV on a 16:9 capture. */
+export const JUNGLE_FRAME = { fovDeg: STATIONS.overview.fov, aspect: 16 / 9 } as const
+
+/** CameraControls.setBoundary clamps the look-at, not the camera. This box is the land (288 × 264 m field plus a margin). */
+export const JUNGLE_LOOK_BOX: Box = {
+  min: [-150, -1, -140],
+  max: [150, 40, 150],
+}
+
+/** Where the camera may sit: all round the land, low enough for a horizon shot. */
+export const JUNGLE_CAMERA_BOX: Box = {
+  min: [-460, 8, -460],
+  max: [460, 300, 460],
+}
+
+export function clampToBox(box: Box, x: number, y: number, z: number): [number, number, number] {
+  return [
+    Math.min(box.max[0], Math.max(box.min[0], x)),
+    Math.min(box.max[1], Math.max(box.min[1], y)),
+    Math.min(box.max[2], Math.max(box.min[2], z)),
+  ]
+}
+
+/** Camera position for a pitch / azimuth / distance about a target (the convention `poseFor` uses). */
+export function orbitPosition(target: readonly [number, number, number], pitchDeg: number, azimuthDeg: number, distance: number): [number, number, number] {
+  const pitch = (pitchDeg * Math.PI) / 180
+  const azimuth = (azimuthDeg * Math.PI) / 180
+  const horizontal = Math.cos(pitch) * distance
+  return [target[0] + Math.sin(azimuth) * horizontal, target[1] + Math.sin(pitch) * distance, target[2] + Math.cos(azimuth) * horizontal]
 }
 
 export function defaultOverride(station: Station): CameraOverride {

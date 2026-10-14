@@ -1,48 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  edgeBackboneScore,
-  fieldStarCount,
-  keepBackboneEdge,
-  skyClockMs,
-  SPIRAL_SPIN_PERIOD_MS,
-  spiralPlacement,
-  spiralSpinAngle,
-  weakTraceCurve,
-} from "./space-field";
+import { edgeBackboneScore, edgeDrawBudget, keepBackboneEdge, weakTraceCurve } from "./space-field";
 
-describe("shared space backdrop", () => {
-  it("keeps the generated spiral a modest but clearly visible sky object", () => {
-    const { cx, cy, size, fade } = spiralPlacement(1200, 800);
-    expect(size).toBeGreaterThanOrEqual(96);
-    expect(size).toBeLessThanOrEqual(128);
-    expect(fade).toBeGreaterThanOrEqual(0.55);
-    expect(fade).toBeLessThanOrEqual(0.8);
-    expect(cx).toBeGreaterThan(800);
-    expect(cy).toBeLessThan(200);
-    // A phone-sized sky shrinks it rather than letting it dominate.
-    expect(spiralPlacement(390, 700).size).toBeLessThan(60);
-  });
-
-  it("spins slowly but perceptibly", () => {
-    expect(SPIRAL_SPIN_PERIOD_MS).toBeGreaterThanOrEqual(30_000);
-    expect(SPIRAL_SPIN_PERIOD_MS).toBeLessThanOrEqual(60_000);
-    // Quarter turn after a quarter period.
-    expect(spiralSpinAngle(SPIRAL_SPIN_PERIOD_MS / 4)).toBeCloseTo(Math.PI / 2, 6);
-    expect(spiralSpinAngle(SPIRAL_SPIN_PERIOD_MS / 2, true)).toBe(0);
-    expect(fieldStarCount(1200, 800)).toBeGreaterThan(Math.round((1200 * 800) / 5200));
-  });
-
-  it("samples a shared sky clock so a remount is already mid-orbit", () => {
-    const later = 40_000;
-    expect(skyClockMs(later)).toBe(later);
-    const angle = spiralSpinAngle(skyClockMs(later));
-    const remount = spiralSpinAngle(skyClockMs(later));
-    expect(angle).toBeCloseTo(remount, 8);
-    expect(Math.abs(angle)).toBeGreaterThan(1);
-    expect(spiralSpinAngle(skyClockMs(0))).toBe(0);
-    expect(spiralSpinAngle(skyClockMs(later), true)).toBe(0);
-  });
-
+describe("constellation edge helpers", () => {
   it("keeps the strongest backbone at Fit and reveals weaker edges as zoom grows", () => {
     const backbone = edgeBackboneScore({
       kind: "concept",
@@ -71,6 +30,20 @@ describe("shared space backdrop", () => {
     expect(keepBackboneEdge(resource, 0.81)).toBe(false);
     expect(keepBackboneEdge(weak, 1.4)).toBe(true);
     expect(keepBackboneEdge(resource, 1.6)).toBe(true);
+  });
+
+  it("draws edges fainter and thinner at Fit than when zoomed in", () => {
+    const fit = edgeDrawBudget(0.7);
+    const mid = edgeDrawBudget(1);
+    const close = edgeDrawBudget(1.5);
+    expect(fit.alpha).toBeGreaterThan(mid.alpha);
+    expect(close.alpha).toBeGreaterThan(mid.alpha);
+    for (const b of [fit, mid, close]) {
+      expect(b.alpha).toBeGreaterThan(0);
+      expect(b.alpha).toBeLessThanOrEqual(1);
+      expect(b.width).toBeGreaterThan(0);
+      expect(b.width).toBeLessThanOrEqual(1);
+    }
   });
 
   it("cuts a short smooth mid-span from a quadratic edge", () => {

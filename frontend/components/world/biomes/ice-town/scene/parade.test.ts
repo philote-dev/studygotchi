@@ -60,18 +60,24 @@ describe("walkers against the land's colliders", () => {
     const walkers = createWalkers(ICE_TOWN_LAYOUT, set);
     let worst = 0;
     let stalled = 0;
+    let offLand = 0;
     const samples: number[][] = [];
     for (let step = 0; step < HZ * SECONDS; step++) {
       stepWalkers(ICE_TOWN_LAYOUT, walkers, set, 1 / HZ);
       for (const walker of walkers) {
         worst = Math.max(worst, penetrationDepth(set, walker.x, walker.z, walker.r));
         stalled = Math.max(stalled, walker.stall);
-        expect(isParadeLand(ICE_TOWN_LAYOUT, walker.x, walker.z)).toBe(true);
+        if (!isParadeLand(ICE_TOWN_LAYOUT, walker.x, walker.z)) offLand++;
       }
       if (step % 300 === 0) samples.push(walkers.flatMap((walker) => [walker.x, walker.z]));
     }
-    return { set, walkers, worst, stalled, samples };
+    return { set, walkers, worst, stalled, offLand, samples };
   }
+
+  // One 60 s simulation (~2 s of CPU) is shared by the tests below; the determinism test runs a second one
+  // against it instead of two more of its own, which is what pushed it past the 5 s timeout under load.
+  let shared: ReturnType<typeof simulate> | null = null;
+  const first = () => (shared ??= simulate());
 
   it("registers the real land: hundreds of colliders from every source", () => {
     const items = iceLandColliders(ICE_TOWN_LAYOUT, SEED, FULL);
@@ -88,8 +94,9 @@ describe("walkers against the land's colliders", () => {
   });
 
   it("never penetrates a collider, keeps every walker moving, and ends with no overlaps", () => {
-    const { walkers, worst, stalled } = simulate();
+    const { walkers, worst, stalled, offLand } = first();
     expect(walkers).toHaveLength(WALKER_DISTRICTS.length);
+    expect(offLand, "walker samples off the parade land").toBe(0);
     expect(worst).toBeLessThan(1e-3);
     expect(stalled).toBeLessThan(2);
     for (const walker of walkers) expect(walker.travelled, `walker ${walker.index}`).toBeGreaterThanOrEqual(15);
@@ -116,8 +123,9 @@ describe("walkers against the land's colliders", () => {
   });
 
   it("is deterministic across two runs", () => {
-    const a = simulate();
+    const a = first();
     const b = simulate();
+    expect(b.offLand).toBe(0);
     expect(a.samples).toEqual(b.samples);
     expect(a.walkers.map((walker) => [walker.x, walker.z, walker.heading])).toEqual(
       b.walkers.map((walker) => [walker.x, walker.z, walker.heading]),

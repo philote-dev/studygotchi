@@ -1,23 +1,43 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Stars as DreiStars } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import {
   FRONTIER_LAYOUT as L,
   FRONTIER_PALETTE as P,
   courseProgress,
-  dioramaCameraPose,
   generateLayout,
   landmarkStage,
   populationFor,
   seeded,
-  skylineProfile,
 } from '../layout/biome-layout'
+import { backdropSkyline, backdropWallHeightAt, SKYLINE_STRATA } from '../layout/skyline'
+import { DIG, MINE, RAILWAY, RANCH, RESERVE, type Slot, TELEGRAPH_LINE, TOWN, reserveItemMinCount, reserveItems } from '../layout/placements'
 import { PixelComposer } from '../render/PixelComposer'
 import { Glow, Surf } from '../render/materials'
 import type { LabState } from '../state'
+import { FreeCameraRig } from '../camera/FreeCameraRig'
+import { EdgeLabOverlay } from '../edge/EdgeLabPanel'
+import { Outer } from '../edge/Outer'
+import { DESERT_FOG, createOuterDesert } from '../edge/outer/desert'
+import { frontierColliders } from '../collision/footprints'
+import { type FrontierWalker as FrontierWalkerBody, createWalkers, stepWalkers } from './walkers'
+import { ColliderProvider, type ColliderDevHook, useCollider, useColliderRegistry, useColliderSet } from '../../collision/ColliderRegistry'
+import { ColliderDebug } from '../../collision/ColliderDebug'
 
-const rad = (degrees: number) => (degrees * Math.PI) / 180
+/**
+ * Haze the outer world bakes into the authored skyline (lerp toward the sky) so that, with the
+ * fog pushed out to 1.65 km, the back wall keeps the dusty read the 420 m fog used to give it
+ * from the overview, and the mesa rows behind it can continue the gradient (0.5 → 0.9).
+ */
+export const SKYLINE_HAZE = { near: 0.4, far: 0.54 } as const
+
+const hazeScratch = new THREE.Color()
+const skyScratch = new THREE.Color()
+function hazed(colour: string, sky: string, amount: number): string {
+  if (amount <= 0) return colour
+  return `#${hazeScratch.set(colour).lerp(skyScratch.set(sky), amount).getHexString()}`
+}
 
 function Box({ position, size, color, rotation = [0, 0, 0], glow = false }: {
   position: [number, number, number]
@@ -361,44 +381,38 @@ function Landmark({ stage, night }: { stage: ReturnType<typeof landmarkStage>; n
   )
 }
 
-function BackdropSkyline({ night, fraction }: { night: boolean; fraction: number }) {
-  const profile = skylineProfile(fraction)
-  const segments = 13
+function BackdropSkyline({ night, fraction, haze = { near: 0, far: 0 } }: { night: boolean; fraction: number; haze?: { near: number; far: number } }) {
+  const sky = backdropSkyline(fraction)
+  const skyColour = night ? P.skyNight : P.sky
   return (
     <group>
-      {[0, 1].flatMap((row) =>
-        Array.from({ length: segments }, (_, i) => {
-          const x = -205 + i * (410 / (segments - 1))
-          const z = row ? -166 - Math.cos((i / segments) * Math.PI) * 3 : -142 + Math.sin(i * 1.7) * 3
-          const base = row ? profile.far : profile.near
-          const h = base * 0.58 + Math.sin(i * 1.9 + row) * 4 + (i % 5 === 0 ? 5 : 0)
-          const width = 20 + ((i + row) % 3) * 4
-          return (
-            <group key={`${row}:${i}`} position={[x, h / 2, z]}>
-              <Box position={[0, 0, 0]} size={[width, h, row ? 18 : 24]} color={night ? (row ? '#3a2f45' : '#6f3f38') : row ? P.farRock : P.redRock} />
-              <Box position={[0, h / 2 - 1.1, 0]} size={[width + 0.5, 2.2, row ? 18.5 : 24.5]} color={night ? '#8f684e' : P.sand} />
-              {!row && [0.24, 0.5, 0.72].map((k) => <Box key={k} position={[0, -h / 2 + h * k, 12.15]} size={[width + 0.15, 0.7, 0.35]} color={P.strata} />)}
-            </group>
-          )
-        }),
-      )}
-      {[-1, 1].flatMap((side) =>
-        Array.from({ length: 8 }, (_, i) => {
-          const x = side * (174 + i * 5)
-          const z = -120 + i * 22
-          const h = Math.max(30, profile.near - i * 6.2)
-          return (
-            <mesh key={`${side}:${i}`} position={[x, h / 2, z]} rotation={[0, side * -0.16, 0]}>
-              <boxGeometry args={[16, h, 28]} />
-              <Surf color={night ? '#6f3f38' : P.redRock} transparent opacity={Math.max(0.18, 0.82 - i * 0.09)} />
+      {sky.rows.map((b) => {
+        const amount = b.row ? haze.far : haze.near
+        return (
+          <group key={`${b.row}:${b.index}`} position={[b.x, b.h / 2, b.z]}>
+            <Box position={[0, 0, 0]} size={[b.w, b.h, b.d]} color={hazed(night ? (b.row ? '#3a2f45' : '#6f3f38') : b.row ? P.farRock : P.redRock, skyColour, amount)} />
+            <Box position={[0, b.h / 2 - 1.1, 0]} size={[b.w + 0.5, 2.2, b.d + 0.5]} color={hazed(night ? '#8f684e' : P.sand, skyColour, amount)} />
+            {!b.row && SKYLINE_STRATA.map((k) => <Box key={k} position={[0, -b.h / 2 + b.h * k, 12.15]} size={[b.w + 0.15, 0.7, 0.35]} color={hazed(P.strata, skyColour, amount)} />)}
+          </group>
+        )
+      })}
+      {/*
+        The fog wings were made to fade into the 420 m side fog at the old yaw limits; they are out
+        of frame from the overview. With the outer world (no fog wall, geography on every side) they
+        would stand in the free camera's way as translucent boxes, so the outer mode retires them.
+      */}
+      {haze.near > 0
+        ? null
+        : sky.wings.map((w) => (
+            <mesh key={`${w.side}:${w.index}`} position={[w.x, w.h / 2, w.z]} rotation={[0, w.yaw, 0]}>
+              <boxGeometry args={[16, w.h, 28]} />
+              <Surf color={night ? '#6f3f38' : P.redRock} transparent opacity={w.opacity} />
             </mesh>
-          )
-        }),
-      )}
-      {profile.spire > 0 && (
-        <group position={[-150, 0, -150]}>
-          <mesh position={[0, profile.spire / 2, 0]} castShadow><cylinderGeometry args={[5, 11, profile.spire, 8]} /><Surf color={night ? '#6f3f38' : P.redRock} /></mesh>
-          <Box position={[0, profile.spire, 0]} size={[15, 2.2, 12]} color={night ? '#8f684e' : P.sand} />
+          ))}
+      {sky.spire && (
+        <group position={[sky.spire.x, 0, sky.spire.z]}>
+          <mesh position={[0, (sky.spire.h - 2.2) / 2, 0]} castShadow><cylinderGeometry args={[5, 11, sky.spire.h - 2.2, 8]} /><Surf color={hazed(night ? '#6f3f38' : P.redRock, skyColour, haze.near)} /></mesh>
+          <Box position={[0, sky.spire.h - 2.2, 0]} size={[15, 2.2, 12]} color={hazed(night ? '#8f684e' : P.sand, skyColour, haze.near)} />
         </group>
       )}
     </group>
@@ -426,7 +440,7 @@ function Rails() {
     <group>
       {[56, 62].map((x) => <Box key={x} position={[x, 0.28, 0]} size={[0.38, 0.38, 270]} color="#55483f" />)}
       {Array.from({ length: 54 }, (_, i) => <Box key={i} position={[59, 0.12, -132 + i * 5]} size={[11, 0.24, 0.6]} color={P.timberDark} />)}
-      {Array.from({ length: 9 }, (_, i) => <Post key={i} x={72 + i * 6.8} y={0} z={-112 + i * 28} h={8} />)}
+      {TELEGRAPH_LINE.map((p, i) => <Post key={i} x={p.x} y={0} z={p.z} h={8} />)}
     </group>
   )
 }
@@ -476,33 +490,30 @@ function CivicHall({ night }: { night: boolean }) {
   )
 }
 
+const SIDING: Record<Slot['color'], string> = { oxblood: P.oxblood, teal: P.teal, sage: P.sage, timber: P.timber }
+
 function Town({ count, night }: { count: number; night: boolean }) {
-  const slots: Array<[number, number, number, string, 'store' | 'saloon' | 'sheriff' | 'hotel']> = [
-    [-24, 0, -13, P.oxblood, 'saloon'], [-13, 0, -13, P.teal, 'store'], [-2, 0, -13, P.sage, 'hotel'], [10, 0, -13, P.timber, 'store'], [22, 0, -13, P.teal, 'store'], [34, 0, -13, P.sage, 'store'],
-    [-24, Math.PI, 13, P.sage, 'sheriff'], [-13, Math.PI, 13, P.timber, 'store'], [-2, Math.PI, 13, P.teal, 'store'], [10, Math.PI, 13, P.sage, 'store'], [22, Math.PI, 13, P.timber, 'store'], [34, Math.PI, 13, P.teal, 'store'],
-  ]
   return (
     <group>
-      <group position={[-39, 0, 0]}><WaterTower night={night} /></group>
-      <Box position={[1, 0.1, 0]} size={[82, 0.2, 10]} color="#cfae78" />
+      <group position={[TOWN.waterTower.x, 0, TOWN.waterTower.z]}><WaterTower night={night} /></group>
+      <Box position={[TOWN.road.x, 0.1, TOWN.road.z]} size={[TOWN.road.w, 0.2, TOWN.road.d]} color="#cfae78" />
       <Box position={[3, 0.25, -9.3]} size={[78, 0.5, 5.2]} color={P.timber} />
       <Box position={[3, 0.25, 9.3]} size={[78, 0.5, 5.2]} color={P.timber} />
-      {slots.slice(0, count).map(([x, yaw, z, color, variant], i) => (
-        <group key={i} position={[x, 0, z]} rotation={[0, yaw, 0]}>
-          <FalseFront position={[0, 0, 0]} color={color} variant={variant} night={night} />
+      {TOWN.slots.slice(0, count).map((slot, i) => (
+        <group key={i} position={[slot.x, 0, slot.z]} rotation={[0, slot.yaw, 0]}>
+          <FalseFront position={[0, 0, 0]} color={SIDING[slot.color]} variant={slot.variant} night={night} />
         </group>
       ))}
-      {count >= 6 && <><Wagon position={[5, 0, 2]} yaw={0.2} /><Trough position={[-18, 0, 4]} /></>}
-      {count >= 10 && <><Wagon position={[27, 0, -2]} yaw={-0.18} /><Trough position={[20, 0, 4]} /></>}
+      {TOWN.wagons.filter((w) => count >= w.minCount).map((w) => <Wagon key={`wagon${w.x}`} position={[w.x, 0, w.z]} yaw={w.yaw} />)}
+      {TOWN.troughs.filter((t) => count >= t.minCount).map((t) => <Trough key={`trough${t.x}`} position={[t.x, 0, t.z]} />)}
       {count >= 12 && <>
-        <group position={[-37, 0, -21]} scale={0.88}><CivicHall night={night} /></group>
-        {[-28, -17, -6, 7, 20, 32].map((x, i) => <Box key={`shed${x}`} position={[x, 1.7, i % 2 ? 23 : -23]} size={[5.4, 3.4, 4.6]} color={i % 3 ? P.timber : P.sage} />)}
-        {[-30, -14, 2, 18, 34].map((x) => <group key={`hitch${x}`} position={[x, 0, 5.8]}><Post x={-1.3} y={0} z={0} h={1.3} r={0.1} /><Post x={1.3} y={0} z={0} h={1.3} r={0.1} /><Box position={[0, 1.05, 0]} size={[2.8, 0.14, 0.14]} color={P.timberDark} /></group>)}
-        {[-34, -10, 14, 38].map((x) => <group key={`lamp${x}`} position={[x, 0, -6]}><Post x={0} y={0} z={0} h={3.7} r={0.09} /><Box position={[0, 3.8, 0]} size={[0.7, 0.7, 0.7]} color={night ? P.lamp : P.mustard} glow={night} /></group>)}
-        {[-27, 30].map((x) => <Animal key={`horse${x}`} position={[x, 0, 4]} color={x < 0 ? '#6a4632' : '#b78a64'} />)}
-        <Tumbleweed position={[39, 1.2, 1]} scale={1.1} />
-        <Tumbleweed position={[-7, 0.9, -2]} scale={0.8} />
-        {[-31, -8, 15, 34].map((x) => <Post key={x} x={x} y={0} z={7} h={1.6} r={0.1} />)}
+        <group position={[TOWN.civicHall.x, 0, TOWN.civicHall.z]} scale={TOWN.civicHall.scale}><CivicHall night={night} /></group>
+        {TOWN.sheds.map((s) => <Box key={`shed${s.x}`} position={[s.x, 1.7, s.z]} size={[5.4, 3.4, 4.6]} color={s.sage ? P.sage : P.timber} />)}
+        {TOWN.hitches.map((h) => <group key={`hitch${h.x}`} position={[h.x, 0, h.z]}><Post x={-1.3} y={0} z={0} h={1.3} r={0.1} /><Post x={1.3} y={0} z={0} h={1.3} r={0.1} /><Box position={[0, 1.05, 0]} size={[2.8, 0.14, 0.14]} color={P.timberDark} /></group>)}
+        {TOWN.lamps.map((l) => <group key={`lamp${l.x}`} position={[l.x, 0, l.z]}><Post x={0} y={0} z={0} h={3.7} r={0.09} /><Box position={[0, 3.8, 0]} size={[0.7, 0.7, 0.7]} color={night ? P.lamp : P.mustard} glow={night} /></group>)}
+        {TOWN.horses.map((h) => <Animal key={`horse${h.x}`} position={[h.x, 0, h.z]} color={h.color} />)}
+        {TOWN.tumbleweeds.map((t) => <Tumbleweed key={`tumble${t.x}`} position={[t.x, t.y, t.z]} scale={t.scale} />)}
+        {TOWN.posts.map((p) => <Post key={p.x} x={p.x} y={0} z={p.z} h={1.6} r={0.1} />)}
       </>}
     </group>
   )
@@ -512,15 +523,15 @@ function RailwayDistrict({ count, night }: { count: number; night: boolean }) {
   return (
     <group>
       <Depot night={night} />
-      <group position={[31, 0, -14]}><WaterCrane /></group>
-      <group position={[30, 0, 15]}><SignalMast night={night} /></group>
-      {count >= 1 && Array.from({ length: 8 }, (_, i) => <Box key={i} position={[17 + (i % 4) * 2.2, 0.65 + Math.floor(i / 4) * 1.2, 11 + (i % 2) * 2]} size={[1.9, 1.3, 1.9]} color={i % 3 ? P.timber : P.mustard} />)}
-      {count >= 2 && <Wagon position={[2, 0, -12]} yaw={Math.PI / 2} />}
-      {count >= 3 && <>
-        <Box position={[-14, 2.8, -10]} size={[12, 5.6, 9]} color={P.sage} />
-        <Box position={[-14, 6.2, -10]} size={[13, 1, 10]} color={P.timberDark} />
+      <group position={[RAILWAY.waterCrane.x, 0, RAILWAY.waterCrane.z]}><WaterCrane /></group>
+      <group position={[RAILWAY.signalMast.x, 0, RAILWAY.signalMast.z]}><SignalMast night={night} /></group>
+      {count >= RAILWAY.crateStack.minCount && Array.from({ length: 8 }, (_, i) => <Box key={i} position={[17 + (i % 4) * 2.2, 0.65 + Math.floor(i / 4) * 1.2, 11 + (i % 2) * 2]} size={[1.9, 1.3, 1.9]} color={i % 3 ? P.timber : P.mustard} />)}
+      {count >= RAILWAY.wagon.minCount && <Wagon position={[RAILWAY.wagon.x, 0, RAILWAY.wagon.z]} yaw={RAILWAY.wagon.yaw} />}
+      {count >= RAILWAY.shed.minCount && <>
+        <Box position={[RAILWAY.shed.x, 2.8, RAILWAY.shed.z]} size={[RAILWAY.shed.w, 5.6, RAILWAY.shed.d]} color={P.sage} />
+        <Box position={[RAILWAY.shed.x, 6.2, RAILWAY.shed.z]} size={[RAILWAY.shed.w + 1, 1, RAILWAY.shed.d + 1]} color={P.timberDark} />
       </>}
-      {count >= 5 && <Box position={[28, 1.8, 25]} size={[5.2, 3.6, 9]} color={P.mustard} />}
+      {count >= RAILWAY.caboose.minCount && <Box position={[RAILWAY.caboose.x, 1.8, RAILWAY.caboose.z]} size={[RAILWAY.caboose.w, 3.6, RAILWAY.caboose.d]} color={P.mustard} />}
     </group>
   )
 }
@@ -528,30 +539,25 @@ function RailwayDistrict({ count, night }: { count: number; night: boolean }) {
 function Ranch({ count }: { count: number }) {
   return (
     <group>
-      <group position={[30, 0, -18]}><WindPump /></group>
-      <Corral position={[-23, 0, 9]} radius={9} />
-      {count >= 2 && <Corral position={[0, 0, 13]} radius={8} />}
-      {count >= 3 && <Corral position={[23, 0, 8]} radius={7} />}
-      {count >= 1 && <group position={[-25, 0, -19]} scale={1.15}><FalseFront position={[0, 0, 0]} color={P.sage} variant="store" /></group>}
-      {count >= 2 && <>
-        <Box position={[3, 4.8, -21]} size={[16, 9.6, 12]} color={P.timber} />
-        <mesh position={[3, 10.8, -21]} rotation={[0, Math.PI / 4, 0]} castShadow><coneGeometry args={[10.5, 3.6, 4]} /><Surf color={P.oxblood} /></mesh>
+      <group position={[RANCH.windPump.x, 0, RANCH.windPump.z]}><WindPump /></group>
+      {RANCH.corrals.filter((c) => count >= c.minCount).map((c) => <Corral key={`corral${c.x}`} position={[c.x, 0, c.z]} radius={c.radius} />)}
+      {count >= RANCH.house.minCount && <group position={[RANCH.house.x, 0, RANCH.house.z]} scale={RANCH.house.scale}><FalseFront position={[0, 0, 0]} color={P.sage} variant="store" /></group>}
+      {count >= RANCH.barn.minCount && <>
+        <Box position={[RANCH.barn.x, 4.8, RANCH.barn.z]} size={[RANCH.barn.w, 9.6, RANCH.barn.d]} color={P.timber} />
+        <mesh position={[RANCH.barn.x, 10.8, RANCH.barn.z]} rotation={[0, Math.PI / 4, 0]} castShadow><coneGeometry args={[10.5, 3.6, 4]} /><Surf color={P.oxblood} /></mesh>
         <Box position={[3, 4.2, -14.92]} size={[6.4, 7.2, 0.22]} color={P.ink} />
         <Box position={[3, 4.2, -14.78]} size={[0.25, 7.2, 0.25]} color={P.canvas} />
         <Box position={[3, 4.2, -14.76]} size={[6.4, 0.25, 0.25]} color={P.canvas} rotation={[0, 0, 0.75]} />
         <Box position={[3, 4.2, -14.74]} size={[6.4, 0.25, 0.25]} color={P.canvas} rotation={[0, 0, -0.75]} />
       </>}
-      {count >= 2 && <><FenceRun position={[-3, 0, -2]} length={68} /><FenceRun position={[-3, 0, 28]} length={68} /></>}
-      {count >= 3 && <><FenceRun position={[-36, 0, 13]} length={30} yaw={Math.PI / 2} /><FenceRun position={[30, 0, 13]} length={30} yaw={Math.PI / 2} /></>}
-      {count >= 2 && [-29, -23, -16, -8, 0].map((x, i) => <Animal key={x} position={[x, 0, 3 + (i % 2) * 10]} color={i % 2 ? '#d8c3a5' : '#8a6045'} horned />)}
-      {count >= 3 && [8, 15, 22, 28].map((x, i) => <Animal key={x} position={[x, 0, 3 + (i % 3) * 6]} color={i % 2 ? '#9a765c' : '#6d4c39'} />)}
+      {RANCH.fences.filter((f) => count >= f.minCount).map((f) => <FenceRun key={`fence${f.x}:${f.z}`} position={[f.x, 0, f.z]} length={f.length} yaw={f.yaw} />)}
+      {RANCH.cattle.filter((a) => count >= a.minCount).map((a) => <Animal key={`cow${a.x}`} position={[a.x, 0, a.z]} color={a.color} horned={a.horned} />)}
+      {RANCH.horses.filter((a) => count >= a.minCount).map((a) => <Animal key={`horse${a.x}`} position={[a.x, 0, a.z]} color={a.color} />)}
       {count >= 4 && <>
-        <Wagon position={[29, 0, -4]} yaw={-0.7} />
-        <Trough position={[-8, 0, 1]} />
-        {[-18, -14, 14, 18].map((x) => <HayBale key={x} position={[x, 1.2, -8]} />)}
-        <FenceRun position={[-21, 0, 20]} length={20} yaw={0.25} />
-        <FenceRun position={[15, 0, 24]} length={24} yaw={-0.18} />
-        <group position={[-31, 0, -9]}><Box position={[0, 1.6, 0]} size={[7, 3.2, 5]} color={P.sage} /><Box position={[0, 3.5, 0]} size={[7.8, 0.7, 5.8]} color={P.timberDark} /></group>
+        <Wagon position={[RANCH.wagon.x, 0, RANCH.wagon.z]} yaw={RANCH.wagon.yaw} />
+        <Trough position={[RANCH.trough.x, 0, RANCH.trough.z]} />
+        {RANCH.hay.map((h) => <HayBale key={h.x} position={[h.x, 1.2, h.z]} />)}
+        <group position={[RANCH.shed.x, 0, RANCH.shed.z]}><Box position={[0, 1.6, 0]} size={[RANCH.shed.w, 3.2, RANCH.shed.d]} color={P.sage} /><Box position={[0, 3.5, 0]} size={[RANCH.shed.w + 0.8, 0.7, RANCH.shed.d + 0.8]} color={P.timberDark} /></group>
       </>}
     </group>
   )
@@ -560,22 +566,22 @@ function Ranch({ count }: { count: number }) {
 function Mine({ count, night }: { count: number; night: boolean }) {
   return (
     <group>
-      <Box position={[-31, 7, -10]} size={[18, 14, 20]} color={P.redRock} />
-      <mesh position={[-21.8, 3.6, -2]} rotation={[0, Math.PI / 2, 0]}><torusGeometry args={[4.2, 1.8, 6, 14, Math.PI]} /><Surf color={P.ink} /></mesh>
-      <group position={[-8, 0, -5]}><Headframe /></group>
-      <Box position={[-8, 0.22, 13]} size={[2.8, 0.25, 32]} color={P.timberDark} />
+      <Box position={[MINE.rock.x, MINE.rock.h / 2, MINE.rock.z]} size={[MINE.rock.w, MINE.rock.h, MINE.rock.d]} color={P.redRock} />
+      <mesh position={[MINE.adit.x, 3.6, MINE.adit.z]} rotation={[0, Math.PI / 2, 0]}><torusGeometry args={[4.2, 1.8, 6, 14, Math.PI]} /><Surf color={P.ink} /></mesh>
+      <group position={[MINE.headframe.x, 0, MINE.headframe.z]}><Headframe /></group>
+      <Box position={[MINE.spur.x, 0.22, MINE.spur.z]} size={[MINE.spur.w, 0.25, MINE.spur.d]} color={P.timberDark} />
       <Box position={[-3.5, 0.22, 13]} size={[0.25, 0.25, 32]} color={P.copper} />
       <Box position={[-12.5, 0.22, 13]} size={[0.25, 0.25, 32]} color={P.copper} />
       {Array.from({ length: 9 }, (_, i) => <Box key={i} position={[-8, 0.17, -1 + i * 4]} size={[10, 0.18, 0.5]} color={P.timberDark} />)}
       {count >= 2 && <>
-        <mesh position={[13, 4.5, -8]}><cylinderGeometry args={[3, 3.3, 9, 12]} /><Surf color={P.copper} /></mesh>
-        <Post x={13} y={8} z={-8} h={7} r={0.6} color={P.ink} />
-        <Box position={[27, 3.2, -6]} size={[13, 6.4, 10]} color={P.timber} />
+        <mesh position={[MINE.boiler.x, 4.5, MINE.boiler.z]}><cylinderGeometry args={[3, MINE.boiler.radius, 9, 12]} /><Surf color={P.copper} /></mesh>
+        <Post x={MINE.boiler.x} y={8} z={MINE.boiler.z} h={7} r={0.6} color={P.ink} />
+        <Box position={[MINE.shed.x, 3.2, MINE.shed.z]} size={[MINE.shed.w, 6.4, MINE.shed.d]} color={P.timber} />
       </>}
-      {count >= 4 && [-8, -3.5, 1].map((x, i) => <Box key={x} position={[x, 1.2, 11 + i * 6]} size={[4.2, 2.4, 3.2]} color={P.copper} />)}
-      {count >= 4 && [14, 22, 30].map((x, i) => <mesh key={x} position={[x, 1.4 + i * 0.3, 14 + i * 3]}><coneGeometry args={[4.8, 2.8 + i * 0.6, 8]} /><Surf color={i % 2 ? P.strata : '#9e724b'} /></mesh>)}
-      {count >= 6 && [-30, -20, -10, 0].map((x) => <group key={x} position={[x, 0, 27]}><mesh position={[0, 1.8, 0]} rotation={[0, Math.PI / 4, 0]}><coneGeometry args={[3.8, 3.6, 4]} /><Surf color={P.canvas} /></mesh>{night && <pointLight position={[0, 2, 2]} intensity={2} color={P.lamp} />}</group>)}
-      {count >= 8 && <Box position={[30, 2.8, 16]} size={[10, 5.6, 8]} color={P.sage} />}
+      {MINE.carts.filter((c) => count >= c.minCount).map((c) => <Box key={`cart${c.x}`} position={[c.x, 1.2, c.z]} size={[c.w, 2.4, c.d]} color={P.copper} />)}
+      {MINE.tailings.filter((t) => count >= t.minCount).map((t, i) => <mesh key={`tail${t.x}`} position={[t.x, t.lift, t.z]}><coneGeometry args={[t.radius, t.h, 8]} /><Surf color={i % 2 ? P.strata : '#9e724b'} /></mesh>)}
+      {MINE.tents.filter((t) => count >= t.minCount).map((t) => <group key={`tent${t.x}`} position={[t.x, 0, t.z]}><mesh position={[0, 1.8, 0]} rotation={[0, Math.PI / 4, 0]}><coneGeometry args={[3.8, 3.6, 4]} /><Surf color={P.canvas} /></mesh>{night && <pointLight position={[0, 2, 2]} intensity={2} color={P.lamp} />}</group>)}
+      {count >= MINE.assay.minCount && <Box position={[MINE.assay.x, 2.8, MINE.assay.z]} size={[MINE.assay.w, 5.6, MINE.assay.d]} color={P.sage} />}
     </group>
   )
 }
@@ -615,87 +621,78 @@ function ExcavationTrench({ position, size }: { position: [number, number, numbe
 function Dig({ count }: { count: number }) {
   return (
     <group>
-      <Foundation position={[-15, 0, -7]} size={[18, 11]} />
-      {[[-23, 9, 13, 5], [-4, 10, 15, 6], [17, 8, 12, 5]].map(([x, z, w, d], i) => <ExcavationTrench key={i} position={[x, 0, z]} size={[w, d]} />)}
-      {count >= 2 && [-29, 0].map((x, i) => <group key={x} position={[x, 0, -22 + i * 2]}><mesh position={[0, 2.2, 0]} rotation={[0, Math.PI / 4, 0]}><coneGeometry args={[5, 4.4, 4]} /><Surf color={P.canvas} /></mesh><Post x={0} y={0} z={0} h={5.5} r={0.1} /></group>)}
-      {count >= 4 && <Foundation position={[14, 0, -7]} size={[18, 13]} />}
-      {count >= 4 && <>
-        <Box position={[8, 1.2, 22]} size={[10, 2.4, 4]} color={P.timber} />
-        {[-22, -14, 20, 28].map((x) => <Box key={x} position={[x, 0.65, 22]} size={[3, 1.3, 2.2]} color={P.timber} />)}
+      {DIG.foundations.filter((f) => count >= f.minCount).map((f) => <Foundation key={`found${f.x}:${f.z}`} position={[f.x, 0, f.z]} size={[f.w, f.d]} buried={f.buried} />)}
+      {DIG.trenches.map((t, i) => <ExcavationTrench key={i} position={[t.x, 0, t.z]} size={[t.w, t.d]} />)}
+      {DIG.tents.filter((t) => count >= t.minCount).map((t) => <group key={`tent${t.x}`} position={[t.x, 0, t.z]}><mesh position={[0, 2.2, 0]} rotation={[0, Math.PI / 4, 0]}><coneGeometry args={[5, 4.4, 4]} /><Surf color={P.canvas} /></mesh><Post x={0} y={0} z={0} h={5.5} r={0.1} /></group>)}
+      {count >= DIG.table.minCount && <>
+        <Box position={[DIG.table.x, 1.2, DIG.table.z]} size={[DIG.table.w, 2.4, DIG.table.d]} color={P.timber} />
+        {DIG.crates.map((c) => <Box key={c.x} position={[c.x, 0.65, c.z]} size={[c.w, 1.3, c.d]} color={P.timber} />)}
       </>}
-      {count >= 6 && <group position={[22, 0, 3]}>{[-5, 5].flatMap((x) => [-3, 3].map((z) => <Post key={`${x}:${z}`} x={x} y={0} z={z} h={7} />))}<Box position={[0, 6.7, 0]} size={[11, 0.35, 7]} color={P.timber} />{[2, 4].map((y) => <Box key={y} position={[0, y, 3]} size={[10, 0.16, 0.16]} color={P.timberDark} />)}</group>}
-      {count >= 8 && <Foundation position={[0, 0, 1]} size={[24, 16]} buried />}
+      {count >= DIG.scaffold.minCount && <group position={[DIG.scaffold.x, 0, DIG.scaffold.z]}>{DIG.scaffold.legs.flatMap((x) => DIG.scaffold.legsZ.map((z) => <Post key={`${x}:${z}`} x={x} y={0} z={z} h={7} />))}<Box position={[0, 6.7, 0]} size={[11, 0.35, 7]} color={P.timber} />{[2, 4].map((y) => <Box key={y} position={[0, y, 3]} size={[10, 0.16, 0.16]} color={P.timberDark} />)}</group>}
       {count >= 8 && <>
-        {[15, 21, 27].map((x, i) => <mesh key={x} position={[x, 1 + i * 0.25, 15]}><coneGeometry args={[3.2, 2 + i * 0.5, 8]} /><Surf color="#a87952" /></mesh>)}
-        <group position={[-9, 0, 20]}><Box position={[0, 1.2, 0]} size={[4.8, 0.28, 3.4]} color={P.timber} />{[-1.7, 1.7].flatMap((x) => [-1.1, 1.1].map((z) => <Post key={`${x}:${z}`} x={x} y={0} z={z} h={1.2} r={0.1} />))}</group>
-        {[-18, -12, -6, 0, 6].map((x, i) => <mesh key={x} position={[x, 0.55, 18 + (i % 2) * 2]}><cylinderGeometry args={[0.45 + i * 0.04, 0.32, 1.1, 8]} /><Surf color={i % 2 ? P.oxblood : P.copper} /></mesh>)}
-        <Wagon position={[27, 0, -16]} yaw={-0.5} />
+        {DIG.spoil.map((s) => <mesh key={s.x} position={[s.x, s.lift, s.z]}><coneGeometry args={[s.radius, s.h, 8]} /><Surf color="#a87952" /></mesh>)}
+        <group position={[DIG.sortingTable.x, 0, DIG.sortingTable.z]}><Box position={[0, 1.2, 0]} size={[DIG.sortingTable.w, 0.28, DIG.sortingTable.d]} color={P.timber} />{[-1.7, 1.7].flatMap((x) => [-1.1, 1.1].map((z) => <Post key={`${x}:${z}`} x={x} y={0} z={z} h={1.2} r={0.1} />))}</group>
+        {DIG.barrels.map((b, i) => <mesh key={b.x} position={[b.x, 0.55, b.z]}><cylinderGeometry args={[b.radius, 0.32, 1.1, 8]} /><Surf color={i % 2 ? P.oxblood : P.copper} /></mesh>)}
+        <Wagon position={[DIG.wagon.x, 0, DIG.wagon.z]} yaw={DIG.wagon.yaw} />
       </>}
     </group>
   )
 }
 
 function Reserve({ seed, count, wildlife }: { seed: number; count: number; wildlife: boolean }) {
-  const items = useMemo(() => {
-    const rng = seeded(seed * 73)
-    return Array.from({ length: 72 }, (_, i) => ({ x: -34 + rng() * 68, z: -112 + rng() * 224, s: 0.55 + rng() * 1.05, kind: i % 9 }))
-  }, [seed])
+  const items = useMemo(() => reserveItems(seed), [seed])
   return (
     <group>
-      {[-22, 4, 25, -5].map((x, i) => <Cactus key={x} position={[x, 0, -78 + i * 52]} scale={[1.25, 0.92, 1.1, 0.78][i]} />)}
+      {RESERVE.cacti.map((c) => <Cactus key={c.x} position={[c.x, 0, c.z]} scale={c.scale} />)}
       {items.map((c, i) => {
-        if (c.kind === 0 && count >= 2) return <Cactus key={i} position={[c.x, 0, c.z]} scale={c.s} />
-        if ((c.kind === 1 || c.kind === 2) && count >= 1) return <PricklyPear key={i} position={[c.x, 0, c.z]} scale={c.s} />
-        if ((c.kind === 3 || c.kind === 4) && count >= 2) return <Scrub key={i} position={[c.x, 0, c.z]} scale={c.s} />
-        if ((c.kind === 5 || c.kind === 6) && count >= 3) return <RockOutcrop key={i} position={[c.x, 0, c.z]} scale={c.s * 0.8} />
-        if ((c.kind === 7 || c.kind === 8) && count >= 4) return <Tumbleweed key={i} position={[c.x, c.s, c.z]} scale={c.s * 0.7} />
-        return null
+        const minCount = reserveItemMinCount(c.kind)
+        if (minCount === null || count < minCount) return null
+        if (c.kind === 0) return <Cactus key={i} position={[c.x, 0, c.z]} scale={c.s} />
+        if (c.kind === 1 || c.kind === 2) return <PricklyPear key={i} position={[c.x, 0, c.z]} scale={c.s} />
+        if (c.kind === 3 || c.kind === 4) return <Scrub key={i} position={[c.x, 0, c.z]} scale={c.s} />
+        if (c.kind === 5 || c.kind === 6) return <RockOutcrop key={i} position={[c.x, 0, c.z]} scale={c.s * 0.8} />
+        return <Tumbleweed key={i} position={[c.x, c.s, c.z]} scale={c.s * 0.7} />
       })}
-      <group position={[17, 0, 20]}>
-        <mesh position={[0, 5, 0]}><cylinderGeometry args={[5, 5.6, 8, 12]} /><Surf color={P.timber} /></mesh>
+      <group position={[RESERVE.tank.x, 0, RESERVE.tank.z]}>
+        <mesh position={[0, 5, 0]}><cylinderGeometry args={[5, RESERVE.tank.radius, 8, 12]} /><Surf color={P.timber} /></mesh>
         {[-3.5, 3.5].flatMap((x) => [-3.5, 3.5].map((z) => <Post key={`${x}:${z}`} x={x} y={0} z={z} h={5} r={0.2} />))}
       </group>
-      {[-92, -58, -24, 10, 44, 78].map((z) => <group key={z} position={[-28, 0, z]}><Post x={0} y={0} z={0} h={9} /><Box position={[0, 8.3, 0]} size={[5.2, 0.28, 0.28]} color={P.timberDark} /></group>)}
+      {RESERVE.telegraph.map((p) => <group key={p.z} position={[p.x, 0, p.z]}><Post x={0} y={0} z={0} h={9} /><Box position={[0, 8.3, 0]} size={[5.2, 0.28, 0.28]} color={P.timberDark} /></group>)}
       {[-1.3, 0, 1.3].map((x) => <Box key={x} position={[-28 + x, 8.5, -7]} size={[0.08, 0.08, 170]} color={P.timberDark} />)}
-      {wildlife && count >= 1 && [[-4, -60], [13, -22], [-10, 37], [18, 83]].map(([x, z], i) => <Animal key={i} position={[x, 0, z]} color={i % 2 ? '#d19b5f' : '#a87048'} />)}
-      {wildlife && count >= 1 && <Animal position={[-2, 0, 9]} color="#c18a54" />}
-      {count >= 3 && [[-14, 56], [11, 78], [24, -48], [-6, -92]].map(([x, z], i) => <mesh key={i} position={[x, 0.12, z]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[2.3, 3.2, 12]} /><Surf color="#79583e" /></mesh>)}
+      {wildlife && count >= 1 && RESERVE.wildlife.map((a, i) => <Animal key={i} position={[a.x, 0, a.z]} color={a.color} />)}
+      {count >= 3 && RESERVE.burrows.map((b, i) => <mesh key={i} position={[b.x, 0.12, b.z]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[2.3, 3.2, 12]} /><Surf color="#79583e" /></mesh>)}
       {count >= 4 && <>
-        <group position={[23, 0, -84]}>
+        <group position={[RESERVE.formation.x, 0, RESERVE.formation.z]}>
           <mesh position={[-4, 6, 0]} scale={[2.8, 6, 2.2]}><dodecahedronGeometry args={[1, 0]} /><Surf color={P.redRock} /></mesh>
           <mesh position={[4, 7.5, 0]} scale={[2.5, 7.5, 2]}><dodecahedronGeometry args={[1, 0]} /><Surf color={P.strata} /></mesh>
           <Box position={[0, 10.8, 0]} size={[7.5, 2.1, 3.2]} color={P.redRock} />
         </group>
-        <group position={[-18, 0, 68]}>
+        <group position={[RESERVE.stack.x, 0, RESERVE.stack.z]}>
           {[0, 4, 8].map((y, i) => <mesh key={y} position={[0, y * 0.8 + 1.5, 0]} scale={[5 - i * 0.7, 1.5, 4 - i * 0.5]}><dodecahedronGeometry args={[1, 0]} /><Surf color={i % 2 ? P.strata : P.redRock} /></mesh>)}
         </group>
-        {[-72, -12, 48, 96].map((z, i) => <group key={z} position={[-19 + (i % 2) * 31, 0, z]}><Box position={[0, 0.09, 0]} size={[13, 0.18, 4.2]} color={P.paleGravel} /><PricklyPear position={[-4, 0, 1]} scale={0.8} /><Scrub position={[4, 0, -1]} scale={0.9} /></group>)}
+        {RESERVE.washes.map((w) => <group key={w.z} position={[w.x, 0, w.z]}><Box position={[0, 0.09, 0]} size={[13, 0.18, 4.2]} color={P.paleGravel} /><PricklyPear position={[-4, 0, 1]} scale={0.8} /><Scrub position={[4, 0, -1]} scale={0.9} /></group>)}
       </>}
     </group>
   )
 }
 
-function FrontierWalker({
-  index,
-  center,
-  night,
-}: {
-  index: number
-  center: [number, number]
-  night: boolean
-}) {
+function FrontierWalker({ index, bodies, night }: { index: number; bodies: React.RefObject<FrontierWalkerBody[]>; night: boolean }) {
   const group = useRef<THREE.Group>(null)
-  const phase = index * 1.7
-  useFrame(({ clock }) => {
-    if (!group.current) return
-    const t = clock.elapsedTime * 0.35 + phase
-    const x = center[0] + Math.sin(t) * 8
-    const z = center[1] + Math.sin(t * 2 + 0.4) * 6
-    group.current.position.set(x, 0, z)
-    group.current.rotation.y = Math.atan2(Math.cos(t) * 8, Math.cos(t * 2 + 0.4) * 12)
+  useFrame(() => {
+    const root = group.current
+    const body = bodies.current?.[index]
+    if (!root) return
+    if (!body) {
+      root.visible = false
+      return
+    }
+    root.visible = true
+    root.position.set(body.x, 0, body.z)
+    // Headings are atan2(dz, dx); the mesh faces +z, so rotation.y = atan2(dirX, dirZ).
+    root.rotation.y = Math.atan2(Math.cos(body.heading), Math.sin(body.heading))
   })
   return (
-    <group ref={group} scale={L.creatureScale}>
+    <group ref={group} scale={L.creatureScale} visible={false}>
       <mesh position={[0, 0.65, 0]} castShadow><dodecahedronGeometry args={[0.52, 0]} /><Surf color={index % 2 ? P.canvas : P.teal} /></mesh>
       <mesh position={[0, 1.32, 0]} castShadow><icosahedronGeometry args={[0.38, 1]} /><Surf color={P.canvas} /></mesh>
       <mesh position={[0, 1.7, 0]} castShadow><cylinderGeometry args={[0.52, 0.42, 0.25, 10]} /><Surf color={index % 3 ? P.oxblood : P.mustard} /></mesh>
@@ -705,15 +702,79 @@ function FrontierWalker({
   )
 }
 
+/** Frames the collider registry must hold still before the first bodies are placed. */
+const SETTLE_FRAMES = 2
+
+/**
+ * The residents: one deterministic simulation (`stepWalkers`) runs once per frame at priority −1,
+ * before the figures read their bodies. Each body steers round the registered colliders, sweeps
+ * its circle and is kept apart from the others (scene/walkers.ts).
+ */
 function Creatures({ generated, residents, night }: { generated: ReturnType<typeof generateLayout>; residents: number; night: boolean }) {
+  const registry = useColliderRegistry()
+  const colliders = useColliderSet()
+  const bodies = useRef<FrontierWalkerBody[]>([])
+  const settle = useRef({ version: -1, frames: 0 })
+
+  useEffect(() => {
+    registry.setAgents('frontier-walkers', bodies.current)
+    return () => registry.clearAgents('frontier-walkers')
+  }, [registry])
+
+  useEffect(() => {
+    // Rebuild the cast when the layout re-rolls so homes follow the districts.
+    bodies.current.length = 0
+  }, [generated])
+
+  useFrame(({ clock }, dt) => {
+    const set = colliders.current
+    const list = bodies.current
+    if (registry.version !== settle.current.version) {
+      settle.current.version = registry.version
+      settle.current.frames = 0
+    } else settle.current.frames += 1
+    if (list.length === 0 && settle.current.frames < SETTLE_FRAMES) return
+    if (list.length !== residents) {
+      list.length = 0
+      list.push(...createWalkers(generated, set, residents))
+    }
+    if (list.length === 0) return
+    stepWalkers(list, set, clock.elapsedTime, dt)
+  }, -1)
+
   return (
-    <group>
-      {Array.from({ length: residents }, (_, i) => {
-        const d = generated.districts[i % generated.districts.length]
-        return <FrontierWalker key={i} index={i} center={d.center} night={night} />
-      })}
+    <group name="frontier-walkers">
+      {Array.from({ length: residents }, (_, i) => (
+        <FrontierWalker key={i} index={i} bodies={bodies} night={night} />
+      ))}
     </group>
   )
+}
+
+/** Registers every footprint derived from the placement data (the same rows the meshes map over). */
+function Colliders({ generated, progress, wildlife }: { generated: ReturnType<typeof generateLayout>; progress: LabState['progress']; wildlife: boolean }) {
+  const shapes = useMemo(() => frontierColliders(generated, progress, wildlife), [generated, progress, wildlife])
+  useCollider(shapes)
+  const registry = useColliderRegistry()
+  useEffect(() => {
+    // A future character (or a dev console) can read the live set without the `?colliders=1` flag.
+    window.__colliders = {
+      count: () => registry.count(),
+      penetration: (x, z, r) => registry.penetration(x, z, r),
+      shapes: () => registry.shapes(),
+      version: () => registry.version,
+    }
+    return () => {
+      delete window.__colliders
+    }
+  }, [registry])
+  return null
+}
+
+declare global {
+  interface Window {
+    __colliders?: ColliderDevHook
+  }
 }
 
 function Dust({ dense = false }: { dense?: boolean }) {
@@ -728,55 +789,14 @@ function Dust({ dense = false }: { dense?: boolean }) {
   )
 }
 
-function CameraRig({ state, generated }: { state: LabState; generated: ReturnType<typeof generateLayout> }) {
-  const camera = useThree((s) => s.camera)
-  const district = generated.districts.find((d) => d.id === state.focusDistrict)
-  useEffect(() => {
-    const yawDeg = Math.max(-35, Math.min(35, state.camera.azimuthDeg))
-    const yaw = rad(yawDeg)
-    const pitchDeg = Math.max(34, Math.min(40, state.camera.pitchDeg))
-    const pitch = rad(pitchDeg)
-    const kingdom = dioramaCameraPose(yawDeg, state.camera.dolly, pitchDeg)
-    let target = kingdom.target
-    let position = kingdom.position
-    if (state.station === 'district' && district) {
-      const focusOffsetX = district.id === 'railway-station' ? 12 : district.id === 'mine-works' ? -5 : 0
-      target = [district.center[0] + focusOffsetX, 3, district.center[1]]
-      const groundDistance = (
-        district.id === 'outskirts-reserve'
-          ? 140
-          : Math.max(100, Math.max(...district.footprint) * 1.65)
-      ) * state.camera.dolly
-      const x = target[0] + Math.sin(yaw) * groundDistance * 0.55
-      const z = target[2] + groundDistance
-      position = [x, target[1] + Math.tan(pitch) * Math.hypot(x - target[0], z - target[2]), z]
-    } else if (state.station === 'landmark') {
-      target = [118, 9, 65]
-      const d = 68 * state.camera.dolly
-      position = [target[0] + Math.sin(yaw) * d * 0.5, target[1] + Math.tan(pitch) * d, target[2] + d]
-    } else if (state.station === 'resident' && generated.districts[0]) {
-      target = [generated.districts[0].center[0] + 7, 3, generated.districts[0].center[1]]
-      const d = 18 * state.camera.dolly
-      position = [target[0] + Math.sin(yaw) * 5, target[1] + Math.tan(pitch) * d, target[2] + d]
-    } else if (state.station === 'arrival') {
-      target = [-22, 4, -5]
-      const d = 100 * state.camera.dolly
-      position = [target[0] + Math.sin(yaw) * 34, target[1] + Math.tan(pitch) * d, target[2] + d]
-    } else if (state.station === 'horizon') {
-      target = kingdom.target
-      position = kingdom.position
-    }
-    if (camera instanceof THREE.PerspectiveCamera) {
-      camera.fov = state.camera.fov
-      camera.near = 0.5
-      camera.far = 900
-      camera.updateProjectionMatrix()
-    }
-    camera.position.set(...position)
-    camera.lookAt(...target)
-    camera.updateMatrixWorld()
-  }, [camera, district, generated, state.camera, state.focusDistrict, state.station])
-  return null
+/** Linear fog near / far per mode: the dust storm, the slab as shipped (420 m wall), or the outer world's aerial perspective. */
+export function fogRange(state: Pick<LabState, 'edge' | 'night' | 'catastrophe'>): [number, number] {
+  if (state.catastrophe.phase === 'dust') return [70, 210]
+  if (state.edge === 'outer') {
+    const fog = state.night ? DESERT_FOG.night : DESERT_FOG.day
+    return [fog.near, fog.far]
+  }
+  return [190, 420]
 }
 
 export function FrontierScene({ state, onPickDistrict }: { state: LabState; onPickDistrict: (id: string) => void }) {
@@ -784,15 +804,28 @@ export function FrontierScene({ state, onPickDistrict }: { state: LabState; onPi
   const fraction = courseProgress(state.progress)
   const ruin = state.catastrophe.phase === 'ruin' || state.catastrophe.phase === 'impact'
   const sky = state.night ? P.skyNight : state.catastrophe.phase === 'dust' ? '#b69062' : P.sky
+  const outer = state.edge === 'outer'
+  const [fogNear, fogFar] = fogRange(state)
+  const reducedMotion = state.reducedMotion ?? false
+  const desert = useMemo(() => (outer ? createOuterDesert(state.seed) : null), [outer, state.seed])
+  // What the free camera must stay above: the outer heightfield and the authored skyline boxes.
+  const cameraGround = useMemo(
+    () => (x: number, z: number) => Math.max(desert ? desert.heightAt(x, z) : 0, backdropWallHeightAt(x, z, fraction)),
+    [desert, fraction],
+  )
   return (
-    <>
+    <ColliderProvider>
       <color attach="background" args={[sky]} />
-      <fog attach="fog" args={[sky, state.catastrophe.phase === 'dust' ? 70 : 190, state.catastrophe.phase === 'dust' ? 210 : 420]} />
+      <fog attach="fog" args={[sky, fogNear, fogFar]} />
       <hemisphereLight args={[state.night ? '#59618a' : '#fff0ce', state.night ? '#281d28' : '#9f5c3d', state.night ? 0.7 : 0.9]} />
       <directionalLight position={state.night ? [-80, 75, 40] : [95, 88, 125]} intensity={state.night ? 1.2 : 2.5} color={state.night ? '#91a7d8' : '#ffe4b5'} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-left={-190} shadow-camera-right={190} shadow-camera-top={170} shadow-camera-bottom={-170} />
 
-      <mesh position={[0, -0.35, 150]} receiveShadow><boxGeometry args={[520, 0.7, 800]} /><Surf color={state.night ? '#7f5f4d' : P.sand} /></mesh>
-      <BackdropSkyline night={state.night} fraction={fraction} />
+      {outer && desert ? (
+        <Outer desert={desert} night={state.night} reducedMotion={reducedMotion} />
+      ) : (
+        <mesh position={[0, -0.35, 150]} receiveShadow><boxGeometry args={[520, 0.7, 800]} /><Surf color={state.night ? '#7f5f4d' : P.sand} /></mesh>
+      )}
+      <BackdropSkyline night={state.night} fraction={fraction} haze={outer ? SKYLINE_HAZE : undefined} />
       <Arroyo />
       <Rails />
       <Train active={state.train} night={state.night} />
@@ -818,12 +851,15 @@ export function FrontierScene({ state, onPickDistrict }: { state: LabState; onPi
       })}
 
       <Landmark stage={landmarkStage(fraction)} night={state.night} />
+      <Colliders generated={generated} progress={state.progress} wildlife={state.wildlife} />
       <Creatures generated={generated} residents={state.residents} night={state.night} />
+      <ColliderDebug groundAt={() => 0} />
       {state.dust && <Dust dense={state.catastrophe.phase === 'dust'} />}
-      {state.night && <DreiStars radius={280} depth={80} count={2500} factor={4} saturation={0.25} fade speed={0.2} />}
+      {state.night && (outer ? <DreiStars radius={1900} depth={300} count={2500} factor={14} saturation={0.25} fade speed={0.2} /> : <DreiStars radius={280} depth={80} count={2500} factor={4} saturation={0.25} fade speed={0.2} />)}
       {ruin && state.catastrophe.districtId && <pointLight position={[0, 12, 0]} color="#c34e32" intensity={6} distance={70} />}
-      <CameraRig state={state} generated={generated} />
+      <FreeCameraRig state={state} generated={generated} poseId={state.pose ?? null} custom={state.customCamera ?? null} readyKey={state.edge ?? 'outer'} groundAt={cameraGround} />
+      <EdgeLabOverlay />
       {state.pixel && <PixelComposer />}
-    </>
+    </ColliderProvider>
   )
 }

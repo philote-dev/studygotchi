@@ -15,6 +15,14 @@ export interface SpacePalette {
   lamp: string;
   /** Struggling and fragile ideas carry the one live colour. */
   live: string;
+  /**
+   * Constellation edges. These are the single source of edge brightness for
+   * both renderers (`components/graph/KnowledgeCanvas.tsx` and the WebGL twin
+   * `lib/graph/twin/style.ts`): the stroke colour carries the base alpha, and
+   * `edgeDrawBudget` in `lib/space-field.ts` multiplies it per zoom band
+   * (0.74 / 0.62 / 0.88). `edgeStrong` is the lit / route stroke at alpha 1,
+   * so it must stay above `edge` for focus and routes to read.
+   */
   edge: string;
   edgeStrong: string;
   edgeResource: string;
@@ -37,9 +45,9 @@ export function spacePalette(theme: "light" | "dark"): SpacePalette {
       starDim: "rgba(255, 246, 223, 0.42)",
       lamp: "#ffe7a3",
       live: "#e88a8a",
-      edge: "rgba(255, 246, 223, 0.16)",
-      edgeStrong: "rgba(255, 246, 223, 0.62)",
-      edgeResource: "rgba(185, 216, 234, 0.14)",
+      edge: "rgba(255, 246, 223, 0.23)",
+      edgeStrong: "rgba(255, 246, 223, 0.8)",
+      edgeResource: "rgba(185, 216, 234, 0.2)",
       label: "#efe6d3",
       labelDim: "rgba(239, 230, 211, 0.66)",
       labelStrong: "#fff6df",
@@ -52,9 +60,9 @@ export function spacePalette(theme: "light" | "dark"): SpacePalette {
     starDim: "rgba(23, 21, 29, 0.42)",
     lamp: "#d9a92e",
     live: "#dc756f",
-    edge: "rgba(23, 21, 29, 0.14)",
-    edgeStrong: "rgba(23, 21, 29, 0.55)",
-    edgeResource: "rgba(23, 21, 29, 0.1)",
+    edge: "rgba(23, 21, 29, 0.2)",
+    edgeStrong: "rgba(23, 21, 29, 0.74)",
+    edgeResource: "rgba(23, 21, 29, 0.14)",
     label: "#29303a",
     labelDim: "rgba(41, 48, 58, 0.66)",
     labelStrong: "#17151d",

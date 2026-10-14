@@ -17,10 +17,40 @@ import {
   seeded,
   volcanoProfile,
 } from '../layout/biome-layout'
+import {
+  ARCHIPELAGO_HOUSES,
+  CANYON_COLUMNS,
+  CANYON_HOUSES,
+  GEOTHERMAL_HOUSES,
+  GEOTHERMAL_PLOTS,
+  GEOTHERMAL_POOLS,
+  HAMLET_HALLS,
+  HAMLET_ROCKS,
+  HAMLET_SHEEP,
+  HAMLET_WALLS,
+  HEATHER,
+  RELIEF,
+  ROCKS,
+  TRIPOD_FEET,
+  VILLAGE_ANCHORS,
+  hamletHomes,
+  landColliders,
+  villageHomes,
+} from '../layout/placements'
+import { BASIN, GROUND_Y, INLET, LEFT_SLAB, RIGHT_SLAB, WATER_Y, groundHeightAt } from '../layout/terrain'
 import { CameraRig } from '../camera/CameraRig'
 import { PixelComposer } from '../render/PixelComposer'
 import { Surf } from '../render/materials'
 import type { CatastropheState, LabState } from '../state'
+import { ColliderProvider, useCollider } from '../../collision/ColliderRegistry'
+import { ColliderDebug } from '../../collision/ColliderDebug'
+import { edgeTechnique } from '../edge'
+import { EdgeLabPanelPortal } from '../edge/EdgeLabPanel'
+import { outerBundle, outerFloor } from '../edge/outer'
+import { outerFogRange } from '../edge/outer/outer-world'
+import { geyserShowTime } from '../edge/barriers/geography'
+import { LabClockContext, useFrozenTime } from './lab-clock'
+import { Walkers } from './Walkers'
 
 function Beam({ a, b, radius = 0.22, color = P.cream }: { a: THREE.Vector3Tuple; b: THREE.Vector3Tuple; radius?: number; color?: string }) {
   const { midpoint, length, quaternion } = useMemo(() => {
@@ -105,79 +135,62 @@ function TurfPatch({ position, scale, color, rotation = 0 }: {
 
 function Water({ night }: { night: boolean }) {
   return (
-    <mesh position={[0, -0.85, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+    <mesh position={[0, WATER_Y, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[1400, 1400, 1, 1]} />
       <Surf color={night ? P.waterNight : P.water} />
     </mesh>
   )
 }
 
-function FogFollow({ mist }: { mist: boolean }) {
+/**
+ * The land's own fog follows the camera distance. Under the outer world the far end is pushed
+ * out to 1.3–1.6 km (aerial perspective) and the fog colour is the sky colour, so the end of the
+ * last ring never shows as a band; nothing in the product overview frame is nearer than either
+ * fog start, so that pose is unchanged. A frozen lab pose sets the fog instantly.
+ */
+function FogFollow({ mist, outer, night, frozen }: { mist: boolean; outer: boolean; night: boolean; frozen: boolean }) {
   const scene = useThree((state) => state.scene)
+  const colour = useMemo(() => new THREE.Color(outer ? (night ? P.skyNight : P.sky) : night ? '#263544' : P.fog), [outer, night])
   useFrame(({ camera }) => {
     const fog = scene.fog as THREE.Fog | null
     if (!fog) return
-    const { near, far } = fogRange(camera.position.length(), mist)
-    fog.near += (near - fog.near) * 0.12
-    fog.far += (far - fog.far) * 0.12
+    const distance = camera.position.length()
+    const { near, far } = outer ? outerFogRange(distance, night) : fogRange(distance, mist)
+    const k = frozen ? 1 : 0.12
+    fog.near += (near - fog.near) * k
+    fog.far += (far - fog.far) * k
+    if (!fog.color.equals(colour)) fog.color.copy(colour)
   })
   return null
 }
 
 function FixedTerrain({ night }: { night: boolean }) {
   const ground = night ? P.groundNight : P.ground
-  const left: Point[] = [
-    [-250, -200], [-6, -200], [-4, -142], [-7, -90], [-18, -38], [-39, 18],
-    [-47, 52], [-42, 78], [-29, 112], [-23, 170], [-28, 520], [-250, 520],
-  ]
-  const right: Point[] = [
-    [44, -200], [250, -200], [250, 520], [34, 520], [27, 170], [18, 126],
-    [4, 92], [2, 67], [14, 42], [31, 18], [38, -18], [43, -72], [44, -128],
-  ]
-  const basin: Point[] = [
-    [5, 48], [20, 38], [39, 39], [51, 44], [66, 40], [87, 43], [106, 53],
-    [116, 73], [112, 96], [96, 116], [73, 124], [48, 119], [29, 108], [18, 91], [17, 68],
-  ]
-  const inlet: Point[] = [[-10, 44], [14, 38], [37, 42], [35, 62], [10, 66], [-5, 59]]
-  const relief = [
-    { p: [-174, 4.1, -105] as THREE.Vector3Tuple, s: [30, 2.2, 21] as THREE.Vector3Tuple, c: '#5d6c52', r: 0.2 },
-    { p: [-79, 4.4, -99] as THREE.Vector3Tuple, s: [24, 2.8, 17] as THREE.Vector3Tuple, c: '#637256', r: 0.7 },
-    { p: [-145, 4.1, 54] as THREE.Vector3Tuple, s: [28, 2.1, 22] as THREE.Vector3Tuple, c: '#71805e', r: 0.1 },
-    { p: [-71, 4.2, 111] as THREE.Vector3Tuple, s: [20, 2.1, 16] as THREE.Vector3Tuple, c: '#5f7054', r: 0.5 },
-    { p: [112, 4.4, -117] as THREE.Vector3Tuple, s: [26, 2.6, 18] as THREE.Vector3Tuple, c: '#59664f', r: 0.35 },
-    { p: [145, 4.2, 20] as THREE.Vector3Tuple, s: [24, 2.1, 19] as THREE.Vector3Tuple, c: '#71805f', r: 0.6 },
-    { p: [143, 4.1, 115] as THREE.Vector3Tuple, s: [32, 2.4, 18] as THREE.Vector3Tuple, c: '#5f6e54', r: -0.2 },
-  ]
-  const rocks = [
-    [-151, 6.1, -26, 3.2, 1.8, 2.5, 0.2], [-137, 5.6, -18, 1.8, 1.1, 1.5, 0.8],
-    [-93, 5.7, 93, 2.4, 1.3, 1.8, 0.5], [-119, 5.5, 111, 1.6, 1, 1.4, 1.1],
-    [-66, 5.8, -117, 2.5, 1.5, 2, 0.4], [-45, 5.3, -109, 1.5, 0.8, 1.2, 0.9],
-    [105, 5.9, 26, 2.7, 1.5, 2.1, 0.7], [134, 5.4, 38, 1.5, 0.9, 1.4, 0.2],
-    [98, 5.6, 124, 2.1, 1.2, 1.8, 0.9], [150, 6.2, 102, 3.5, 1.7, 2.2, 0.3],
-  ] as const
-  const heather = [
-    [-162, -54, 10, 6, '#6a655f'], [-112, 4, 12, 7, '#7b6b67'], [-92, 118, 10, 6, '#6d665d'],
-    [-57, 73, 8, 5, '#88906d'], [87, -83, 11, 6, '#7a6c68'], [127, 41, 9, 5, '#6f6662'],
-    [142, 131, 13, 7, '#79816a'], [34, -105, 9, 5, '#596850'],
-  ] as const
   return (
     <>
       <Water night={night} />
-      <LandPlate points={left} color={ground} />
-      <LandPlate points={right} color={ground} />
-      <FlatShape points={inlet} y={4.02} color={night ? P.waterNight : P.water} />
-      <FlatShape points={basin} y={4.03} color={night ? P.waterNight : P.water} />
-      {relief.map((item, i) => (
+      <LandPlate points={LEFT_SLAB} color={ground} />
+      <LandPlate points={RIGHT_SLAB} color={ground} />
+      <FlatShape points={INLET} y={4.02} color={night ? P.waterNight : P.water} />
+      <FlatShape points={BASIN} y={4.03} color={night ? P.waterNight : P.water} />
+      {RELIEF.map((item, i) => (
         <Boulder key={`relief-${i}`} position={item.p} scale={item.s} color={night ? '#3b4b4c' : item.c} rotation={item.r} />
       ))}
-      {rocks.map(([x, y, z, sx, sy, sz, r], i) => (
+      {ROCKS.map(([x, y, z, sx, sy, sz, r], i) => (
         <Boulder key={`rock-${i}`} position={[x, y, z]} scale={[sx, sy, sz]} color={night ? '#303b42' : i % 3 ? P.basalt : '#59605d'} rotation={r} />
       ))}
-      {heather.map(([x, z, sx, sz, color], i) => (
+      {HEATHER.map(([x, z, sx, sz, color], i) => (
         <TurfPatch key={`heather-${i}`} position={[x, 4.3, z]} scale={[sx, sz, 1]} color={night ? '#3f4c4b' : color} rotation={i * 0.47} />
       ))}
     </>
   )
+}
+
+/** Every structure's ground-plane shape, registered once per seed / progress for the walkers. */
+function LandColliders({ layout, seed, progress }: { layout: BiomeLayout; seed: number; progress: DistrictProgress }) {
+  const shapes = useMemo(() => landColliders(layout, seed, progress), [layout, seed, progress])
+  useCollider(shapes)
+  return null
 }
 
 function Route({ points, color, width, y = 3.7 }: { points: Point[]; color: string; width: number; y?: number }) {
@@ -356,20 +369,7 @@ function NordicHouse({ position, yaw, color, night, ruined = false, wide = 1, ro
 }
 
 function Village({ district, count, seed, night, ruined }: { district: GeneratedDistrict; count: number; seed: number; night: boolean; ruined: boolean }) {
-  const rng = seeded(seed * 73 + 1)
-  const homes = [
-    { p: [7, 0.4, -10] as THREE.Vector3Tuple, yaw: -0.12, c: P.red, w: 1.15, roof: P.turf },
-    { p: [-1, 0.8, -8] as THREE.Vector3Tuple, yaw: 0.18, c: P.cream, w: 0.9, roof: '#455b3d' },
-    { p: [-10, 1.4, -5] as THREE.Vector3Tuple, yaw: -0.2, c: P.ochre, w: 1.05, roof: P.turf },
-    { p: [4, 0.7, 2] as THREE.Vector3Tuple, yaw: 0.12, c: '#b84d3f', w: 0.85, roof: '#455b3d' },
-    { p: [-5, 1.4, 5] as THREE.Vector3Tuple, yaw: -0.08, c: P.cream, w: 1.25, roof: P.turf },
-    { p: [-15, 2.1, 5] as THREE.Vector3Tuple, yaw: 0.25, c: '#d09a43', w: 0.8, roof: '#4c613e' },
-    { p: [2, 1.4, 12] as THREE.Vector3Tuple, yaw: -0.28, c: '#a94138', w: 1.1, roof: P.turf },
-    { p: [-9, 2.2, 14] as THREE.Vector3Tuple, yaw: 0.18, c: P.cream, w: 0.85, roof: '#40573c' },
-    { p: [-18, 2.9, 13] as THREE.Vector3Tuple, yaw: -0.12, c: P.red, w: 1.3, roof: P.turf },
-    { p: [-3, 2.5, 21] as THREE.Vector3Tuple, yaw: 0.22, c: P.ochre, w: 0.9, roof: '#40573c' },
-    { p: [-14, 3.2, 23] as THREE.Vector3Tuple, yaw: -0.22, c: P.cream, w: 1.05, roof: P.turf },
-  ]
+  const homes = useMemo(() => villageHomes(seed, count), [seed, count])
   return (
     <group position={[district.center[0], 3.6, district.center[1]]} rotation={[0, THREE.MathUtils.degToRad(district.yawDeg), 0]}>
       <TurfPatch position={[-7, 0.1, 9]} scale={[26, 18, 1]} color="#748461" rotation={-0.15} />
@@ -378,20 +378,11 @@ function Village({ district, count, seed, night, ruined }: { district: Generated
       <mesh position={[49, 0.28, -7]} castShadow><boxGeometry args={[4.2, 0.55, 16]} /><Surf color="#79583e" /></mesh>
       <mesh position={[26, 0.28, 6]} castShadow><boxGeometry args={[18, 0.5, 3.2]} /><Surf color="#79583e" /></mesh>
       {[18, 28, 38, 48].map((x) => <Beam key={x} a={[x, -0.8, -2.5]} b={[x, 1.2, -2.5]} radius={0.18} color="#4b3429" />)}
-      <NordicHouse position={[16, 0.3, -7]} yaw={0.08} color={P.ochre} roof="#3f4d3b" night={night} ruined={ruined} wide={1.35} height={3.1} />
-      <NordicHouse position={[24, 0.2, 7]} yaw={-0.08} color="#a74235" roof="#38473a" night={night} ruined={ruined} wide={0.9} height={2.8} />
-      {homes.slice(0, count).map((home, i) => (
-        <NordicHouse
-          key={i}
-          position={[home.p[0] + (rng() - 0.5) * 1.2, home.p[1], home.p[2] + (rng() - 0.5) * 1.2]}
-          yaw={home.yaw + (rng() - 0.5) * 0.12}
-          color={home.c}
-          roof={home.roof}
-          night={night}
-          ruined={ruined}
-          wide={home.w}
-          height={i % 4 === 0 ? 3.8 : 3.2}
-        />
+      {VILLAGE_ANCHORS.map((h, i) => (
+        <NordicHouse key={`anchor-${i}`} position={h.p} yaw={h.yaw} color={h.c} roof={h.roof} night={night} ruined={ruined} wide={h.w} height={h.height} />
+      ))}
+      {homes.map((home, i) => (
+        <NordicHouse key={i} position={home.p} yaw={home.yaw} color={home.c} roof={home.roof} night={night} ruined={ruined} wide={home.w} height={home.height} />
       ))}
       {[
         [-13, 0.2, -1, 26, 0.15], [-10, 1.1, 8, 23, -0.12], [-12, 2, 17, 21, 0.18],
@@ -416,15 +407,10 @@ function Village({ district, count, seed, night, ruined }: { district: Generated
 }
 
 function Canyon({ district, count, night, ruined }: { district: GeneratedDistrict; count: number; night: boolean; ruined: boolean }) {
-  const columns = [
-    [-18, 5.5, -12, 4.8, 10], [-13, 7, -13, 4.5, 13], [-8, 5.8, -14, 4.6, 10],
-    [9, 6.2, -14, 4.8, 11], [14, 8, -13, 4.7, 15], [19, 5.5, -11, 4.5, 10],
-    [-20, 4.6, -3, 4.2, 8], [-15, 5.7, 2, 4.2, 10], [15, 5.4, 1, 4.3, 9], [21, 4.3, -3, 4, 7],
-  ] as const
   return (
     <group position={[district.center[0], 3.4, district.center[1]]} rotation={[0, THREE.MathUtils.degToRad(district.yawDeg), 0]}>
       <FlatShape points={[[-24, -18], [24, -18], [20, 8], [11, 16], [-12, 15], [-23, 7]]} y={0.18} color="#272a30" />
-      {columns.map(([x, y, z, radius, height], i) => (
+      {CANYON_COLUMNS.map(([x, y, z, radius, height], i) => (
         <mesh key={`column-${i}`} position={[x, y / 2, z]} rotation={[0, i * 0.21, i % 2 ? 0.035 : -0.025]} castShadow>
           <cylinderGeometry args={[radius * 0.86, radius, height, 6]} />
           <Surf color={ruined ? '#303238' : i % 3 ? '#3e4148' : '#252a31'} />
@@ -450,8 +436,9 @@ function Canyon({ district, count, night, ruined }: { district: GeneratedDistric
         <mesh><boxGeometry args={[3.4, 1.5, 3]} /><Surf color="#4a4140" /></mesh>
         {[[-1.3, -1], [1.3, -1], [-1.3, 1], [1.3, 1]].map(([x, z], i) => <mesh key={i} position={[x, -0.9, z]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.5, 0.16, 5, 10]} /><Surf color="#20252b" /></mesh>)}
       </group>
-      {count >= 3 && <NordicHouse position={[20, 0.2, 14]} yaw={-0.2} color="#74534a" roof="#30383a" night={night} ruined={ruined} wide={0.9} height={2.9} />}
-      {count >= 6 && <NordicHouse position={[23, 0.2, 6]} yaw={0.28} color="#5c5654" roof="#343b3b" night={night} ruined={ruined} wide={0.75} height={2.7} />}
+      {CANYON_HOUSES.map((h, i) =>
+        count >= h.minCount ? <NordicHouse key={`house-${i}`} position={h.p} yaw={h.yaw} color={h.c} roof={h.roof} night={night} ruined={ruined} wide={h.w} height={h.height} /> : null,
+      )}
       <Boulder position={[24, 4.5, -16]} scale={[7, 4.6, 6]} color="#1e242b" rotation={0.4} />
       <Boulder position={[-25, 3.8, 14]} scale={[6, 3.8, 5]} color="#282d33" rotation={0.8} />
     </group>
@@ -459,60 +446,37 @@ function Canyon({ district, count, night, ruined }: { district: GeneratedDistric
 }
 
 function Hamlet({ district, count, seed, night, ruined }: { district: GeneratedDistrict; count: number; seed: number; night: boolean; ruined: boolean }) {
-  const rng = seeded(seed * 53 + 9)
-  const homes = [
-    [-19, 0.3, -5, -0.28, P.red, 1.15, '#40563b'],
-    [-10, 0.7, -1, -0.12, P.cream, 0.8, P.turf],
-    [-1, 1.1, 2, 0.18, '#b54c3d', 1.05, '#40563b'],
-    [9, 1.6, 4, -0.16, P.cream, 0.85, P.turf],
-    [18, 2.1, 7, 0.24, P.ochre, 1.1, '#465c40'],
-    [-14, 1.2, 10, 0.22, P.cream, 0.95, P.turf],
-    [-4, 1.7, 13, -0.25, P.red, 0.8, '#40563b'],
-    [7, 2.3, 15, 0.15, P.cream, 1.2, P.turf],
-    [18, 2.8, 18, -0.18, '#a94439', 0.85, '#40563b'],
-    [-4, 2.8, 23, 0.2, P.ochre, 1, P.turf],
-  ] as const
+  const homes = useMemo(() => hamletHomes(seed, count), [seed, count])
   return (
     <group position={[district.center[0], 3.6, district.center[1]]} rotation={[0, THREE.MathUtils.degToRad(district.yawDeg), 0]}>
       <TurfPatch position={[0, 0.08, 8]} scale={[31, 23, 1]} color="#82906b" rotation={0.18} />
       <TurfPatch position={[16, 0.12, -8]} scale={[18, 13, 1]} color="#71825f" rotation={-0.3} />
-      <NordicHouse position={[-10, 0.6, -12]} yaw={-0.24} color="#9e463c" roof={P.turf} night={night} ruined={ruined} wide={1.8} height={4.2} />
-      <NordicHouse position={[7, 1.1, -10]} yaw={0.28} color="#6f5545" roof="#455e3f" night={night} ruined={ruined} wide={1.55} height={4} />
-      {homes.slice(0, count).map(([x, y, z, yaw, color, wide, roof], i) => (
-        <NordicHouse
-          key={i}
-          position={[x + (rng() - 0.5) * 1.2, y, z + (rng() - 0.5) * 1.2]}
-          yaw={yaw + (rng() - 0.5) * 0.12}
-          color={color}
-          roof={roof}
-          night={night}
-          ruined={ruined}
-          wide={wide}
-          height={i % 3 === 0 ? 3.6 : 3}
-        />
+      {HAMLET_HALLS.map((h, i) => (
+        <NordicHouse key={`hall-${i}`} position={h.p} yaw={h.yaw} color={h.c} roof={h.roof} night={night} ruined={ruined} wide={h.w} height={h.height} />
       ))}
-      {[
-        [-25, 0.6, -18, -6, 1.3, -17], [-6, 1.3, -17, 15, 1.5, -15],
-        [15, 1.5, -15, 28, 2.2, -9], [-27, 0.8, 18, -10, 2, 27],
-      ].map(([ax, ay, az, bx, by, bz], i) => <Beam key={`wall-${i}`} a={[ax, ay, az]} b={[bx, by, bz]} radius={0.28} color="#aaa89b" />)}
+      {homes.map((home, i) => (
+        <NordicHouse key={i} position={home.p} yaw={home.yaw} color={home.c} roof={home.roof} night={night} ruined={ruined} wide={home.w} height={home.height} />
+      ))}
+      {HAMLET_WALLS.map(([ax, ay, az, bx, by, bz], i) => <Beam key={`wall-${i}`} a={[ax, ay, az]} b={[bx, by, bz]} radius={0.28} color="#aaa89b" />)}
       {count >= 5 && Array.from({ length: 8 }, (_, i) => <Beam key={i} a={[-24 + i * 6, 0.4 + i * 0.08, 30]} b={[-24 + i * 6, 1.8 + i * 0.08, 30]} radius={0.11} color={P.cream} />)}
       {count >= 5 && <Beam a={[-24, 1.25, 30]} b={[18, 1.8, 30]} radius={0.11} color={P.cream} />}
-      {count >= 5 && Array.from({ length: 6 }, (_, i) => (
-        <group key={`sheep-${i}`} position={[-20 + (i % 3) * 6, 1, 20 + Math.floor(i / 3) * 5]}>
+      {count >= 5 && HAMLET_SHEEP.map((p, i) => (
+        <group key={`sheep-${i}`} position={p}>
           <mesh scale={[1.1, 0.7, 0.75]}><dodecahedronGeometry args={[1, 0]} /><Surf color="#d8d5c8" /></mesh>
           <mesh position={[0.9, 0.25, 0]} scale={0.35}><dodecahedronGeometry args={[1, 0]} /><Surf color="#3e4040" /></mesh>
         </group>
       ))}
-      {[[-24, 1.5, 9], [25, 2.2, 12], [24, 1.8, -2]].map(([x, y, z], i) => <Boulder key={`hamlet-rock-${i}`} position={[x, y, z]} scale={[2.4, 1.3, 1.8]} color="#777b72" rotation={i * 0.7} />)}
+      {HAMLET_ROCKS.map(([x, y, z], i) => <Boulder key={`hamlet-rock-${i}`} position={[x, y, z]} scale={[2.4, 1.3, 1.8]} color="#777b72" rotation={i * 0.7} />)}
     </group>
   )
 }
 
 function SteamPlume({ position, phase = 0 }: { position: THREE.Vector3Tuple; phase?: number }) {
   const ref = useRef<THREE.Group>(null)
+  const frozen = useFrozenTime()
   useFrame(({ clock }) => {
     if (!ref.current) return
-    const t = clock.elapsedTime + phase
+    const t = (frozen ?? clock.elapsedTime) + phase
     ref.current.position.y = position[1] + Math.sin(t * 0.8) * 0.8
     ref.current.scale.setScalar(0.9 + (Math.sin(t * 1.3) + 1) * 0.12)
   })
@@ -529,16 +493,9 @@ function SteamPlume({ position, phase = 0 }: { position: THREE.Vector3Tuple; pha
 }
 
 function Geothermal({ district, count, night, ruined }: { district: GeneratedDistrict; count: number; night: boolean; ruined: boolean }) {
-  const pools = [
-    [-11, -12, 5.8, 1.25, 0.84, -0.12], [2, -15, 4.8, 1.1, 0.8, 0.18], [12, -10, 4.2, 1.25, 0.76, -0.3],
-  ] as const
-  const plots = [
-    [-13, 13, 5.5, 9, -0.18, '#4f6248'], [-3, 15, 6.5, 10, 0.12, '#65724f'],
-    [8, 14, 5.5, 8, -0.1, '#465d47'], [17, 11, 5, 7, 0.25, '#68764f'],
-  ] as const
   return (
     <group position={[district.center[0], 3.55, district.center[1]]} rotation={[0, THREE.MathUtils.degToRad(district.yawDeg), 0]}>
-      {pools.map(([x, z, r, sx, sz, rotation], i) => (
+      {GEOTHERMAL_POOLS.map(([x, z, r, sx, sz, rotation], i) => (
         <group key={i} position={[x, 0, z]} rotation={[0, rotation, 0]}>
           <mesh position={[0, 0.2, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[sx * 1.3, sz * 1.3, 1]}>
             <circleGeometry args={[r + 1.5, 14]} />
@@ -561,10 +518,8 @@ function Geothermal({ district, count, night, ruined }: { district: GeneratedDis
       ))}
       <Route points={[[-11, -6], [-7, 1], [-3, 7], [-3, 14]]} color="#91bdb4" width={0.34} y={0.45} />
       <Route points={[[2, -9], [5, -3], [8, 4], [12, 10]]} color="#91bdb4" width={0.26} y={0.48} />
-      <Beam a={[-4, 0, -10]} b={[0, 11, -7]} radius={0.32} />
-      <Beam a={[5, 0, -10]} b={[0, 11, -7]} radius={0.32} />
-      <Beam a={[0, 0, -2]} b={[0, 11, -7]} radius={0.32} />
-      {plots.map(([x, z, sx, sz, rotation, color], i) => (
+      {TRIPOD_FEET.map((foot, i) => <Beam key={`leg-${i}`} a={foot} b={[0, 11, -7]} radius={0.32} />)}
+      {GEOTHERMAL_PLOTS.map(([x, z, sx, sz, rotation, color], i) => (
         <mesh key={`plot-${i}`} position={[x, 0.18, z]} rotation={[0, rotation, 0]}>
           <boxGeometry args={[sx, 0.3, sz]} />
           <Surf color={color} />
@@ -578,9 +533,9 @@ function Geothermal({ district, count, night, ruined }: { district: GeneratedDis
           {[-3, 0, 3].map((x) => <Beam key={x} a={[x, 0, -3.7]} b={[x, 4.4, -3.7]} radius={0.1} color={P.cream} />)}
         </group>
       )}
-      {count >= 1 && <NordicHouse position={[-20, 0.2, 4]} yaw={-0.2} color={P.red} roof="#465b40" night={night} ruined={ruined} wide={1.05} />}
-      {count >= 4 && <NordicHouse position={[24, 0.5, 13]} yaw={0.25} color={P.cream} roof={P.turf} night={night} ruined={ruined} wide={0.9} />}
-      {count >= 7 && <NordicHouse position={[-21, 0.5, 15]} yaw={0.12} color={P.ochre} roof="#40553c" night={night} ruined={ruined} wide={0.8} height={2.8} />}
+      {GEOTHERMAL_HOUSES.map((h, i) =>
+        count >= h.minCount ? <NordicHouse key={`house-${i}`} position={h.p} yaw={h.yaw} color={h.c} roof={h.roof} night={night} ruined={ruined} wide={h.w} height={h.height} /> : null,
+      )}
       <Beam a={[-11, 1, -5]} b={[-9, 1, 8]} radius={0.18} color="#b6a77a" />
       <Beam a={[2, 1, -9]} b={[9, 1, 6]} radius={0.18} color="#b6a77a" />
       <mesh position={[7, 1.2, 6]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[0.35, 0.35, 17, 8]} /><Surf color="#a7a78e" /></mesh>
@@ -616,8 +571,9 @@ function Archipelago({ layout, district, count, night, ruined }: { layout: Biome
         <mesh position={[55, 7.2, 74]} rotation={[0, 0.52, 0]} castShadow><boxGeometry args={[13, 0.75, 2.5]} /><Surf color="#5a4940" /></mesh>
         {[58, 64, 70].map((x, i) => <Boulder key={`bridge-rock-${i}`} position={[x, 7.4, 72 + i]} scale={[2.2, 1.1, 1.8]} color="#34363c" rotation={i * 0.6} />)}
       </group>
-      {count >= 1 && <NordicHouse position={[87, 10.2, 78]} yaw={0.2} color="#5b5554" roof="#2c3536" night={night} ruined={ruined} wide={0.8} height={2.8} />}
-      {count >= 2 && <NordicHouse position={[46, 9.4, 58]} yaw={-0.45} color="#6e4a3f" roof="#30383a" night={night} ruined={ruined} wide={0.68} height={2.5} />}
+      {ARCHIPELAGO_HOUSES.map((h, i) =>
+        count >= h.minCount ? <NordicHouse key={`shelter-${i}`} position={h.p} yaw={h.yaw} color={h.c} roof={h.roof} night={night} ruined={ruined} wide={h.w} height={h.height} /> : null,
+      )}
       {count >= 4 && (
         <group position={[91, 8.8, 70]}>
           <Beam a={[-3, 0, 0]} b={[-3, 6, 0]} radius={0.16} color={P.cream} />
@@ -696,33 +652,13 @@ function Landmark({ layout, stage, night }: { layout: BiomeLayout; stage: Landma
   )
 }
 
-function Residents({ layout, count, seed, night }: { layout: BiomeLayout; count: number; seed: number; night: boolean }) {
-  const rng = seeded(seed * 181 + 5)
-  return (
-    <group>
-      {Array.from({ length: count }, (_, i) => {
-        const district = layout.districts[i % layout.districts.length]
-        const x = district.center[0] + (rng() - 0.5) * 20
-        const z = district.center[1] + (rng() - 0.5) * 16
-        const scale = layout.creatureScale
-        return (
-          <group key={i} position={[x, 4, z]} scale={scale}>
-            <mesh position={[0, 0.85, 0]} castShadow><capsuleGeometry args={[0.35, 0.8, 3, 6]} /><Surf color={i % 3 === 0 ? P.red : '#4b5968'} /></mesh>
-            <mesh position={[0, 1.65, 0]}><sphereGeometry args={[0.34, 7, 5]} /><Surf color="#d7b08a" /></mesh>
-            <mesh position={[0, 1.95, 0]} rotation={[0, i, 0]}><coneGeometry args={[0.5, 0.5, 6]} /><Surf color={night ? '#b8c6d0' : P.cream} /></mesh>
-          </group>
-        )
-      })}
-    </group>
-  )
-}
-
 function AmbientEvents({ enabled, layout, seed }: { enabled: boolean; layout: BiomeLayout; seed: number }) {
   const boat = useRef<THREE.Group>(null)
   const curve = useMemo(() => new THREE.CatmullRomCurve3(layout.fjord.map(([x, z]) => new THREE.Vector3(x, 0.15, z))), [layout])
+  const frozen = useFrozenTime()
   useFrame(({ clock }) => {
     if (!boat.current || !enabled) return
-    const u = ((clock.elapsedTime + seed * 0.7) % 42) / 42
+    const u = (((frozen ?? clock.elapsedTime) + seed * 0.7) % 42) / 42
     const p = curve.getPointAt(u)
     const t = curve.getTangentAt(u)
     boat.current.position.copy(p)
@@ -795,42 +731,66 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict }: BiomeSc
   const fraction = courseProgress(layout, state.progress)
   const generated = useMemo(() => generateDistricts(layout, state.seed), [layout, state.seed])
   const sky = state.night ? P.skyNight : P.sky
+  // The outer world is the shipped look; `?edge=none` shows the authored baseline for comparison.
+  const edge = edgeTechnique(state.edge === undefined ? 'outer' : state.edge)
+  const reducedMotion = state.reducedMotion ?? false
+  const pose = state.pose ?? null
+  // A fixed lab pose freezes scene time at the instant the geyser field is mid-eruption.
+  const frozenTime = useMemo(() => (pose ? geyserShowTime(state.seed) : null), [pose, state.seed])
+  const floorAt = useMemo(() => (edge ? outerFloor(outerBundle(state.seed)) : null), [edge, state.seed])
+  const storm = state.catastrophe.phase === 'ashfall' || state.catastrophe.phase === 'quake'
   return (
-    <>
+    <LabClockContext.Provider value={frozenTime}>
       <color attach="background" args={[sky]} />
       <fog attach="fog" args={[state.night ? '#263544' : P.fog, state.mist ? 430 : 520, state.mist ? 620 : 760]} />
-      <FogFollow mist={state.mist} />
+      <FogFollow mist={state.mist} outer={edge !== null} night={state.night} frozen={frozenTime !== null} />
       <hemisphereLight args={[state.night ? '#50658f' : '#e8f1eb', state.night ? '#1b2530' : '#48503f', state.night ? 0.85 : 1.2]} />
       <directionalLight position={state.night ? [-70, 80, 30] : [65, 105, 70]} intensity={state.night ? 1.2 : 2.35} color={state.night ? '#91a9d2' : '#fff3dc'} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-left={-170} shadow-camera-right={170} shadow-camera-top={170} shadow-camera-bottom={-170} shadow-camera-far={420} />
 
-      <FixedTerrain night={state.night} />
-      <Routes layout={layout} />
-      <Horizon night={state.night} />
-      <VolcanoSkyline fraction={fraction} night={state.night} />
-      <Districts layout={layout} progress={state.progress} seed={state.seed} night={state.night} catastrophe={state.catastrophe} />
-      <Landmark layout={layout} stage={landmarkStage(fraction)} night={state.night} />
-      <Residents layout={layout} count={state.residents} seed={state.seed} night={state.night} />
-      <AmbientEvents enabled={state.ambient} layout={layout} seed={state.seed} />
-      <Catastrophe layout={layout} state={state.catastrophe} />
-      <NightSky show={state.night} />
-      <Aurora show={state.night && state.aurora} />
+      <ColliderProvider>
+        {edge ? <edge.Scene layout={layout} night={state.night} storm={storm} seed={state.seed} reducedMotion={reducedMotion} frozenTime={frozenTime} /> : null}
+        <FixedTerrain night={state.night} />
+        <Routes layout={layout} />
+        <Horizon night={state.night} />
+        <VolcanoSkyline fraction={fraction} night={state.night} />
+        <Districts layout={layout} progress={state.progress} seed={state.seed} night={state.night} catastrophe={state.catastrophe} />
+        <Landmark layout={layout} stage={landmarkStage(fraction)} night={state.night} />
+        <LandColliders layout={layout} seed={state.seed} progress={state.progress} />
+        <Walkers layout={layout} count={state.residents} seed={state.seed} night={state.night} frozen={frozenTime !== null || reducedMotion} />
+        <ColliderDebug groundAt={(x, z) => Math.max(GROUND_Y, groundHeightAt(x, z))} />
+        <AmbientEvents enabled={state.ambient} layout={layout} seed={state.seed} />
+        <Catastrophe layout={layout} state={state.catastrophe} />
+        <NightSky show={state.night} />
+        <Aurora show={state.night && state.aurora} />
 
-      {generated.map((district) => (
-        <group key={district.id} position={[district.center[0], 4, district.center[1]]}>
-          <mesh onClick={(event) => { event.stopPropagation(); onPickDistrict(district.id) }}>
-            <cylinderGeometry args={[district.footprintRadius, district.footprintRadius, 5, 10]} />
-            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-          </mesh>
-          {state.focusDistrict === district.id && (
-            <Html position={[0, 12, 0]} center distanceFactor={120} className="region-label">
-              <span>{district.name}</span>
-            </Html>
-          )}
-        </group>
-      ))}
+        {generated.map((district) => (
+          <group key={district.id} position={[district.center[0], 4, district.center[1]]}>
+            <mesh onClick={(event) => { event.stopPropagation(); onPickDistrict(district.id) }}>
+              <cylinderGeometry args={[district.footprintRadius, district.footprintRadius, 5, 10]} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+            {state.focusDistrict === district.id && (
+              <Html position={[0, 12, 0]} center distanceFactor={120} className="region-label">
+                <span>{district.name}</span>
+              </Html>
+            )}
+          </group>
+        ))}
 
-      <CameraRig layout={layout} station={state.station} override={state.camera} focusDistrict={state.focusDistrict} diving={state.diving} onDiveEnd={onDiveEnd} />
+        <CameraRig
+          layout={layout}
+          station={state.station}
+          override={state.camera}
+          focusDistrict={state.focusDistrict}
+          diving={state.diving}
+          onDiveEnd={onDiveEnd}
+          poseId={pose}
+          readyKey={edge?.id ?? 'none'}
+          floorAt={floorAt}
+        />
+      </ColliderProvider>
+      {state.edgeLab ? <EdgeLabPanelPortal /> : null}
       {state.pixel && <PixelComposer />}
-    </>
+    </LabClockContext.Provider>
   )
 }

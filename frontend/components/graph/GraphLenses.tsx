@@ -20,6 +20,7 @@ export function GraphLenses({
           key={l.id}
           type="button"
           aria-pressed={lens === l.id}
+          data-lens={l.id}
           title={l.hint}
           className="sg-seg-item"
           onClick={() => {

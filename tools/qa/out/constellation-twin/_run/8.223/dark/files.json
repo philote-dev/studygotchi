@@ -1,0 +1,5186 @@
+{
+ "state": "files",
+ "title": "Files pill on: the files dock over the fitted sky (canvas unchanged)",
+ "steps": [
+  {
+   "files": true
+  },
+  {
+   "fit": true
+  }
+ ],
+ "course": {
+  "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f",
+  "code": "8.223",
+  "name": "Classical Mechanics II"
+ },
+ "theme": "dark",
+ "dpr": 1,
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "anchors": {
+  "hover": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+  "select": "085699dc-1387-441b-87ae-78f0951e3757",
+  "route": [
+   "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "085699dc-1387-441b-87ae-78f0951e3757",
+   "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+  ],
+  "arriving": [
+   "085699dc-1387-441b-87ae-78f0951e3757",
+   "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+  ]
+ },
+ "version": 1,
+ "graphHash": "0b652e13",
+ "size": {
+  "w": 1440,
+  "h": 900,
+  "dpr": 1
+ },
+ "camera": {
+  "x": 1.5610567079311295,
+  "y": -65.408665115551,
+  "k": 0.31169780713658707
+ },
+ "labelLayer": "clusters",
+ "frozenNow": 100000,
+ "hovered": null,
+ "selected": null,
+ "routeIds": [],
+ "arrivingIds": [],
+ "arrivingAgeMs": {},
+ "weakTraceIds": [],
+ "weakPulseAgeMs": null,
+ "emphasis": null,
+ "nodes": [
+  {
+   "id": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "kind": "concept",
+   "label": "Canonical Transformation",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 549.5203099929662,
+   "y": 498.41207769041335,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "0335b690-d27a-425f-af32-b8a6b2601d9f",
+   "kind": "concept",
+   "label": "Euler-Lagrange Derived Frequencies",
+   "weight": 0.6,
+   "radius": 35.44889165348332,
+   "x": 705.5335101743497,
+   "y": -1167.0892727640562,
+   "cluster": "Energy Conservation in Lagrangian Mechanics",
+   "clusterId": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation",
+   "weight": 1,
+   "radius": 43,
+   "x": -216.1766475747914,
+   "y": 44.23728573452328,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.7485643783
+  },
+  {
+   "id": "0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+   "kind": "concept",
+   "label": "Angular Frequency of Spring-Mass System",
+   "weight": 0.6,
+   "radius": 35.44889165348332,
+   "x": 319.51926857032925,
+   "y": -584.9455053044862,
+   "cluster": "Euler-Lagrange Equation for Radial Displacement",
+   "clusterId": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "kind": "concept",
+   "label": "Integration of Acceleration to Obtain Velocity and Position",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 575.221092081849,
+   "y": 879.7123535093846,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "0de9a099-0808-4367-a744-b5db6843f09e",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation with Electromagnetic Potential",
+   "weight": 0.85,
+   "radius": 35.44889165348332,
+   "x": -51.661172602745935,
+   "y": -523.9277686450733,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "kind": "concept",
+   "label": "Conserved Energy in Lagrangian Systems",
+   "weight": 1,
+   "radius": 37.89003445352722,
+   "x": -606.4525640640969,
+   "y": -229.73528705766387,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5871159877
+  },
+  {
+   "id": "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "kind": "concept",
+   "label": "Kinetic Energy in Polar Coordinates",
+   "weight": 0.6,
+   "radius": 35.44889165348332,
+   "x": -152.61993377575396,
+   "y": -1141.2927343197007,
+   "cluster": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "clusterId": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+   "kind": "concept",
+   "label": "Constraint Forces in Rolling Without Slipping",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": 1243.4449684284045,
+   "y": -592.1352105164115,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "1595a327-9415-475e-9c96-36f19e6bf95f",
+   "kind": "concept",
+   "label": "Potential Energy from Spring Displacement",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 197.01080328029505,
+   "y": -1174.3389647588633,
+   "cluster": "Kinetic Energy Expression in Spring-Pendulum System",
+   "clusterId": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "15a36609-4fde-4d7f-8282-2e6083d11309",
+   "kind": "concept",
+   "label": "Potential Energy in Gravitational Field on Inclined Plane",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1093.7264864861786,
+   "y": 4.463086947307994,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "1642f502-f226-460d-8c3e-0b619f7b3317",
+   "kind": "concept",
+   "label": "Potential Energy from Spring Coupling Between Pendulums",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1380.3610386400467,
+   "y": 38.854658212142205,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "1853b2bf-4039-4ed7-8e80-6c640f169397",
+   "kind": "concept",
+   "label": "Non-standard Splitting of Energy in Electromagnetic Lagrangian",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": -489.8121378547962,
+   "y": -1095.594839944897,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "18bbcf17-6f53-4d21-b51a-93ce31585aad",
+   "kind": "concept",
+   "label": "Conservation of Torque",
+   "weight": 0.6,
+   "radius": 35.44889651869138,
+   "x": 622.4966291159554,
+   "y": -192.82353591848462,
+   "cluster": "Conservation of Torque",
+   "clusterId": "18bbcf17-6f53-4d21-b51a-93ce31585aad",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "18cd1e56-3175-416a-987f-3c4919a3c465",
+   "kind": "concept",
+   "label": "Hamiltonian Function with Coupling Term",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": 500.1715758440364,
+   "y": -9.341383383776751,
+   "cluster": "Poisson Bracket Definition",
+   "clusterId": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "19c96995-dfb0-4296-af81-ca02d198ca61",
+   "kind": "concept",
+   "label": "Action Functional",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -68.46899425433438,
+   "y": 359.4058269885927,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "1a8846b8-10c5-4319-bc3c-ede7229575ef",
+   "kind": "concept",
+   "label": "Angular Momentum in Two Dimensions",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": 385.04696188833805,
+   "y": 784.5232391829036,
+   "cluster": "Angular Momentum Conservation Criterion",
+   "clusterId": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "kind": "concept",
+   "label": "Spatial Translational Invariance and Conservation of Momentum",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -584.4458900756682,
+   "y": 1058.8635510843378,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0
+  },
+  {
+   "id": "1b207606-aec4-46ab-9bd3-82b273969a6d",
+   "kind": "concept",
+   "label": "Potential Energy on Inclined Plane",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1108.2147753636702,
+   "y": 829.0327934358673,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "1b958cf7-d68b-489c-89da-061da0e96bde",
+   "kind": "concept",
+   "label": "Variational Principle in Hamiltonian Mechanics",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": 187.92572224935873,
+   "y": 117.49507056224638,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "kind": "concept",
+   "label": "Hamiltonian Mechanics",
+   "weight": 0.85,
+   "radius": 37.00236004914916,
+   "x": -232.77234601717933,
+   "y": -144.52498976665913,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5791630183
+  },
+  {
+   "id": "1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+   "kind": "concept",
+   "label": "Symmetry of Second Derivatives",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1003.6955107136398,
+   "y": 269.2242106619808,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+   "kind": "concept",
+   "label": "Equations of Motion for Coupled Oscillators",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -755.0166951065806,
+   "y": -104.72060884945567,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "1fecf000-d07f-4d59-9996-a568df1b3e17",
+   "kind": "concept",
+   "label": "Fourth-order differential equations in mechanics",
+   "weight": 0.7,
+   "radius": 31.228756555322953,
+   "x": -637.9400216433622,
+   "y": -421.7367903425561,
+   "cluster": "Euler-Lagrange equation for higher derivatives",
+   "clusterId": "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+   "kind": "concept",
+   "label": "Coriolis Force",
+   "weight": 0.5,
+   "radius": 35.44888675044915,
+   "x": -1660.1018458861784,
+   "y": -191.8654904214403,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "kind": "concept",
+   "label": "Euler-Lagrange equation for higher derivatives",
+   "weight": 1,
+   "radius": 35.44889165348332,
+   "x": -758.8451489581768,
+   "y": -599.9189542140946,
+   "cluster": "Euler-Lagrange equation for higher derivatives",
+   "clusterId": "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "kind": "concept",
+   "label": "Orbit Equation in Polar Coordinates",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1344.409271057704,
+   "y": 227.3186926168817,
+   "cluster": "Orbital Energy and Conic Sections Relationship",
+   "clusterId": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "kind": "concept",
+   "label": "Lorentz Force Law",
+   "weight": 1,
+   "radius": 36.624415656940755,
+   "x": -309.05443488337454,
+   "y": -304.0483317730384,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5780579054
+  },
+  {
+   "id": "22e498f3-2ba8-4679-b9e9-0c10af834113",
+   "kind": "concept",
+   "label": "General Solution of Coupled Pendulum Angles",
+   "weight": 0.85,
+   "radius": 35.44888675044915,
+   "x": -1654.850236951485,
+   "y": 306.1016932710001,
+   "cluster": "General Solution of Coupled Pendulum Angles",
+   "clusterId": "22e498f3-2ba8-4679-b9e9-0c10af834113",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+   "kind": "concept",
+   "label": "Equation of Motion for a Particle in Potential",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": -302.72284660152786,
+   "y": 823.8902812077082,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+   "kind": "concept",
+   "label": "Potential Energy of a Pendulum",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": 848.7287312108559,
+   "y": -610.437753453214,
+   "cluster": "Potential Energy of a Pendulum",
+   "clusterId": "2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "kind": "concept",
+   "label": "Potential Energy of a Spring Mass System in Polar Coordinates",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": -34.45172263207715,
+   "y": -715.258968134379,
+   "cluster": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "clusterId": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+   "kind": "concept",
+   "label": "Scattering Angle and Frequency",
+   "weight": 0.7,
+   "radius": 31.228756555322953,
+   "x": -444.52556583717916,
+   "y": 940.2397278454795,
+   "cluster": "Radial Equation of Motion in Central Force Field",
+   "clusterId": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "constellation": "Orbital motion",
+   "mastery": 0
+  },
+  {
+   "id": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "kind": "concept",
+   "label": "Lagrangian of Radially Displaced Spring-Pendulum System",
+   "weight": 1,
+   "radius": 35.44889165348332,
+   "x": 701.2360916360907,
+   "y": -487.7549762873539,
+   "cluster": "Euler-Lagrange Equation for Radial Displacement",
+   "clusterId": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "2f95366b-8a19-4527-9428-5220826149d5",
+   "kind": "concept",
+   "label": "Conservative System",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": 874.5868828553881,
+   "y": -436.9398421280456,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+   "kind": "concept",
+   "label": "Small Angle Approximation for Sine Function",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1234.642726616049,
+   "y": -85.94132078065329,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "kind": "concept",
+   "label": "Action Principle in Classical Mechanics",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": 374.72293279241654,
+   "y": 135.3405032405704,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+   "kind": "concept",
+   "label": "Lagrange Equations of Motion for Spring Pendulum",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -499.3509237544516,
+   "y": 402.5190841320317,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+   "kind": "concept",
+   "label": "Generalized Coordinates in Dynamics",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -568.3689280382237,
+   "y": -29.847758367058592,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+   "kind": "concept",
+   "label": "Conservation Law from Symmetry",
+   "weight": 0.8,
+   "radius": 35.44889651869138,
+   "x": -2.874078679514779,
+   "y": 921.024832613544,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "36019b68-0b16-4199-8ea6-f287aabaa260",
+   "kind": "concept",
+   "label": "Dimensionless Radial Displacement",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 558.0858284329053,
+   "y": -1044.29227812553,
+   "cluster": "Kinetic Energy Expression in Spring-Pendulum System",
+   "clusterId": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+   "kind": "concept",
+   "label": "Coupling Frequency Contribution",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1197.6408831815259,
+   "y": -274.22507229229916,
+   "cluster": "Coupling Frequency Contribution",
+   "clusterId": "375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "3b8862d8-2ce3-4b54-ab49-7a35179cb19c",
+   "kind": "concept",
+   "label": "Centrifugal Force in Rotating Frame",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1135.7008773954126,
+   "y": -685.8807445061548,
+   "cluster": "Centrifugal Force in Rotating Frame",
+   "clusterId": "3b8862d8-2ce3-4b54-ab49-7a35179cb19c",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "kind": "concept",
+   "label": "Lagrange Multipliers",
+   "weight": 1,
+   "radius": 41.39848178835541,
+   "x": -136.63562052190386,
+   "y": -296.82595888491954,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.6130013307
+  },
+  {
+   "id": "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "kind": "concept",
+   "label": "Equation of Motion for Translational Coordinate with Constraint Force",
+   "weight": 1,
+   "radius": 39.21301401704859,
+   "x": 1445.4584341564655,
+   "y": 681.0330195510664,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5967727998
+  },
+  {
+   "id": "440a0bab-1b7f-4466-9474-615733f741cd",
+   "kind": "concept",
+   "label": "Energy Function from Lagrangian (Hamiltonian) in Electromagnetic Field",
+   "weight": 0.85,
+   "radius": 35.44889165348332,
+   "x": -118.7348780208454,
+   "y": -952.4334757080238,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "kind": "concept",
+   "label": "Kinetic Energy Expression in Spring-Pendulum System",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": 343.5965463186948,
+   "y": -1298.1693101386725,
+   "cluster": "Kinetic Energy Expression in Spring-Pendulum System",
+   "clusterId": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "kind": "concept",
+   "label": "Nonholonomic Constraints",
+   "weight": 0.7,
+   "radius": 40.748423203598094,
+   "x": 730.8086053057544,
+   "y": 91.29319795980967,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.6081489566
+  },
+  {
+   "id": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "kind": "concept",
+   "label": "Poisson Bracket Definition",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": 231.81367133341774,
+   "y": -218.90019252464393,
+   "cluster": "Poisson Bracket Definition",
+   "clusterId": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "490d901a-ebdf-4adc-8699-277b7eac6ab6",
+   "kind": "concept",
+   "label": "Conservation of Angular Momentum in Central Force Motion",
+   "weight": 0.6,
+   "radius": 35.44888675044915,
+   "x": -1174.8748914067655,
+   "y": -498.02366774878766,
+   "cluster": "Conservation of Angular Momentum in Central Force Motion",
+   "clusterId": "490d901a-ebdf-4adc-8699-277b7eac6ab6",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+   "kind": "concept",
+   "label": "Energy Expression for Orbital Motion",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -1337.9354764828668,
+   "y": -599.1486885029121,
+   "cluster": "Equation of Conic Section Orbit",
+   "clusterId": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation for Angular Motion",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 798.1214239738725,
+   "y": -795.517702277277,
+   "cluster": "Euler-Lagrange Equation for Radial Displacement",
+   "clusterId": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "4cd672ef-76c9-444f-aec6-5485eb900cf1",
+   "kind": "concept",
+   "label": "Hamiltonian Conservation",
+   "weight": 0.7,
+   "radius": 31.228756555322953,
+   "x": -470.1052225531554,
+   "y": -356.9604487372808,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+   "kind": "concept",
+   "label": "Lagrangian of a Two-Mass Rotating System",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -1615.9937016720523,
+   "y": 497.8151427791568,
+   "cluster": "Lagrangian of a Two-Mass Rotating System",
+   "clusterId": "5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "kind": "concept",
+   "label": "Equations of Motion from Lagrangian",
+   "weight": 0.95,
+   "radius": 31.228756555322953,
+   "x": -109.77316007353792,
+   "y": 697.4473908037005,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "533ac192-4478-4039-bd6f-d26f903716cb",
+   "kind": "concept",
+   "label": "Simple Pendulum Equation of Motion",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -325.16898738717424,
+   "y": 459.7149238610695,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "54052acf-3640-47d3-914b-a62a8b53f674",
+   "kind": "concept",
+   "label": "Orbital Energy in Terms of Alpha",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -1163.5232891232783,
+   "y": 291.17128978814554,
+   "cluster": "Orbital Energy and Conic Sections Relationship",
+   "clusterId": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "kind": "concept",
+   "label": "Angular Momentum Conservation Criterion",
+   "weight": 1,
+   "radius": 35.44889651869138,
+   "x": 83.06565526413128,
+   "y": 278.21815000389296,
+   "cluster": "Angular Momentum Conservation Criterion",
+   "clusterId": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+   "kind": "concept",
+   "label": "Lagrangian of a Pendulum",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 505.15265977643975,
+   "y": -553.1385121031785,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+   "kind": "concept",
+   "label": "Radial Substitution in Orbital Mechanics",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1079.6353611026516,
+   "y": 527.0224431496614,
+   "cluster": "Radial Equation of Motion in Central Force Field",
+   "clusterId": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "kind": "concept",
+   "label": "Zero Angular Acceleration of Phi",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 1628.3950817755997,
+   "y": 611.6313038778486,
+   "cluster": "Zero Angular Acceleration of Phi",
+   "clusterId": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "58406be5-da3c-471b-a5a2-fff33383ba98",
+   "kind": "concept",
+   "label": "Canonical Momentum in Electromagnetic Field",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": -400.1728096449681,
+   "y": -527.2836287295285,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "593cd940-5114-4dc8-b170-90ef1b0a601f",
+   "kind": "concept",
+   "label": "Lagrangian Derivative for Phi-dot",
+   "weight": 0.6,
+   "radius": 35.44889153843304,
+   "x": 1562.4924958670513,
+   "y": 431.4072975809062,
+   "cluster": "Zero Angular Acceleration of Phi",
+   "clusterId": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "594658ff-0393-479f-b9fc-87c135f16228",
+   "kind": "concept",
+   "label": "Alpha Parameter in Orbital Mechanics",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1435.0381990106443,
+   "y": 561.6872716193291,
+   "cluster": "Orbital Energy and Conic Sections Relationship",
+   "clusterId": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "5a559cd7-a8da-4136-96c2-ce1304dbf4b3",
+   "kind": "concept",
+   "label": "Velocity at Contact Point",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 1540.054112384735,
+   "y": -218.48593484515942,
+   "cluster": "Velocity at Contact Point",
+   "clusterId": "5a559cd7-a8da-4136-96c2-ce1304dbf4b3",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "kind": "concept",
+   "label": "Orbital Energy in Terms of Epsilon",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -1198.648424320094,
+   "y": 102.53903777487253,
+   "cluster": "Orbital Energy and Conic Sections Relationship",
+   "clusterId": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "5c49d17a-6662-45b0-bc83-b01427aa5741",
+   "kind": "concept",
+   "label": "Determinant Condition for Eigenvalue Problems",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1504.0107214758018,
+   "y": -503.00897126672294,
+   "cluster": "Normal Modes in Coupled Oscillators",
+   "clusterId": "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "kind": "concept",
+   "label": "Kinetic Energy of a Rotating Pendulum",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -734.8327088569589,
+   "y": 693.3553487446993,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "kind": "concept",
+   "label": "Equation of Motion for Rolling Object on Inclined Plane",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 457.2327897326452,
+   "y": 334.18702114439105,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "5d2e498e-01b3-4556-acd0-ca052ea1d412",
+   "kind": "concept",
+   "label": "Combined Potential Energy for System of Masses",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1250.218282798877,
+   "y": 811.463759241762,
+   "cluster": "Combined Potential Energy for System of Masses",
+   "clusterId": "5d2e498e-01b3-4556-acd0-ca052ea1d412",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "5d7a924d-d7ab-4807-983e-081fffa89130",
+   "kind": "concept",
+   "label": "Generalized Momentum for Angular Coordinate",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 739.4735093235125,
+   "y": -978.2278734200638,
+   "cluster": "Generalized Momentum for Angular Coordinate",
+   "clusterId": "5d7a924d-d7ab-4807-983e-081fffa89130",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept",
+   "label": "Hamiltonian",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -147.76812291128616,
+   "y": 849.9383371718217,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "kind": "concept",
+   "label": "Total Time Derivative of Partial Derivative of Lagrangian",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1274.23864791557,
+   "y": -60.39497223635021,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "600452e5-d2b2-4182-94dd-e163cba30b84",
+   "kind": "concept",
+   "label": "Energy Conservation under Constraints",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 1298.9112881973235,
+   "y": 852.1544877828164,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+   "kind": "concept",
+   "label": "Reducing Coordinates by Solving Constraints",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": -694.27018323721,
+   "y": -776.0884360199249,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "61932dbf-3a89-4fd6-ba5a-b0608946b049",
+   "kind": "concept",
+   "label": "Kinetic Energy of Translational Motion",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 1250.3417935865657,
+   "y": 666.5324571668588,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "kind": "concept",
+   "label": "Velocity Components in Polar Coordinates",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -914.722050224718,
+   "y": 625.1424518022654,
+   "cluster": "Velocity Components in Polar Coordinates",
+   "clusterId": "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation for Theta",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 1381.8167416203257,
+   "y": 496.02545135963436,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "kind": "concept",
+   "label": "Kinetic Energy of a Rotating Body",
+   "weight": 0.8,
+   "radius": 43,
+   "x": 430.3414019277143,
+   "y": -200.52373816949745,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.6323490576
+  },
+  {
+   "id": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation for Radial Displacement",
+   "weight": 1,
+   "radius": 35.44889165348332,
+   "x": 347.55218564133776,
+   "y": -382.43171801185997,
+   "cluster": "Euler-Lagrange Equation for Radial Displacement",
+   "clusterId": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "kind": "concept",
+   "label": "Conservation of Angular Momentum from Cyclic Coordinate",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -731.7990714571135,
+   "y": 81.45543054675954,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0
+  },
+  {
+   "id": "6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+   "kind": "concept",
+   "label": "Natural Frequency of a Pendulum",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1031.6560639800184,
+   "y": -370.3865935455972,
+   "cluster": "Normalized Equations of Motion for Coupled Pendulums",
+   "clusterId": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "702daa5c-fe09-4464-adbe-0999bb5883f6",
+   "kind": "concept",
+   "label": "Angular Frequency of Pendulum",
+   "weight": 0.6,
+   "radius": 35.44889165348332,
+   "x": 127.80865002855029,
+   "y": -591.6763079360422,
+   "cluster": "Euler-Lagrange Equation for Radial Displacement",
+   "clusterId": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "711a351f-bb26-4823-af6b-4d3de5e95014",
+   "kind": "concept",
+   "label": "Simplification of Equations for Equal Masses",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -838.7464504702741,
+   "y": 235.6310403816521,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "71f01caf-875b-4516-aa33-bdf2821f4760",
+   "kind": "concept",
+   "label": "Lagrangian Energy Function",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 975.9665412075987,
+   "y": 985.9914072591588,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "729382a7-c110-4cca-a6a1-e7b415b04039",
+   "kind": "concept",
+   "label": "Equation of Motion for a Rotating Pendulum with Fixed Length",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -640.271107437755,
+   "y": 526.3796535468773,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "74551b8b-ed34-4c95-bd0f-d775243b12bc",
+   "kind": "concept",
+   "label": "Potential Energy of a Rotating Pendulum",
+   "weight": 0.75,
+   "radius": 35.44888675044915,
+   "x": -673.8884351063908,
+   "y": 333.793441186641,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "769405d3-194b-4638-bb85-048a02ca5433",
+   "kind": "concept",
+   "label": "Moment of Inertia for a Point Mass on a Radius",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -422.46831081836234,
+   "y": -167.91736864886155,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+   "kind": "concept",
+   "label": "Equations of Motion",
+   "weight": 1,
+   "radius": 35.26083364542397,
+   "x": -407.6282011402173,
+   "y": 253.29835500832067,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5417025057
+  },
+  {
+   "id": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "kind": "concept",
+   "label": "Rolling Without Slipping Constraint",
+   "weight": 1,
+   "radius": 39.21301401704859,
+   "x": 1040.6839818768926,
+   "y": -369.70729204299914,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5967727998
+  },
+  {
+   "id": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "kind": "concept",
+   "label": "Normalized Equations of Motion for Coupled Pendulums",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -895.5136108515302,
+   "y": -734.592221483996,
+   "cluster": "Normalized Equations of Motion for Coupled Pendulums",
+   "clusterId": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "7fe9797e-66b5-466b-9cc3-299be28b245c",
+   "kind": "concept",
+   "label": "Symmetric Normal Mode Condition",
+   "weight": 0.5,
+   "radius": 35.44889651869138,
+   "x": 386.43918761768015,
+   "y": 592.67559522337,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "81ee2d95-a981-475a-a7e8-956a5aee8805",
+   "kind": "concept",
+   "label": "Torque",
+   "weight": 0.7,
+   "radius": 35.44889651869138,
+   "x": 652.4625984822777,
+   "y": -46.48410673925648,
+   "cluster": "Torque",
+   "clusterId": "81ee2d95-a981-475a-a7e8-956a5aee8805",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "82a34364-b337-4eab-9843-92de87df9370",
+   "kind": "concept",
+   "label": "Calculation of Friction Force on Rolling Object",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 729.6126775801371,
+   "y": 765.747393044821,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "842dd63a-33cc-4322-807c-d2a51881422c",
+   "kind": "concept",
+   "label": "Coupled Differential Equations for Mechanical System",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -568.3598949337422,
+   "y": 173.58893367059105,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "kind": "concept",
+   "label": "Orbital Alpha and Eccentricity",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1340.9359605738794,
+   "y": -401.8578801124977,
+   "cluster": "Equation of Conic Section Orbit",
+   "clusterId": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+   "kind": "concept",
+   "label": "Lagrangian for a Central Force Problem",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -888.9781727820566,
+   "y": -242.05331854104446,
+   "cluster": "Lagrangian for a Central Force Problem",
+   "clusterId": "88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "8b00bb9b-535a-45be-b3f4-09fb962722b2",
+   "kind": "concept",
+   "label": "Relationship Between Constraint Force and Acceleration",
+   "weight": 0.6,
+   "radius": 35.44889153843304,
+   "x": 552.2218544171052,
+   "y": 689.2187592919366,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "8d405220-2462-4b8d-bcd8-bb09499fe289",
+   "kind": "concept",
+   "label": "Energy Conservation in Velocity-Dependent Electromagnetic Interaction",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": -571.2797699055368,
+   "y": -604.2957979898879,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0
+  },
+  {
+   "id": "8e47d0c9-0501-463b-85a9-488936d12d10",
+   "kind": "concept",
+   "label": "Negligible Assumption in Physics",
+   "weight": 0.3,
+   "radius": 35.44889651869138,
+   "x": 189.99074358888788,
+   "y": 908.5854243097308,
+   "cluster": "Negligible Assumption in Physics",
+   "clusterId": "8e47d0c9-0501-463b-85a9-488936d12d10",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+   "kind": "concept",
+   "label": "Potential Energy of a Simple Pendulum",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 4.969507297110354,
+   "y": -1271.1043129903935,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "kind": "concept",
+   "label": "Constraint Equation in Mechanical Systems",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": -421.9118668068781,
+   "y": -717.8833483431247,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+   "kind": "concept",
+   "label": "Small Angle Approximations for Cosine Functions",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -894.5715519745154,
+   "y": 815.9562177397929,
+   "cluster": "Small Angle Approximations for Cosine Functions",
+   "clusterId": "8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "kind": "concept",
+   "label": "Equation of Motion for a Pendulum in a Rotating Reference Frame",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1524.8928661354569,
+   "y": -87.3497287835761,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "kind": "concept",
+   "label": "Simple Harmonic Motion Frequency of a Pendulum",
+   "weight": 0.85,
+   "radius": 39.212852731304196,
+   "x": 548.1116750782635,
+   "y": -366.0110093065998,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5967716131
+  },
+  {
+   "id": "907799f8-44a9-450e-8c17-bd91c9aa4a70",
+   "kind": "concept",
+   "label": "Static Equilibrium Condition for Radial Coordinate",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": -333.12412370244385,
+   "y": -1206.3705474904125,
+   "cluster": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "clusterId": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "92488b38-c3ea-437c-a726-285534020479",
+   "kind": "concept",
+   "label": "Generalized coordinate",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 203.23049955954147,
+   "y": 617.4773437015766,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "kind": "concept",
+   "label": "Potential Energy of Pendulum under Gravity",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1049.8236026033537,
+   "y": -137.48513867734374,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "957e453f-811f-4200-90bd-23cbff3680be",
+   "kind": "concept",
+   "label": "Coupled Oscillator System",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": 556.8010509948439,
+   "y": 172.16962081962097,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "kind": "concept",
+   "label": "Hamiltonian of Coupled Pendulums",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": 399.86150570276646,
+   "y": 971.5856526517167,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "kind": "concept",
+   "label": "Lagrangian of a Simple Pendulum",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 230.92785533744495,
+   "y": -985.4756388302707,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "97ca537b-0744-4d85-a242-343699941837",
+   "kind": "concept",
+   "label": "Holonomic Constraints in Rolling Motion",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 999.8438017974669,
+   "y": 461.0668749303707,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "kind": "concept",
+   "label": "Coordinate Transformation in Polar Coordinates",
+   "weight": 0.5,
+   "radius": 35.44889165348332,
+   "x": 63.33650103785997,
+   "y": -892.0127382967335,
+   "cluster": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "clusterId": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "98bf8a23-d933-4063-b2b8-169012493a81",
+   "kind": "concept",
+   "label": "Velocity of Center of Mass",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1159.153031264808,
+   "y": -213.98897469521376,
+   "cluster": "Velocity of Center of Mass",
+   "clusterId": "98bf8a23-d933-4063-b2b8-169012493a81",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept",
+   "label": "Hamilton's Equations",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": 147.45943947757837,
+   "y": 456.73914522510086,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "9a46d64c-b8be-4ace-a92f-cf7cf481a72a",
+   "kind": "concept",
+   "label": "Expression for Energy in Standard Lagrangian Mechanics",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": -455.9309656291686,
+   "y": -906.7378681629199,
+   "cluster": "Energy Conservation in Lagrangian Mechanics",
+   "clusterId": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "kind": "concept",
+   "label": "Orbital Energy and Conic Sections Relationship",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -1292.6570051090105,
+   "y": 433.0297479175183,
+   "cluster": "Orbital Energy and Conic Sections Relationship",
+   "clusterId": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+   "kind": "concept",
+   "label": "Lagrangian for a Rolling Sphere on an Inclined Surface",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": 1036.3798860576596,
+   "y": -610.2632967698181,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+   "kind": "concept",
+   "label": "General Solution to Linearized Pendulum Equation",
+   "weight": 0.85,
+   "radius": 35.44889165348332,
+   "x": 592.0110977734599,
+   "y": -855.4741443139851,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "kind": "concept",
+   "label": "Lagrangian Function with Velocity-dependent Potential",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": 377.5415820318157,
+   "y": -1109.3210486472306,
+   "cluster": "Energy Conservation in Lagrangian Mechanics",
+   "clusterId": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+   "kind": "concept",
+   "label": "Kinetic Energy of a Simple Pendulum",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 411.4695767231736,
+   "y": -920.4928254592114,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "9dc13e98-8308-4872-9bfd-5a113b753c05",
+   "kind": "concept",
+   "label": "Partial Derivative of Lagrangian with respect to Generalized Velocity",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1482.1777038302896,
+   "y": 257.129014391913,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+   "kind": "concept",
+   "label": "Rigid Body Pendulum Equation of Motion",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -461.2416959304038,
+   "y": 582.5455603957657,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Rigid body motion",
+   "mastery": 0
+  },
+  {
+   "id": "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "kind": "concept",
+   "label": "Partial Derivatives of Angular Momentum and Hamiltonian",
+   "weight": 0.8,
+   "radius": 35.44889651869138,
+   "x": 310.9741599498101,
+   "y": -40.9243626899164,
+   "cluster": "Poisson Bracket Definition",
+   "clusterId": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+   "kind": "concept",
+   "label": "Linear Oscillatory System",
+   "weight": 0.5,
+   "radius": 31.228756555322953,
+   "x": 28.352742014196135,
+   "y": 579.4982156337973,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+   "kind": "concept",
+   "label": "Conserved Quantity from Time Translation Symmetry",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -606.3087082068521,
+   "y": 853.7153259685036,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0
+  },
+  {
+   "id": "a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+   "kind": "concept",
+   "label": "Equation of Motion for a Damped Oscillator",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -66.97749493641442,
+   "y": -73.30931730939749,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+   "kind": "concept",
+   "label": "Electric and Magnetic Fields from Potentials",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": -212.30997736408878,
+   "y": -643.2660790498956,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "a59d3891-4d62-4880-ab86-fd230a382d37",
+   "kind": "concept",
+   "label": "Transformation to Time-Independent Hamiltonian",
+   "weight": 0.85,
+   "radius": 31.228756555322953,
+   "x": 873.5429998585178,
+   "y": 620.8100919957665,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "a677a078-6084-4c83-886f-12022763a815",
+   "kind": "concept",
+   "label": "Potential Energy from Gravity in Spring-Pendulum",
+   "weight": 0.7,
+   "radius": 35.44889165348332,
+   "x": 524.1412026659966,
+   "y": -1233.1327380348594,
+   "cluster": "Kinetic Energy Expression in Spring-Pendulum System",
+   "clusterId": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "kind": "concept",
+   "label": "Kinetic Energy of Rotating Cylinder",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 1592.4908539414466,
+   "y": 100.1414960600268,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "ab8838e9-c76d-45fe-a22f-124dd8644836",
+   "kind": "concept",
+   "label": "Elimination of Angular Velocity in Normal Force Expression",
+   "weight": 0.7,
+   "radius": 31.228756555322953,
+   "x": 760.102216733281,
+   "y": -309.6143429679171,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+   "kind": "concept",
+   "label": "Scattering",
+   "weight": 0.5,
+   "radius": 35.44889651869138,
+   "x": 30.078523824199625,
+   "y": 73.6350739882122,
+   "cluster": "Scattering",
+   "clusterId": "ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "adcc80bd-14da-49f6-a029-c4b9ef29c267",
+   "kind": "concept",
+   "label": "Harmonic Oscillator Ansatz for Angular Motion",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -910.9909316964382,
+   "y": 7.006888607485959,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "kind": "concept",
+   "label": "Noether's Theorem",
+   "weight": 1,
+   "radius": 35.44889651869138,
+   "x": -221.64682298409042,
+   "y": 975.4836247548934,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "kind": "concept",
+   "label": "Lagrangian for Rolling Cylinder",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 1190.3063092567527,
+   "y": 484.3085187217317,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+   "kind": "concept",
+   "label": "Potential Energy of Rotating Masses in Gravitational Field",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1247.7209546182837,
+   "y": 619.5870135499212,
+   "cluster": "Potential Energy of Rotating Masses in Gravitational Field",
+   "clusterId": "b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "concept",
+   "label": "Equation of Motion for a Simple Pendulum",
+   "weight": 0.9,
+   "radius": 39.213015643408646,
+   "x": 152.5258952211322,
+   "y": -397.7111131452421,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5967728118
+  },
+  {
+   "id": "b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+   "kind": "concept",
+   "label": "Kinetic Energy of a Pendulum",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1670.143361527559,
+   "y": 38.03994460307625,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "b675ae73-d5ba-4f38-aaaa-852c99a81648",
+   "kind": "concept",
+   "label": "Coupling Frequency of Oscillators",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -986.4002452161726,
+   "y": -565.3770837545892,
+   "cluster": "Normalized Equations of Motion for Coupled Pendulums",
+   "clusterId": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "kind": "concept",
+   "label": "Angular Momentum as a Phase Space Function",
+   "weight": 0.7,
+   "radius": 35.44889651869138,
+   "x": 120.48201449274885,
+   "y": -62.67085038552136,
+   "cluster": "Poisson Bracket Definition",
+   "clusterId": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+   "kind": "concept",
+   "label": "Energy in Lagrangian Mechanics",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -238.42817099161175,
+   "y": 298.3068248920126,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "b961f44c-2d48-4323-908b-11f0c2fed41b",
+   "kind": "concept",
+   "label": "Integration by Parts in Variational Calculus",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 40.768483359330865,
+   "y": -237.1807008913829,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "bbd4c1dc-f561-48d2-bce6-20f0075fcf7a",
+   "kind": "concept",
+   "label": "Energy Conservation in Mechanical Systems",
+   "weight": 0.5,
+   "radius": 35.44889651869138,
+   "x": -145.29790136214012,
+   "y": 513.1584718017217,
+   "cluster": "Energy Conservation in Mechanical Systems",
+   "clusterId": "bbd4c1dc-f561-48d2-bce6-20f0075fcf7a",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "kind": "concept",
+   "label": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "weight": 0.8,
+   "radius": 35.44889165348332,
+   "x": -299.23533279075235,
+   "y": -1017.4938429140922,
+   "cluster": "Lagrangian Function for a Mass-Spring-Gravitational System",
+   "clusterId": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "concept",
+   "label": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 808.7031375679272,
+   "y": 444.8140980433657,
+   "cluster": "Lagrangian for Constrained Rolling Body on Inclined Plane",
+   "clusterId": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "c19a2a51-2ad2-4747-8d79-14ad5d1de95c",
+   "kind": "concept",
+   "label": "Angular Velocity Vector",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 817.5464073200601,
+   "y": 258.38430104939937,
+   "cluster": "Angular Velocity Vector",
+   "clusterId": "c19a2a51-2ad2-4747-8d79-14ad5d1de95c",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation Applied to a Pendulum",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 264.8958259174856,
+   "y": -796.6211701504421,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+   "kind": "concept",
+   "label": "Equations of Motion for Small Oscillations",
+   "weight": 1,
+   "radius": 31.228756555322953,
+   "x": -406.8547851815878,
+   "y": 78.10897168597609,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "concept",
+   "label": "Normal Mode",
+   "weight": 0.9,
+   "radius": 43,
+   "x": 316.10101439002483,
+   "y": 434.5046243319022,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.6653960675
+  },
+  {
+   "id": "c667d542-984e-4f30-85a4-4d890fa1a7ae",
+   "kind": "concept",
+   "label": "Energy condition for elliptical orbit",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -1525.6018496683055,
+   "y": 164.2593158646871,
+   "cluster": "Equation of Conic Section Orbit",
+   "clusterId": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "c78dd90d-2078-4454-bc31-8b32028c32cd",
+   "kind": "concept",
+   "label": "Partial Derivatives of Lagrangian Components",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 648.9550258589696,
+   "y": 338.4342462636243,
+   "cluster": "Partial Derivatives of Lagrangian Components",
+   "clusterId": "c78dd90d-2078-4454-bc31-8b32028c32cd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "c79b6401-14c6-438a-aef5-865e46a99953",
+   "kind": "concept",
+   "label": "Expanded Kinetic Energy for System with Angular Velocities",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -849.5817882154457,
+   "y": -430.9346888775793,
+   "cluster": "Expanded Kinetic Energy for System with Angular Velocities",
+   "clusterId": "c79b6401-14c6-438a-aef5-865e46a99953",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+   "kind": "concept",
+   "label": "Constrained Optimization in Lagrangian Mechanics",
+   "weight": 0.9,
+   "radius": 31.228756555322953,
+   "x": -638.3508621337203,
+   "y": -950.8150120912396,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "cb45fc4a-2690-4381-a5d2-6105b8dba215",
+   "kind": "concept",
+   "label": "Kinetic Energy of Translating Mass",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 1350.7520122201668,
+   "y": -236.3813997698649,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+   "kind": "concept",
+   "label": "Determinant Condition for Normal Mode Frequencies",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": -226.56046802431945,
+   "y": -456.15494515713806,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0
+  },
+  {
+   "id": "cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "kind": "concept",
+   "label": "Electromagnetic Lagrangian",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": -264.647322306826,
+   "y": -827.8570799388244,
+   "cluster": "Lorentz Force Law",
+   "clusterId": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "constellation": "Electromagnetism",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "kind": "concept",
+   "label": "Conjugate Momentum",
+   "weight": 0.8,
+   "radius": 35.44889651869138,
+   "x": -462.6174220152454,
+   "y": 756.1947203667858,
+   "cluster": "Noether's Theorem",
+   "clusterId": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "kind": "concept",
+   "label": "Total Kinetic Energy of Rolling Cylinder",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 1353.7053214813393,
+   "y": 114.33304811582094,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "d4122a9a-4f8c-468e-ad01-447c2f637e96",
+   "kind": "concept",
+   "label": "Time Dependence of Theta",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 982.1653983774767,
+   "y": -147.27567123046006,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "kind": "concept",
+   "label": "Energy Conservation in Lagrangian Mechanics",
+   "weight": 1,
+   "radius": 35.44889165348332,
+   "x": 29.464858192561813,
+   "y": -1080.8176655320085,
+   "cluster": "Energy Conservation in Lagrangian Mechanics",
+   "clusterId": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "kind": "concept",
+   "label": "Total Potential Energy of Coupled Pendulums",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1017.7308877223116,
+   "y": 166.4740766157742,
+   "cluster": "Total Potential Energy of Coupled Pendulums",
+   "clusterId": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "kind": "concept",
+   "label": "Torque in Two Dimensions",
+   "weight": 0.8,
+   "radius": 35.44889651869138,
+   "x": 83.15559269363312,
+   "y": 753.4593834459034,
+   "cluster": "Angular Momentum Conservation Criterion",
+   "clusterId": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "constellation": "Conserved quantities",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+   "kind": "concept",
+   "label": "Equations of Motion for a Rolling Disc on an Inclined Plane",
+   "weight": 0.8,
+   "radius": 31.228756555322953,
+   "x": 1231.2247261595535,
+   "y": -387.99789515080477,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0
+  },
+  {
+   "id": "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "kind": "concept",
+   "label": "Constraint Equation",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 700.8898332849594,
+   "y": 588.4442833088006,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "df66203f-8ddf-4be0-a503-1690c6b7f361",
+   "kind": "concept",
+   "label": "Moment of Inertia of a Solid Cylinder",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1301.5616439437033,
+   "y": 321.72944425018363,
+   "cluster": "Lagrangian for Rolling Cylinder",
+   "clusterId": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "kind": "concept",
+   "label": "Angular Acceleration of Theta",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 1173.0886193779368,
+   "y": 179.1496451915266,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+   "kind": "concept",
+   "label": "Constant Phi Angular Velocity",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 1673.2654701554372,
+   "y": 274.4377663166407,
+   "cluster": "Zero Angular Acceleration of Phi",
+   "clusterId": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "e0a61b63-6927-462a-9331-0c6c8b260823",
+   "kind": "concept",
+   "label": "Angular Coordinates Parametrization of a Pendulum",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -984.5863041631065,
+   "y": 360.352651957907,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "kind": "concept",
+   "label": "Radial Equation of Motion in Central Force Field",
+   "weight": 0.9,
+   "radius": 35.44888675044915,
+   "x": -819.696329103836,
+   "y": 458.4879432299384,
+   "cluster": "Radial Equation of Motion in Central Force Field",
+   "clusterId": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "kind": "concept",
+   "label": "Canonical Momentum",
+   "weight": 1,
+   "radius": 35.44889651869138,
+   "x": 258.64926315276944,
+   "y": 1072.6839907100582,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "kind": "concept",
+   "label": "Normal Modes in Coupled Oscillators",
+   "weight": 0.8,
+   "radius": 35.44888675044915,
+   "x": -1541.377463414912,
+   "y": -314.7869062945703,
+   "cluster": "Normal Modes in Coupled Oscillators",
+   "clusterId": "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "e5f80fd1-28c4-4564-8c9f-2e56699d09b7",
+   "kind": "concept",
+   "label": "Small Angle Approximation for Pendulum",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 650.6453050394872,
+   "y": -672.7640186213541,
+   "cluster": "Canonical Momentum",
+   "clusterId": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "constellation": "Hamiltonian mechanics",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "kind": "concept",
+   "label": "Equation of Conic Section Orbit",
+   "weight": 1,
+   "radius": 35.44888675044915,
+   "x": -1379.1918827300021,
+   "y": -212.220975630134,
+   "cluster": "Equation of Conic Section Orbit",
+   "clusterId": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "kind": "concept",
+   "label": "General Solution for Simple Harmonic Oscillator",
+   "weight": 0.9,
+   "radius": 35.44889165348332,
+   "x": 445.4157316291965,
+   "y": -731.623593721621,
+   "cluster": "General Solution for Simple Harmonic Oscillator",
+   "clusterId": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "constellation": "Oscillations",
+   "mastery": 0.5535705817
+  },
+  {
+   "id": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "kind": "concept",
+   "label": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "weight": 1,
+   "radius": 35.44889153843304,
+   "x": 1465.38967190885,
+   "y": -43.62373140122456,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "f0cf22e6-752d-4192-a437-c046871603df",
+   "kind": "concept",
+   "label": "Total Time Derivative of a Constraint",
+   "weight": 0.8,
+   "radius": 35.44889153843304,
+   "x": 783.8269721401786,
+   "y": 949.8089198065579,
+   "cluster": "Euler-Lagrange Equation with Holonomic Constraint and Lagrange Multiplier",
+   "clusterId": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "kind": "concept",
+   "label": "Differential Equation for Orbit Shape",
+   "weight": 0.8,
+   "radius": 35.646175846199654,
+   "x": -763.5775702444223,
+   "y": 956.4542618915234,
+   "cluster": "Radial Equation of Motion in Central Force Field",
+   "clusterId": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "constellation": "Orbital motion",
+   "mastery": 0.5661591309
+  },
+  {
+   "id": "f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+   "kind": "concept",
+   "label": "Expression for Angular Displacement from Linear Displacement",
+   "weight": 0.6,
+   "radius": 35.44889153843304,
+   "x": 918.085692533241,
+   "y": 803.0669399243789,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "f4fb8a97-1a2e-421f-aaf0-276d95d55a0c",
+   "kind": "concept",
+   "label": "Kinetic Energy of a Body in Cartesian Coordinates",
+   "weight": 0.7,
+   "radius": 35.44888675044915,
+   "x": -1082.133784976629,
+   "y": 718.8989450857148,
+   "cluster": "Velocity Components in Polar Coordinates",
+   "clusterId": "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "constellation": "Orbital motion",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "f7aefdee-0410-4cc1-b45c-e2b6e36e2d04",
+   "kind": "concept",
+   "label": "Partial Derivative of Lagrangian with respect to Generalized Coordinate",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 1059.8510023058823,
+   "y": 643.337535088171,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "f82be75e-7578-47fb-8967-b7422733b1d1",
+   "kind": "concept",
+   "label": "Initial Conditions for Coupled Oscillator Amplitudes",
+   "weight": 0.6,
+   "radius": 35.44888675044915,
+   "x": -1473.6113928722964,
+   "y": 369.16827153259817,
+   "cluster": "Initial Conditions for Coupled Oscillator Amplitudes",
+   "clusterId": "f82be75e-7578-47fb-8967-b7422733b1d1",
+   "constellation": "Oscillations",
+   "mastery": 0.5535702706
+  },
+  {
+   "id": "f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "kind": "concept",
+   "label": "Time Dependence of Theta-dot",
+   "weight": 0.9,
+   "radius": 35.44889153843304,
+   "x": 924.3937060489898,
+   "y": 94.53460614837483,
+   "cluster": "Angular Acceleration of Theta",
+   "clusterId": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "constellation": "Rigid body motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "fa72e23c-3758-4ff1-9f60-3c67332502bc",
+   "kind": "concept",
+   "label": "Generalized Force from Constraint",
+   "weight": 0.9,
+   "radius": 35.44889651869138,
+   "x": -86.36200270789357,
+   "y": 188.40594305723124,
+   "cluster": "Lagrange Multipliers",
+   "clusterId": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535708904
+  },
+  {
+   "id": "fef03cf4-e4dd-4f57-96db-80aa748f0bb8",
+   "kind": "concept",
+   "label": "Generalized Coordinates for Rolling Cylinder",
+   "weight": 0.7,
+   "radius": 35.44889153843304,
+   "x": 799.1531795205456,
+   "y": -102.51509614551979,
+   "cluster": "Generalized Coordinates for Rolling Cylinder",
+   "clusterId": "fef03cf4-e4dd-4f57-96db-80aa748f0bb8",
+   "constellation": "Constrained motion",
+   "mastery": 0.5535705744
+  },
+  {
+   "id": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "kind": "concept",
+   "label": "Lagrangian Formalism",
+   "weight": 1,
+   "radius": 43,
+   "x": -285.3112112355237,
+   "y": 640.0450127602927,
+   "cluster": "Lagrangian Formalism",
+   "clusterId": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "constellation": "Lagrangian mechanics",
+   "mastery": 0.7798066096
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf",
+   "kind": "resource",
+   "label": "L1-notes.pdf",
+   "weight": 0.54,
+   "radius": 20,
+   "x": 220.88683158645364,
+   "y": 341.27631246280674
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf",
+   "kind": "resource",
+   "label": "L2-notes.pdf",
+   "weight": 0.54,
+   "radius": 20,
+   "x": 1130.7949606256805,
+   "y": -496.64836637333826
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "kind": "resource",
+   "label": "L3-notes.pdf",
+   "weight": 0.63,
+   "radius": 18,
+   "x": -581.7889874124917,
+   "y": 664.4506982471032
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:4:L5-notes.pdf",
+   "kind": "resource",
+   "label": "L5-notes.pdf",
+   "weight": 0.48,
+   "radius": 20,
+   "x": 175.54956642953556,
+   "y": 1182.8008715610538
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "kind": "resource",
+   "label": "L9-notes.pdf",
+   "weight": 0.63,
+   "radius": 19,
+   "x": -14.479344608995008,
+   "y": -377.65046290221227
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "kind": "resource",
+   "label": "L10-notes.pdf",
+   "weight": 0.63,
+   "radius": 20,
+   "x": 233.15922197225862,
+   "y": 761.0773217670845
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:10:L11-notes.pdf",
+   "kind": "resource",
+   "label": "L11-notes.pdf",
+   "weight": 0.51,
+   "radius": 22,
+   "x": 908.667693074504,
+   "y": -280.5231924197655
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "kind": "resource",
+   "label": "pset1.pdf",
+   "weight": 0.63,
+   "radius": 22,
+   "x": -335.53777617759425,
+   "y": -47.48485330799559
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:12:pset2.pdf",
+   "kind": "resource",
+   "label": "pset2.pdf",
+   "weight": 0.48,
+   "radius": 22,
+   "x": -550.721607184915,
+   "y": -792.1826648399218
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:13:pset3.pdf",
+   "kind": "resource",
+   "label": "pset3.pdf",
+   "weight": 0.51,
+   "radius": 22,
+   "x": 1348.349130122597,
+   "y": -472.58696395899693
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf",
+   "kind": "resource",
+   "label": "pset4.pdf",
+   "weight": 0.54,
+   "radius": 19,
+   "x": -297.5376887233806,
+   "y": 167.90494078429333
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:15:midterm_2025.pdf",
+   "kind": "resource",
+   "label": "midterm_2025.pdf",
+   "weight": 0.51,
+   "radius": 20,
+   "x": -745.6470268104341,
+   "y": -310.7409160219387
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:16:midterm_sol_2025.pdf",
+   "kind": "resource",
+   "label": "midterm_sol_2025.pdf",
+   "weight": 0.48,
+   "radius": 19,
+   "x": -192.38399337159092,
+   "y": -1301.3601386227588
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf",
+   "kind": "resource",
+   "label": "final_2025.pdf",
+   "weight": 0.54,
+   "radius": 22,
+   "x": -340.4543875060626,
+   "y": 1052.7027376106953
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:19:Legendre Transforms for Dummies.pdf",
+   "kind": "resource",
+   "label": "Legendre Transforms for Dummies.pdf",
+   "weight": 0.48,
+   "radius": 22,
+   "x": 94.21051599407274,
+   "y": 1070.7061140941023
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "kind": "resource",
+   "label": "Pset 1 CM2.pdf",
+   "weight": 0.63,
+   "radius": 20,
+   "x": 117.7914298170247,
+   "y": -746.507391072467
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "kind": "resource",
+   "label": "Pset 2 CM2.pdf",
+   "weight": 0.63,
+   "radius": 21,
+   "x": -1067.0614899465952,
+   "y": 18.007249840054275
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "kind": "resource",
+   "label": "Pset 3 CM2.pdf",
+   "weight": 0.63,
+   "radius": 21,
+   "x": 1145.6554880288807,
+   "y": 334.365388456418
+  },
+  {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "kind": "resource",
+   "label": "Pset 4 CM2.pdf",
+   "weight": 0.63,
+   "radius": 20,
+   "x": 314.3158253160306,
+   "y": 273.57497121896097
+  }
+ ],
+ "links": [
+  {
+   "id": "c:0240617f-dc4b-4c3f-8107-8c9eb5143998->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0240617f-dc4b-4c3f-8107-8c9eb5143998->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0240617f-dc4b-4c3f-8107-8c9eb5143998->a59d3891-4d62-4880-ab86-fd230a382d37",
+   "source": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "target": "a59d3891-4d62-4880-ab86-fd230a382d37",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1b1dbac8-48f8-491e-97a5-f0e381dd25d5->ae88dc79-7547-4131-893e-902e4dec69e9",
+   "source": "1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "target": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1b958cf7-d68b-489c-89da-061da0e96bde->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "1b958cf7-d68b-489c-89da-061da0e96bde",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1d47e643-f2c4-44e0-969f-1cf94cbe7752->4cd672ef-76c9-444f-aec6-5485eb900cf1",
+   "source": "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "target": "4cd672ef-76c9-444f-aec6-5485eb900cf1",
+   "kind": "concept"
+  },
+  {
+   "id": "c:2083cc06-0ec6-443d-a3b4-1a17d00f481b->1fecf000-d07f-4d59-9996-a568df1b3e17",
+   "source": "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "target": "1fecf000-d07f-4d59-9996-a568df1b3e17",
+   "kind": "concept"
+  },
+  {
+   "id": "c:22cabc68-31a8-465e-8f37-bcbabeb61ffd->8d405220-2462-4b8d-bcd8-bb09499fe289",
+   "source": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "target": "8d405220-2462-4b8d-bcd8-bb09499fe289",
+   "kind": "concept"
+  },
+  {
+   "id": "c:2f95366b-8a19-4527-9428-5220826149d5->321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "source": "2f95366b-8a19-4527-9428-5220826149d5",
+   "target": "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "kind": "concept"
+  },
+  {
+   "id": "c:50b54fae-9e85-4fcc-9082-5a0d01e0b332->c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "source": "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "target": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5f57ccb5-acaf-4c18-8113-b1c5330ae043->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:6f4bffe5-863a-4b99-893e-86568318c7a9->0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "source": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "target": "0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->2f95366b-8a19-4527-9428-5220826149d5",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "2f95366b-8a19-4527-9428-5220826149d5",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->ab8838e9-c76d-45fe-a22f-124dd8644836",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "ab8838e9-c76d-45fe-a22f-124dd8644836",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8e644dc9-0e4b-4b55-a968-f6c565c22f2e->6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+   "source": "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "target": "6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8e644dc9-0e4b-4b55-a968-f6c565c22f2e->c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+   "source": "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "target": "c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+   "kind": "concept"
+  },
+  {
+   "id": "c:92488b38-c3ea-437c-a726-285534020479->fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "source": "92488b38-c3ea-437c-a726-285534020479",
+   "target": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:970d8069-e9c2-434c-baeb-0f1b870f5cef->0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "source": "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "target": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ae88dc79-7547-4131-893e-902e4dec69e9->1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "source": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "target": "1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ae88dc79-7547-4131-893e-902e4dec69e9->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ae88dc79-7547-4131-893e-902e4dec69e9->a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+   "source": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "target": "a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba->0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "source": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "target": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba->970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "source": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "target": "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba->9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+   "source": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "target": "9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cd9d6a4e-0266-43db-a0fc-94742c79b347->6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "source": "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "target": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e34c84db-3b89-4526-a44a-68bcb8e2caa8->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e34c84db-3b89-4526-a44a-68bcb8e2caa8->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e34c84db-3b89-4526-a44a-68bcb8e2caa8->970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "source": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "target": "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "kind": "concept"
+  },
+  {
+   "id": "c:f3d0a8c8-3afc-488c-a773-3b19ed1efc36->2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+   "source": "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "target": "2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->19c96995-dfb0-4296-af81-ca02d198ca61",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "19c96995-dfb0-4296-af81-ca02d198ca61",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->533ac192-4478-4039-bd6f-d26f903716cb",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "533ac192-4478-4039-bd6f-d26f903716cb",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+   "kind": "concept"
+  },
+  {
+   "id": "c:9d71d668-cef2-4320-9cb1-dde3f6a33378->97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "source": "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+   "target": "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8e4f1793-3b6a-4b87-ad2e-ed9588784706->97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "source": "8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+   "target": "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "kind": "concept"
+  },
+  {
+   "id": "c:97a338a8-7d72-47b3-a4a0-2de2c363e45e->c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "source": "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "target": "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c463b84a-dc82-4edd-b5ca-bbdbe943281f->b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "source": "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "target": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e5f80fd1-28c4-4564-8c9f-2e56699d09b7->8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "source": "e5f80fd1-28c4-4564-8c9f-2e56699d09b7",
+   "target": "8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8f26ed6e-a493-4090-b7cd-7e7612214363->9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+   "source": "8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "target": "9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+   "kind": "concept"
+  },
+  {
+   "id": "c:54ec1a61-e1c1-4c5e-81d6-ece7848fc306->b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "source": "54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+   "target": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1b958cf7-d68b-489c-89da-061da0e96bde->085699dc-1387-441b-87ae-78f0951e3757",
+   "source": "1b958cf7-d68b-489c-89da-061da0e96bde",
+   "target": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "concept"
+  },
+  {
+   "id": "c:b961f44c-2d48-4323-908b-11f0c2fed41b->085699dc-1387-441b-87ae-78f0951e3757",
+   "source": "b961f44c-2d48-4323-908b-11f0c2fed41b",
+   "target": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e774f1ba-d4a6-4244-9bec-febb7a22cd01->b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "source": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "target": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0fd49a99-4b7f-476f-828e-6f9cd7b5e046->9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "source": "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "target": "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:28b6983b-9781-4ccd-a493-6faa003a8b81->9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "source": "28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "target": "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c07304ba-aed5-4577-ae46-5d6628dc8452->0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "source": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "target": "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c07304ba-aed5-4577-ae46-5d6628dc8452->28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "source": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "target": "28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "kind": "concept"
+  },
+  {
+   "id": "c:907799f8-44a9-450e-8c17-bd91c9aa4a70->c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "source": "907799f8-44a9-450e-8c17-bd91c9aa4a70",
+   "target": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "kind": "concept"
+  },
+  {
+   "id": "c:36019b68-0b16-4199-8ea6-f287aabaa260->45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "source": "36019b68-0b16-4199-8ea6-f287aabaa260",
+   "target": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0ab944ce-1cd0-4899-b152-ca69d59d9ee6->2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "source": "0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+   "target": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "kind": "concept"
+  },
+  {
+   "id": "c:702daa5c-fe09-4464-adbe-0999bb5883f6->2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "source": "702daa5c-fe09-4464-adbe-0999bb5883f6",
+   "target": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "kind": "concept"
+  },
+  {
+   "id": "c:2c91aa67-5e11-46e0-91f6-8a33e8052c32->4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+   "source": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "target": "4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:2c91aa67-5e11-46e0-91f6-8a33e8052c32->6a3d8246-2f95-46fa-8082-91147908f732",
+   "source": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "target": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "kind": "concept"
+  },
+  {
+   "id": "c:36019b68-0b16-4199-8ea6-f287aabaa260->1595a327-9415-475e-9c96-36f19e6bf95f",
+   "source": "36019b68-0b16-4199-8ea6-f287aabaa260",
+   "target": "1595a327-9415-475e-9c96-36f19e6bf95f",
+   "kind": "concept"
+  },
+  {
+   "id": "c:36019b68-0b16-4199-8ea6-f287aabaa260->a677a078-6084-4c83-886f-12022763a815",
+   "source": "36019b68-0b16-4199-8ea6-f287aabaa260",
+   "target": "a677a078-6084-4c83-886f-12022763a815",
+   "kind": "concept"
+  },
+  {
+   "id": "c:9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1->d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "source": "9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "target": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "kind": "concept"
+  },
+  {
+   "id": "c:9a46d64c-b8be-4ace-a92f-cf7cf481a72a->d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "source": "9a46d64c-b8be-4ace-a92f-cf7cf481a72a",
+   "target": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0335b690-d27a-425f-af32-b8a6b2601d9f->9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "source": "0335b690-d27a-425f-af32-b8a6b2601d9f",
+   "target": "9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cc7acffa-d3bc-48c6-8938-ec8aae42a202->58406be5-da3c-471b-a5a2-fff33383ba98",
+   "source": "cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "target": "58406be5-da3c-471b-a5a2-fff33383ba98",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cc7acffa-d3bc-48c6-8938-ec8aae42a202->0de9a099-0808-4367-a744-b5db6843f09e",
+   "source": "cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "target": "0de9a099-0808-4367-a744-b5db6843f09e",
+   "kind": "concept"
+  },
+  {
+   "id": "c:58406be5-da3c-471b-a5a2-fff33383ba98->0de9a099-0808-4367-a744-b5db6843f09e",
+   "source": "58406be5-da3c-471b-a5a2-fff33383ba98",
+   "target": "0de9a099-0808-4367-a744-b5db6843f09e",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0de9a099-0808-4367-a744-b5db6843f09e->22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "source": "0de9a099-0808-4367-a744-b5db6843f09e",
+   "target": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:a4b7412e-e5fc-4767-9c8f-28fb41bde25a->22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "source": "a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+   "target": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cc7acffa-d3bc-48c6-8938-ec8aae42a202->440a0bab-1b7f-4466-9474-615733f741cd",
+   "source": "cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "target": "440a0bab-1b7f-4466-9474-615733f741cd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:440a0bab-1b7f-4466-9474-615733f741cd->1853b2bf-4039-4ed7-8e80-6c640f169397",
+   "source": "440a0bab-1b7f-4466-9474-615733f741cd",
+   "target": "1853b2bf-4039-4ed7-8e80-6c640f169397",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->085699dc-1387-441b-87ae-78f0951e3757",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e0a61b63-6927-462a-9331-0c6c8b260823->5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "source": "e0a61b63-6927-462a-9331-0c6c8b260823",
+   "target": "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5c5c1e31-5e05-4419-8e8b-efce24af2205->fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "source": "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "target": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:74551b8b-ed34-4c95-bd0f-d775243b12bc->fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "source": "74551b8b-ed34-4c95-bd0f-d775243b12bc",
+   "target": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->729382a7-c110-4cca-a6a1-e7b415b04039",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "729382a7-c110-4cca-a6a1-e7b415b04039",
+   "kind": "concept"
+  },
+  {
+   "id": "c:317fe1ea-2df6-47d9-bb05-9426d5f1a474->8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "source": "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+   "target": "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "kind": "concept"
+  },
+  {
+   "id": "c:317fe1ea-2df6-47d9-bb05-9426d5f1a474->955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "source": "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+   "target": "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:b3ef9331-83b2-4cf4-a86a-0c134afd71fa->8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "source": "b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+   "target": "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1642f502-f226-460d-8c3e-0b619f7b3317->dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "source": "1642f502-f226-460d-8c3e-0b619f7b3317",
+   "target": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "kind": "concept"
+  },
+  {
+   "id": "c:955f4773-38a1-4d33-950d-ed6594fc6e9d->dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "source": "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "target": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df->8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "source": "1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+   "target": "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:6f5b918a-663c-4c95-bc74-7bdd1adc64ce->7f162dfc-c480-4c66-a378-da21e0a312db",
+   "source": "6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+   "target": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "kind": "concept"
+  },
+  {
+   "id": "c:b675ae73-d5ba-4f38-aaaa-852c99a81648->7f162dfc-c480-4c66-a378-da21e0a312db",
+   "source": "b675ae73-d5ba-4f38-aaaa-852c99a81648",
+   "target": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8f26ed6e-a493-4090-b7cd-7e7612214363->c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "source": "8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "target": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "concept"
+  },
+  {
+   "id": "c:769405d3-194b-4638-bb85-048a02ca5433->6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "source": "769405d3-194b-4638-bb85-048a02ca5433",
+   "target": "6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "kind": "concept"
+  },
+  {
+   "id": "c:634c1d57-c52c-438f-b8a0-c9c36e2152fe->f4fb8a97-1a2e-421f-aaf0-276d95d55a0c",
+   "source": "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "target": "f4fb8a97-1a2e-421f-aaf0-276d95d55a0c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->842dd63a-33cc-4322-807c-d2a51881422c",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "842dd63a-33cc-4322-807c-d2a51881422c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:32d6edc8-3b83-4aad-91d0-5e96d0f869b7->085699dc-1387-441b-87ae-78f0951e3757",
+   "source": "32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+   "target": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "concept"
+  },
+  {
+   "id": "c:711a351f-bb26-4823-af6b-4d3de5e95014->842dd63a-33cc-4322-807c-d2a51881422c",
+   "source": "711a351f-bb26-4823-af6b-4d3de5e95014",
+   "target": "842dd63a-33cc-4322-807c-d2a51881422c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:adcc80bd-14da-49f6-a029-c4b9ef29c267->842dd63a-33cc-4322-807c-d2a51881422c",
+   "source": "adcc80bd-14da-49f6-a029-c4b9ef29c267",
+   "target": "842dd63a-33cc-4322-807c-d2a51881422c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5c49d17a-6662-45b0-bc83-b01427aa5741->e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "source": "5c49d17a-6662-45b0-bc83-b01427aa5741",
+   "target": "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "kind": "concept"
+  },
+  {
+   "id": "c:e10bfbc2-a129-4a1d-b7ca-18f35ba48e21->f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "source": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "target": "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "kind": "concept"
+  },
+  {
+   "id": "c:551029d9-fbe1-4c8f-bf3c-6f5aee129470->f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "source": "551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+   "target": "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "kind": "concept"
+  },
+  {
+   "id": "c:4a29bb78-6be4-48aa-ac36-f25f2aed4d4e->8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "source": "4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+   "target": "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8488e5fa-934e-4bba-a71b-8479c21db3b6->e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "source": "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "target": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "kind": "concept"
+  },
+  {
+   "id": "c:c667d542-984e-4f30-85a4-4d890fa1a7ae->e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "source": "c667d542-984e-4f30-85a4-4d890fa1a7ae",
+   "target": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "kind": "concept"
+  },
+  {
+   "id": "c:9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142->2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "source": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "target": "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:594658ff-0393-479f-b9fc-87c135f16228->2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "source": "594658ff-0393-479f-b9fc-87c135f16228",
+   "target": "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5ae26457-9194-49d8-aa92-e8f60237a7f7->9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "source": "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "target": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "kind": "concept"
+  },
+  {
+   "id": "c:54052acf-3640-47d3-914b-a62a8b53f674->5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "source": "54052acf-3640-47d3-914b-a62a8b53f674",
+   "target": "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "kind": "concept"
+  },
+  {
+   "id": "c:df66203f-8ddf-4be0-a503-1690c6b7f361->a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "source": "df66203f-8ddf-4be0-a503-1690c6b7f361",
+   "target": "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7e9fef99-9052-45f7-b659-76f99e22000f->ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "source": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "target": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cb45fc4a-2690-4381-a5d2-6105b8dba215->cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "source": "cb45fc4a-2690-4381-a5d2-6105b8dba215",
+   "target": "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "kind": "concept"
+  },
+  {
+   "id": "c:a9550eaa-3761-4dfb-a36a-b69718c3d48d->cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "source": "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "target": "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1b207606-aec4-46ab-9bd3-82b273969a6d->b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "source": "1b207606-aec4-46ab-9bd3-82b273969a6d",
+   "target": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:cdbe9395-74d5-44d1-8732-635bf7c4061b->b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "source": "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "target": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ed9dbc9e-2087-4bca-bb57-99e994142ddb->417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "source": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "target": "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "kind": "concept"
+  },
+  {
+   "id": "c:3fa76df3-5bdb-4f06-94cb-1649ca7c3287->5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "source": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "target": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5c9fb2a1-519a-4f65-937f-b4ff058a377d->0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "source": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "target": "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:0b8722b2-54f6-4b15-a5c3-cc2c8b74083c->f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+   "source": "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "target": "f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5c9fb2a1-519a-4f65-937f-b4ff058a377d->82a34364-b337-4eab-9843-92de87df9370",
+   "source": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "target": "82a34364-b337-4eab-9843-92de87df9370",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8b00bb9b-535a-45be-b3f4-09fb962722b2->5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "source": "8b00bb9b-535a-45be-b3f4-09fb962722b2",
+   "target": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "kind": "concept"
+  },
+  {
+   "id": "c:46f19b7b-a02d-4c64-8846-2f1cb8a5eb21->7e9fef99-9052-45f7-b659-76f99e22000f",
+   "source": "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "target": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "kind": "concept"
+  },
+  {
+   "id": "c:f0cf22e6-752d-4192-a437-c046871603df->de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "source": "f0cf22e6-752d-4192-a437-c046871603df",
+   "target": "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "kind": "concept"
+  },
+  {
+   "id": "c:de5a83f4-3c07-4a8d-815f-9d54e80b8fa7->46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "source": "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "target": "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "kind": "concept"
+  },
+  {
+   "id": "c:92488b38-c3ea-437c-a726-285534020479->46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "source": "92488b38-c3ea-437c-a726-285534020479",
+   "target": "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "kind": "concept"
+  },
+  {
+   "id": "c:417e7904-a9e2-47dc-a9f1-a0ffb1962a73->600452e5-d2b2-4182-94dd-e163cba30b84",
+   "source": "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "target": "600452e5-d2b2-4182-94dd-e163cba30b84",
+   "kind": "concept"
+  },
+  {
+   "id": "c:71f01caf-875b-4516-aa33-bdf2821f4760->600452e5-d2b2-4182-94dd-e163cba30b84",
+   "source": "71f01caf-875b-4516-aa33-bdf2821f4760",
+   "target": "600452e5-d2b2-4182-94dd-e163cba30b84",
+   "kind": "concept"
+  },
+  {
+   "id": "c:97ca537b-0744-4d85-a242-343699941837->c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "source": "97ca537b-0744-4d85-a242-343699941837",
+   "target": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "concept"
+  },
+  {
+   "id": "c:61932dbf-3a89-4fd6-ba5a-b0608946b049->c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "source": "61932dbf-3a89-4fd6-ba5a-b0608946b049",
+   "target": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "concept"
+  },
+  {
+   "id": "c:6634b32f-46fb-4325-a447-f43d08eb0c02->c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "source": "6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "target": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "concept"
+  },
+  {
+   "id": "c:15a36609-4fde-4d7f-8282-2e6083d11309->c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "source": "15a36609-4fde-4d7f-8282-2e6083d11309",
+   "target": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "concept"
+  },
+  {
+   "id": "c:9dc13e98-8308-4872-9bfd-5a113b753c05->5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "source": "9dc13e98-8308-4872-9bfd-5a113b753c05",
+   "target": "5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "kind": "concept"
+  },
+  {
+   "id": "c:5fd21f6f-4c70-46bb-9d76-a7fe13581958->6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "source": "5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "target": "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:f7aefdee-0410-4cc1-b45c-e2b6e36e2d04->6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "source": "f7aefdee-0410-4cc1-b45c-e2b6e36e2d04",
+   "target": "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "kind": "concept"
+  },
+  {
+   "id": "c:6583abe0-dc79-49ea-b696-760d1a3ab6a3->dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "source": "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "target": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "kind": "concept"
+  },
+  {
+   "id": "c:dfaa3d6f-9a1a-44d5-9b69-99371207ce18->f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "source": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "target": "f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "kind": "concept"
+  },
+  {
+   "id": "c:f8d41df6-8259-4095-bc40-ba411c909ab6->d4122a9a-4f8c-468e-ad01-447c2f637e96",
+   "source": "f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "target": "d4122a9a-4f8c-468e-ad01-447c2f637e96",
+   "kind": "concept"
+  },
+  {
+   "id": "c:593cd940-5114-4dc8-b170-90ef1b0a601f->56dee4da-2ded-45b9-8522-1ede11732716",
+   "source": "593cd940-5114-4dc8-b170-90ef1b0a601f",
+   "target": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "kind": "concept"
+  },
+  {
+   "id": "c:56dee4da-2ded-45b9-8522-1ede11732716->e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+   "source": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "target": "e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1d54b657-2d36-4903-ab9f-0f035d45fbe2->0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "source": "1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+   "target": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "kind": "concept"
+  },
+  {
+   "id": "c:085699dc-1387-441b-87ae-78f0951e3757->1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "source": "085699dc-1387-441b-87ae-78f0951e3757",
+   "target": "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1d47e643-f2c4-44e0-969f-1cf94cbe7752->0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "source": "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "target": "0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "kind": "concept"
+  },
+  {
+   "id": "c:1a8846b8-10c5-4319-bc3c-ede7229575ef->dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "source": "1a8846b8-10c5-4319-bc3c-ede7229575ef",
+   "target": "dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "kind": "concept"
+  },
+  {
+   "id": "c:dd69a394-f4db-4a14-ad2c-acb8cf501a00->547579f9-7a7c-4243-a087-eef28263ce20",
+   "source": "dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "target": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "kind": "concept"
+  },
+  {
+   "id": "c:47ebd6b3-b10f-4580-a9cd-be55bcff81b9->b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "source": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "target": "b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "kind": "concept"
+  },
+  {
+   "id": "c:47ebd6b3-b10f-4580-a9cd-be55bcff81b9->18cd1e56-3175-416a-987f-3c4919a3c465",
+   "source": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "target": "18cd1e56-3175-416a-987f-3c4919a3c465",
+   "kind": "concept"
+  },
+  {
+   "id": "c:b67b909e-9274-4457-8fa8-13fe1990e01c->9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "source": "b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "target": "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "kind": "concept"
+  },
+  {
+   "id": "c:18cd1e56-3175-416a-987f-3c4919a3c465->9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "source": "18cd1e56-3175-416a-987f-3c4919a3c465",
+   "target": "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ae88dc79-7547-4131-893e-902e4dec69e9->cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "source": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "target": "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "kind": "concept"
+  },
+  {
+   "id": "c:fffbe263-f438-422e-aa58-f99c5e8ca3dd->ae88dc79-7547-4131-893e-902e4dec69e9",
+   "source": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "target": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "kind": "concept"
+  },
+  {
+   "id": "c:ae88dc79-7547-4131-893e-902e4dec69e9->33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+   "source": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "target": "33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+   "kind": "concept"
+  },
+  {
+   "id": "c:957e453f-811f-4200-90bd-23cbff3680be->c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "source": "957e453f-811f-4200-90bd-23cbff3680be",
+   "target": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "concept"
+  },
+  {
+   "id": "c:3fa76df3-5bdb-4f06-94cb-1649ca7c3287->fa72e23c-3758-4ff1-9f60-3c67332502bc",
+   "source": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "target": "fa72e23c-3758-4ff1-9f60-3c67332502bc",
+   "kind": "concept"
+  },
+  {
+   "id": "c:8e644dc9-0e4b-4b55-a968-f6c565c22f2e->3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "source": "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "target": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "kind": "concept"
+  },
+  {
+   "id": "c:7fe9797e-66b5-466b-9cc3-299be28b245c->c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "source": "7fe9797e-66b5-466b-9cc3-299be28b245c",
+   "target": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "concept"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf->321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf",
+   "target": "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf->19c96995-dfb0-4296-af81-ca02d198ca61",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf",
+   "target": "19c96995-dfb0-4296-af81-ca02d198ca61",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf->085699dc-1387-441b-87ae-78f0951e3757",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:0:L1-notes.pdf",
+   "target": "085699dc-1387-441b-87ae-78f0951e3757",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf->7e9fef99-9052-45f7-b659-76f99e22000f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf",
+   "target": "7e9fef99-9052-45f7-b659-76f99e22000f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf->2f95366b-8a19-4527-9428-5220826149d5",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf",
+   "target": "2f95366b-8a19-4527-9428-5220826149d5",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf->9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:1:L2-notes.pdf",
+   "target": "9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->ae88dc79-7547-4131-893e-902e4dec69e9",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "ae88dc79-7547-4131-893e-902e4dec69e9",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf->a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:2:L3-notes.pdf",
+   "target": "a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:4:L5-notes.pdf->9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:4:L5-notes.pdf",
+   "target": "9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf->ab8838e9-c76d-45fe-a22f-124dd8644836",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:8:L9-notes.pdf",
+   "target": "ab8838e9-c76d-45fe-a22f-124dd8644836",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf->970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:9:L10-notes.pdf",
+   "target": "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:10:L11-notes.pdf->1b958cf7-d68b-489c-89da-061da0e96bde",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:10:L11-notes.pdf",
+   "target": "1b958cf7-d68b-489c-89da-061da0e96bde",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:10:L11-notes.pdf->a59d3891-4d62-4880-ab86-fd230a382d37",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:10:L11-notes.pdf",
+   "target": "a59d3891-4d62-4880-ab86-fd230a382d37",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "fffbe263-f438-422e-aa58-f99c5e8ca3dd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->533ac192-4478-4039-bd6f-d26f903716cb",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "533ac192-4478-4039-bd6f-d26f903716cb",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->1fecf000-d07f-4d59-9996-a568df1b3e17",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "1fecf000-d07f-4d59-9996-a568df1b3e17",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf->8d405220-2462-4b8d-bcd8-bb09499fe289",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:11:pset1.pdf",
+   "target": "8d405220-2462-4b8d-bcd8-bb09499fe289",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:12:pset2.pdf->c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:12:pset2.pdf",
+   "target": "c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:13:pset3.pdf->dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:13:pset3.pdf",
+   "target": "dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:13:pset3.pdf->10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:13:pset3.pdf",
+   "target": "10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf->2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf",
+   "target": "2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf->1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf",
+   "target": "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf->4cd672ef-76c9-444f-aec6-5485eb900cf1",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:14:pset4.pdf",
+   "target": "4cd672ef-76c9-444f-aec6-5485eb900cf1",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:15:midterm_2025.pdf->0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:15:midterm_2025.pdf",
+   "target": "0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:15:midterm_2025.pdf->7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:15:midterm_2025.pdf",
+   "target": "7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:16:midterm_sol_2025.pdf->cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:16:midterm_sol_2025.pdf",
+   "target": "cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf->50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf",
+   "target": "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf->f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf",
+   "target": "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf->2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:17:final_2025.pdf",
+   "target": "2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:19:Legendre Transforms for Dummies.pdf->92488b38-c3ea-437c-a726-285534020479",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:19:Legendre Transforms for Dummies.pdf",
+   "target": "92488b38-c3ea-437c-a726-285534020479",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->9d71d668-cef2-4320-9cb1-dde3f6a33378",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->e5f80fd1-28c4-4564-8c9f-2e56699d09b7",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "e5f80fd1-28c4-4564-8c9f-2e56699d09b7",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "8f26ed6e-a493-4090-b7cd-7e7612214363",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "6634b32f-46fb-4325-a447-f43d08eb0c02",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->b961f44c-2d48-4323-908b-11f0c2fed41b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "b961f44c-2d48-4323-908b-11f0c2fed41b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "28b6983b-9781-4ccd-a493-6faa003a8b81",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "c07304ba-aed5-4577-ae46-5d6628dc8452",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->907799f8-44a9-450e-8c17-bd91c9aa4a70",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "907799f8-44a9-450e-8c17-bd91c9aa4a70",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->702daa5c-fe09-4464-adbe-0999bb5883f6",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "702daa5c-fe09-4464-adbe-0999bb5883f6",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->36019b68-0b16-4199-8ea6-f287aabaa260",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "36019b68-0b16-4199-8ea6-f287aabaa260",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->5d7a924d-d7ab-4807-983e-081fffa89130",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "5d7a924d-d7ab-4807-983e-081fffa89130",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->6a3d8246-2f95-46fa-8082-91147908f732",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "6a3d8246-2f95-46fa-8082-91147908f732",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->1595a327-9415-475e-9c96-36f19e6bf95f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "1595a327-9415-475e-9c96-36f19e6bf95f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->a677a078-6084-4c83-886f-12022763a815",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "a677a078-6084-4c83-886f-12022763a815",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->9a46d64c-b8be-4ace-a92f-cf7cf481a72a",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "9a46d64c-b8be-4ace-a92f-cf7cf481a72a",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->0335b690-d27a-425f-af32-b8a6b2601d9f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "0335b690-d27a-425f-af32-b8a6b2601d9f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "cc7acffa-d3bc-48c6-8938-ec8aae42a202",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->0de9a099-0808-4367-a744-b5db6843f09e",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "0de9a099-0808-4367-a744-b5db6843f09e",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->58406be5-da3c-471b-a5a2-fff33383ba98",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "58406be5-da3c-471b-a5a2-fff33383ba98",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->440a0bab-1b7f-4466-9474-615733f741cd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "440a0bab-1b7f-4466-9474-615733f741cd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf->1853b2bf-4039-4ed7-8e80-6c640f169397",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:20:Pset 1 CM2.pdf",
+   "target": "1853b2bf-4039-4ed7-8e80-6c640f169397",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->729382a7-c110-4cca-a6a1-e7b415b04039",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "729382a7-c110-4cca-a6a1-e7b415b04039",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->74551b8b-ed34-4c95-bd0f-d775243b12bc",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "74551b8b-ed34-4c95-bd0f-d775243b12bc",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->e0a61b63-6927-462a-9331-0c6c8b260823",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "e0a61b63-6927-462a-9331-0c6c8b260823",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->3b8862d8-2ce3-4b54-ab49-7a35179cb19c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "3b8862d8-2ce3-4b54-ab49-7a35179cb19c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->1642f502-f226-460d-8c3e-0b619f7b3317",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "1642f502-f226-460d-8c3e-0b619f7b3317",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->b675ae73-d5ba-4f38-aaaa-852c99a81648",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "b675ae73-d5ba-4f38-aaaa-852c99a81648",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->7f162dfc-c480-4c66-a378-da21e0a312db",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "7f162dfc-c480-4c66-a378-da21e0a312db",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->22e498f3-2ba8-4679-b9e9-0c10af834113",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "22e498f3-2ba8-4679-b9e9-0c10af834113",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->f82be75e-7578-47fb-8967-b7422733b1d1",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "f82be75e-7578-47fb-8967-b7422733b1d1",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->769405d3-194b-4638-bb85-048a02ca5433",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "769405d3-194b-4638-bb85-048a02ca5433",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->f4fb8a97-1a2e-421f-aaf0-276d95d55a0c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "f4fb8a97-1a2e-421f-aaf0-276d95d55a0c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->c79b6401-14c6-438a-aef5-865e46a99953",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "c79b6401-14c6-438a-aef5-865e46a99953",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->5d2e498e-01b3-4556-acd0-ca052ea1d412",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "5d2e498e-01b3-4556-acd0-ca052ea1d412",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->842dd63a-33cc-4322-807c-d2a51881422c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "842dd63a-33cc-4322-807c-d2a51881422c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->711a351f-bb26-4823-af6b-4d3de5e95014",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "711a351f-bb26-4823-af6b-4d3de5e95014",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->adcc80bd-14da-49f6-a029-c4b9ef29c267",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "adcc80bd-14da-49f6-a029-c4b9ef29c267",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->5c49d17a-6662-45b0-bc83-b01427aa5741",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "5c49d17a-6662-45b0-bc83-b01427aa5741",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->490d901a-ebdf-4adc-8699-277b7eac6ab6",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "490d901a-ebdf-4adc-8699-277b7eac6ab6",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->c667d542-984e-4f30-85a4-4d890fa1a7ae",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "c667d542-984e-4f30-85a4-4d890fa1a7ae",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->594658ff-0393-479f-b9fc-87c135f16228",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "594658ff-0393-479f-b9fc-87c135f16228",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf->54052acf-3640-47d3-914b-a62a8b53f674",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:21:Pset 2 CM2.pdf",
+   "target": "54052acf-3640-47d3-914b-a62a8b53f674",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->df66203f-8ddf-4be0-a503-1690c6b7f361",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "df66203f-8ddf-4be0-a503-1690c6b7f361",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->fef03cf4-e4dd-4f57-96db-80aa748f0bb8",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "fef03cf4-e4dd-4f57-96db-80aa748f0bb8",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->cb45fc4a-2690-4381-a5d2-6105b8dba215",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "cb45fc4a-2690-4381-a5d2-6105b8dba215",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->1b207606-aec4-46ab-9bd3-82b273969a6d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "1b207606-aec4-46ab-9bd3-82b273969a6d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->c78dd90d-2078-4454-bc31-8b32028c32cd",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "c78dd90d-2078-4454-bc31-8b32028c32cd",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->82a34364-b337-4eab-9843-92de87df9370",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "82a34364-b337-4eab-9843-92de87df9370",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->8b00bb9b-535a-45be-b3f4-09fb962722b2",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "8b00bb9b-535a-45be-b3f4-09fb962722b2",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->98bf8a23-d933-4063-b2b8-169012493a81",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "98bf8a23-d933-4063-b2b8-169012493a81",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->5a559cd7-a8da-4136-96c2-ce1304dbf4b3",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "5a559cd7-a8da-4136-96c2-ce1304dbf4b3",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->c19a2a51-2ad2-4747-8d79-14ad5d1de95c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "c19a2a51-2ad2-4747-8d79-14ad5d1de95c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->f0cf22e6-752d-4192-a437-c046871603df",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "f0cf22e6-752d-4192-a437-c046871603df",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->71f01caf-875b-4516-aa33-bdf2821f4760",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "71f01caf-875b-4516-aa33-bdf2821f4760",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->600452e5-d2b2-4182-94dd-e163cba30b84",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "600452e5-d2b2-4182-94dd-e163cba30b84",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->61932dbf-3a89-4fd6-ba5a-b0608946b049",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "61932dbf-3a89-4fd6-ba5a-b0608946b049",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->15a36609-4fde-4d7f-8282-2e6083d11309",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "15a36609-4fde-4d7f-8282-2e6083d11309",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "c0864f1d-d1f9-4bba-9d09-a555de747050",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->97ca537b-0744-4d85-a242-343699941837",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "97ca537b-0744-4d85-a242-343699941837",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->9dc13e98-8308-4872-9bfd-5a113b753c05",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "9dc13e98-8308-4872-9bfd-5a113b753c05",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->f7aefdee-0410-4cc1-b45c-e2b6e36e2d04",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "f7aefdee-0410-4cc1-b45c-e2b6e36e2d04",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->593cd940-5114-4dc8-b170-90ef1b0a601f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "593cd940-5114-4dc8-b170-90ef1b0a601f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->56dee4da-2ded-45b9-8522-1ede11732716",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "56dee4da-2ded-45b9-8522-1ede11732716",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "f8d41df6-8259-4095-bc40-ba411c909ab6",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->d4122a9a-4f8c-468e-ad01-447c2f637e96",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "d4122a9a-4f8c-468e-ad01-447c2f637e96",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf->1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:22:Pset 3 CM2.pdf",
+   "target": "1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->1a8846b8-10c5-4319-bc3c-ede7229575ef",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "1a8846b8-10c5-4319-bc3c-ede7229575ef",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "dd69a394-f4db-4a14-ad2c-acb8cf501a00",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->547579f9-7a7c-4243-a087-eef28263ce20",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "547579f9-7a7c-4243-a087-eef28263ce20",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "b67b909e-9274-4457-8fa8-13fe1990e01c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->18cd1e56-3175-416a-987f-3c4919a3c465",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "18cd1e56-3175-416a-987f-3c4919a3c465",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->957e453f-811f-4200-90bd-23cbff3680be",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "957e453f-811f-4200-90bd-23cbff3680be",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->fa72e23c-3758-4ff1-9f60-3c67332502bc",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "fa72e23c-3758-4ff1-9f60-3c67332502bc",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->7fe9797e-66b5-466b-9cc3-299be28b245c",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "7fe9797e-66b5-466b-9cc3-299be28b245c",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->81ee2d95-a981-475a-a7e8-956a5aee8805",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "81ee2d95-a981-475a-a7e8-956a5aee8805",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->18bbcf17-6f53-4d21-b51a-93ce31585aad",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "18bbcf17-6f53-4d21-b51a-93ce31585aad",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->bbd4c1dc-f561-48d2-bce6-20f0075fcf7a",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "bbd4c1dc-f561-48d2-bce6-20f0075fcf7a",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+   "kind": "resource"
+  },
+  {
+   "id": "r:2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf->8e47d0c9-0501-463b-85a9-488936d12d10",
+   "source": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:23:Pset 4 CM2.pdf",
+   "target": "8e47d0c9-0501-463b-85a9-488936d12d10",
+   "kind": "resource"
+  }
+ ],
+ "clusters": [
+  {
+   "id": "family:Constrained motion",
+   "label": "Constrained motion",
+   "x": 729.141408910255,
+   "y": 133.43018738975798,
+   "count": 37,
+   "mastery": 0.44142537995405406,
+   "memberIds": [
+    "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+    "10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+    "15a36609-4fde-4d7f-8282-2e6083d11309",
+    "1b207606-aec4-46ab-9bd3-82b273969a6d",
+    "2f95366b-8a19-4527-9428-5220826149d5",
+    "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+    "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+    "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+    "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+    "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+    "6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+    "61932dbf-3a89-4fd6-ba5a-b0608946b049",
+    "6634b32f-46fb-4325-a447-f43d08eb0c02",
+    "71f01caf-875b-4516-aa33-bdf2821f4760",
+    "769405d3-194b-4638-bb85-048a02ca5433",
+    "7e9fef99-9052-45f7-b659-76f99e22000f",
+    "82a34364-b337-4eab-9843-92de87df9370",
+    "8b00bb9b-535a-45be-b3f4-09fb962722b2",
+    "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+    "92488b38-c3ea-437c-a726-285534020479",
+    "97ca537b-0744-4d85-a242-343699941837",
+    "9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+    "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+    "ab8838e9-c76d-45fe-a22f-124dd8644836",
+    "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+    "c0864f1d-d1f9-4bba-9d09-a555de747050",
+    "c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+    "cb45fc4a-2690-4381-a5d2-6105b8dba215",
+    "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+    "dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+    "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+    "df66203f-8ddf-4be0-a503-1690c6b7f361",
+    "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+    "f0cf22e6-752d-4192-a437-c046871603df",
+    "f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+    "fa72e23c-3758-4ff1-9f60-3c67332502bc",
+    "fef03cf4-e4dd-4f57-96db-80aa748f0bb8"
+   ]
+  },
+  {
+   "id": "family:Hamiltonian mechanics",
+   "label": "Hamiltonian mechanics",
+   "x": 86.926256182037,
+   "y": 119.47970571267577,
+   "count": 33,
+   "mastery": 0.41397901850606056,
+   "memberIds": [
+    "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+    "085699dc-1387-441b-87ae-78f0951e3757",
+    "18cd1e56-3175-416a-987f-3c4919a3c465",
+    "1b958cf7-d68b-489c-89da-061da0e96bde",
+    "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+    "1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+    "1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+    "32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+    "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+    "4cd672ef-76c9-444f-aec6-5485eb900cf1",
+    "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+    "5d7a924d-d7ab-4807-983e-081fffa89130",
+    "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+    "711a351f-bb26-4823-af6b-4d3de5e95014",
+    "7fe9797e-66b5-466b-9cc3-299be28b245c",
+    "842dd63a-33cc-4322-807c-d2a51881422c",
+    "8f26ed6e-a493-4090-b7cd-7e7612214363",
+    "957e453f-811f-4200-90bd-23cbff3680be",
+    "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+    "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+    "9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+    "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+    "9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+    "a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+    "a59d3891-4d62-4880-ab86-fd230a382d37",
+    "adcc80bd-14da-49f6-a029-c4b9ef29c267",
+    "b67b909e-9274-4457-8fa8-13fe1990e01c",
+    "b961f44c-2d48-4323-908b-11f0c2fed41b",
+    "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+    "cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+    "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+    "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+    "e5f80fd1-28c4-4564-8c9f-2e56699d09b7"
+   ]
+  },
+  {
+   "id": "family:Lagrangian mechanics",
+   "label": "Lagrangian mechanics",
+   "x": -217.3570477907265,
+   "y": -108.56550362658027,
+   "count": 32,
+   "mastery": 0.43917594709375,
+   "memberIds": [
+    "0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+    "1595a327-9415-475e-9c96-36f19e6bf95f",
+    "19c96995-dfb0-4296-af81-ca02d198ca61",
+    "1fecf000-d07f-4d59-9996-a568df1b3e17",
+    "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+    "2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+    "2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+    "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+    "322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+    "36019b68-0b16-4199-8ea6-f287aabaa260",
+    "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+    "4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+    "5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+    "533ac192-4478-4039-bd6f-d26f903716cb",
+    "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+    "5d2e498e-01b3-4556-acd0-ca052ea1d412",
+    "6a3d8246-2f95-46fa-8082-91147908f732",
+    "702daa5c-fe09-4464-adbe-0999bb5883f6",
+    "729382a7-c110-4cca-a6a1-e7b415b04039",
+    "74551b8b-ed34-4c95-bd0f-d775243b12bc",
+    "7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+    "8e47d0c9-0501-463b-85a9-488936d12d10",
+    "907799f8-44a9-450e-8c17-bd91c9aa4a70",
+    "a677a078-6084-4c83-886f-12022763a815",
+    "b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+    "b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+    "c07304ba-aed5-4577-ae46-5d6628dc8452",
+    "c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+    "c78dd90d-2078-4454-bc31-8b32028c32cd",
+    "c79b6401-14c6-438a-aef5-865e46a99953",
+    "e0a61b63-6927-462a-9331-0c6c8b260823",
+    "fffbe263-f438-422e-aa58-f99c5e8ca3dd"
+   ]
+  },
+  {
+   "id": "family:Oscillations",
+   "label": "Oscillations",
+   "x": -813.1291933542274,
+   "y": -312.46047094464194,
+   "count": 23,
+   "mastery": 0.5554487231130435,
+   "memberIds": [
+    "1642f502-f226-460d-8c3e-0b619f7b3317",
+    "1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+    "22e498f3-2ba8-4679-b9e9-0c10af834113",
+    "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+    "375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+    "54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+    "5c49d17a-6662-45b0-bc83-b01427aa5741",
+    "6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+    "7f162dfc-c480-4c66-a378-da21e0a312db",
+    "8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+    "8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+    "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+    "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+    "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+    "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+    "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+    "b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+    "b675ae73-d5ba-4f38-aaaa-852c99a81648",
+    "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+    "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+    "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+    "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+    "f82be75e-7578-47fb-8967-b7422733b1d1"
+   ]
+  },
+  {
+   "id": "family:Orbital motion",
+   "label": "Orbital motion",
+   "x": -905.2433411946524,
+   "y": 93.8020449518414,
+   "count": 20,
+   "mastery": 0.5265212777399999,
+   "memberIds": [
+    "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+    "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+    "28b6983b-9781-4ccd-a493-6faa003a8b81",
+    "2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+    "4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+    "54052acf-3640-47d3-914b-a62a8b53f674",
+    "551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+    "594658ff-0393-479f-b9fc-87c135f16228",
+    "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+    "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+    "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+    "88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+    "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+    "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+    "ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+    "c667d542-984e-4f30-85a4-4d890fa1a7ae",
+    "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+    "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+    "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+    "f4fb8a97-1a2e-421f-aaf0-276d95d55a0c"
+   ]
+  },
+  {
+   "id": "family:Conserved quantities",
+   "label": "Conserved quantities",
+   "x": -55.55381272395891,
+   "y": 111.02989125612503,
+   "count": 17,
+   "mastery": 0.45785502307647047,
+   "memberIds": [
+    "0335b690-d27a-425f-af32-b8a6b2601d9f",
+    "0e9c4b2a-faa1-422a-bdcd-be2511de74fe",
+    "18bbcf17-6f53-4d21-b51a-93ce31585aad",
+    "1a8846b8-10c5-4319-bc3c-ede7229575ef",
+    "1b1dbac8-48f8-491e-97a5-f0e381dd25d5",
+    "33ef7d3e-65a6-4280-af54-e6a6d5cd5639",
+    "490d901a-ebdf-4adc-8699-277b7eac6ab6",
+    "547579f9-7a7c-4243-a087-eef28263ce20",
+    "600452e5-d2b2-4182-94dd-e163cba30b84",
+    "6f4bffe5-863a-4b99-893e-86568318c7a9",
+    "9a46d64c-b8be-4ace-a92f-cf7cf481a72a",
+    "9ccb394f-07a1-4236-a2f9-6b0a4aa7d0e1",
+    "a4456686-2ef7-4284-b25a-9787c5f4d5b7",
+    "ae88dc79-7547-4131-893e-902e4dec69e9",
+    "bbd4c1dc-f561-48d2-bce6-20f0075fcf7a",
+    "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+    "dd69a394-f4db-4a14-ad2c-acb8cf501a00"
+   ]
+  },
+  {
+   "id": "family:Rigid body motion",
+   "label": "Rigid body motion",
+   "x": 982.1349027125389,
+   "y": 153.50450482172408,
+   "count": 16,
+   "mastery": 0.5189724142625001,
+   "memberIds": [
+    "3b8862d8-2ce3-4b54-ab49-7a35179cb19c",
+    "56dee4da-2ded-45b9-8522-1ede11732716",
+    "593cd940-5114-4dc8-b170-90ef1b0a601f",
+    "5a559cd7-a8da-4136-96c2-ce1304dbf4b3",
+    "5fd21f6f-4c70-46bb-9d76-a7fe13581958",
+    "6583abe0-dc79-49ea-b696-760d1a3ab6a3",
+    "81ee2d95-a981-475a-a7e8-956a5aee8805",
+    "98bf8a23-d933-4063-b2b8-169012493a81",
+    "9dc13e98-8308-4872-9bfd-5a113b753c05",
+    "9f12db65-19fc-475b-a00a-dfa21a8faa2c",
+    "c19a2a51-2ad2-4747-8d79-14ad5d1de95c",
+    "d4122a9a-4f8c-468e-ad01-447c2f637e96",
+    "dfaa3d6f-9a1a-44d5-9b69-99371207ce18",
+    "e07b98c2-a443-472c-bcbc-1e9d98a5634f",
+    "f7aefdee-0410-4cc1-b45c-e2b6e36e2d04",
+    "f8d41df6-8259-4095-bc40-ba411c909ab6"
+   ]
+  },
+  {
+   "id": "family:Electromagnetism",
+   "label": "Electromagnetism",
+   "x": -302.2090628228977,
+   "y": -684.8383752223962,
+   "count": 8,
+   "mastery": 0.4874351744499999,
+   "memberIds": [
+    "0de9a099-0808-4367-a744-b5db6843f09e",
+    "1853b2bf-4039-4ed7-8e80-6c640f169397",
+    "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+    "440a0bab-1b7f-4466-9474-615733f741cd",
+    "58406be5-da3c-471b-a5a2-fff33383ba98",
+    "8d405220-2462-4b8d-bcd8-bb09499fe289",
+    "a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+    "cc7acffa-d3bc-48c6-8938-ec8aae42a202"
+   ]
+  }
+ ],
+ "clusterLabelBoxes": [
+  {
+   "x0": 881.5552656047472,
+   "y0": 477.9776342994601,
+   "x1": 1012.0151349895128,
+   "y1": 509.9776342994601,
+   "memberIds": [
+    "0b8722b2-54f6-4b15-a5c3-cc2c8b74083c",
+    "10905de6-3ad4-4b8d-b94b-e10ca9bdad7d",
+    "15a36609-4fde-4d7f-8282-2e6083d11309",
+    "1b207606-aec4-46ab-9bd3-82b273969a6d",
+    "2f95366b-8a19-4527-9428-5220826149d5",
+    "321ec39f-dcd4-42b4-8a68-a457ebbd0249",
+    "3fa76df3-5bdb-4f06-94cb-1649ca7c3287",
+    "417e7904-a9e2-47dc-a9f1-a0ffb1962a73",
+    "46f19b7b-a02d-4c64-8846-2f1cb8a5eb21",
+    "5c9fb2a1-519a-4f65-937f-b4ff058a377d",
+    "6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+    "61932dbf-3a89-4fd6-ba5a-b0608946b049",
+    "6634b32f-46fb-4325-a447-f43d08eb0c02",
+    "71f01caf-875b-4516-aa33-bdf2821f4760",
+    "769405d3-194b-4638-bb85-048a02ca5433",
+    "7e9fef99-9052-45f7-b659-76f99e22000f",
+    "82a34364-b337-4eab-9843-92de87df9370",
+    "8b00bb9b-535a-45be-b3f4-09fb962722b2",
+    "8e644dc9-0e4b-4b55-a968-f6c565c22f2e",
+    "92488b38-c3ea-437c-a726-285534020479",
+    "97ca537b-0744-4d85-a242-343699941837",
+    "9c1bc4b1-6117-42ba-87ed-f340ac3d2bd8",
+    "a9550eaa-3761-4dfb-a36a-b69718c3d48d",
+    "ab8838e9-c76d-45fe-a22f-124dd8644836",
+    "b0cabb6c-737c-4958-8cc6-eab87b5d0d8d",
+    "c0864f1d-d1f9-4bba-9d09-a555de747050",
+    "c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+    "cb45fc4a-2690-4381-a5d2-6105b8dba215",
+    "cdbe9395-74d5-44d1-8732-635bf7c4061b",
+    "dd6ac4b6-00ab-4c32-a434-94e6cd4b02bb",
+    "de5a83f4-3c07-4a8d-815f-9d54e80b8fa7",
+    "df66203f-8ddf-4be0-a503-1690c6b7f361",
+    "ed9dbc9e-2087-4bca-bb57-99e994142ddb",
+    "f0cf22e6-752d-4192-a437-c046871603df",
+    "f4f57774-ade5-4b74-a715-9a2b6ddcb0a8",
+    "fa72e23c-3758-4ff1-9f60-3c67332502bc",
+    "fef03cf4-e4dd-4f57-96db-80aa748f0bb8"
+   ]
+  },
+  {
+   "x0": 672.5162112777546,
+   "y0": 473.6292997522144,
+   "x1": 820.7000796859577,
+   "y1": 505.6292997522144,
+   "memberIds": [
+    "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+    "085699dc-1387-441b-87ae-78f0951e3757",
+    "18cd1e56-3175-416a-987f-3c4919a3c465",
+    "1b958cf7-d68b-489c-89da-061da0e96bde",
+    "1d47e643-f2c4-44e0-969f-1cf94cbe7752",
+    "1d54b657-2d36-4903-ab9f-0f035d45fbe2",
+    "1fb35d8d-8921-4f3f-8d2e-a0282052886d",
+    "32d6edc8-3b83-4aad-91d0-5e96d0f869b7",
+    "47ebd6b3-b10f-4580-a9cd-be55bcff81b9",
+    "4cd672ef-76c9-444f-aec6-5485eb900cf1",
+    "50b54fae-9e85-4fcc-9082-5a0d01e0b332",
+    "5d7a924d-d7ab-4807-983e-081fffa89130",
+    "5f57ccb5-acaf-4c18-8113-b1c5330ae043",
+    "711a351f-bb26-4823-af6b-4d3de5e95014",
+    "7fe9797e-66b5-466b-9cc3-299be28b245c",
+    "842dd63a-33cc-4322-807c-d2a51881422c",
+    "8f26ed6e-a493-4090-b7cd-7e7612214363",
+    "957e453f-811f-4200-90bd-23cbff3680be",
+    "970d8069-e9c2-434c-baeb-0f1b870f5cef",
+    "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+    "9ca1768a-14f6-4b5d-82fd-d14cd30851d8",
+    "9f29a0d0-af3f-4c97-be52-741d7dee0df9",
+    "9fcf57cd-d09e-45b7-95c9-d463b73df32b",
+    "a4499e18-70f1-40ec-b661-1e3e02a8e5ee",
+    "a59d3891-4d62-4880-ab86-fd230a382d37",
+    "adcc80bd-14da-49f6-a029-c4b9ef29c267",
+    "b67b909e-9274-4457-8fa8-13fe1990e01c",
+    "b961f44c-2d48-4323-908b-11f0c2fed41b",
+    "c5fe56dc-d3e6-4866-b2d6-99b89a7ffdba",
+    "cb7e73f6-bd49-4ee1-bda7-f3ce20cfc86f",
+    "cd9d6a4e-0266-43db-a0fc-94742c79b347",
+    "e34c84db-3b89-4526-a44a-68bcb8e2caa8",
+    "e5f80fd1-28c4-4564-8c9f-2e56699d09b7"
+   ]
+  },
+  {
+   "x0": 579.6997649297037,
+   "y0": 402.54810807316437,
+   "x1": 723.8276488408366,
+   "y1": 434.54810807316437,
+   "memberIds": [
+    "0ab944ce-1cd0-4899-b152-ca69d59d9ee6",
+    "1595a327-9415-475e-9c96-36f19e6bf95f",
+    "19c96995-dfb0-4296-af81-ca02d198ca61",
+    "1fecf000-d07f-4d59-9996-a568df1b3e17",
+    "2083cc06-0ec6-443d-a3b4-1a17d00f481b",
+    "2527d4f6-5d42-4cc3-931a-d6b1fe333c20",
+    "2719d7d1-7774-4cbe-a0e8-c823f4c04786",
+    "2c91aa67-5e11-46e0-91f6-8a33e8052c32",
+    "322b3c44-0f56-4391-95e9-fbcaa45ba02d",
+    "36019b68-0b16-4199-8ea6-f287aabaa260",
+    "45eb811e-cc6b-4ee4-a55b-d2f81bcc58fd",
+    "4ad9d823-5d43-4a9f-895b-15c123c9be4c",
+    "5016d0e3-a037-40d1-8ca2-ff0613fed1ec",
+    "533ac192-4478-4039-bd6f-d26f903716cb",
+    "5c5c1e31-5e05-4419-8e8b-efce24af2205",
+    "5d2e498e-01b3-4556-acd0-ca052ea1d412",
+    "6a3d8246-2f95-46fa-8082-91147908f732",
+    "702daa5c-fe09-4464-adbe-0999bb5883f6",
+    "729382a7-c110-4cca-a6a1-e7b415b04039",
+    "74551b8b-ed34-4c95-bd0f-d775243b12bc",
+    "7ab0d75b-4ed9-494c-9858-05ff49c200cc",
+    "8e47d0c9-0501-463b-85a9-488936d12d10",
+    "907799f8-44a9-450e-8c17-bd91c9aa4a70",
+    "a677a078-6084-4c83-886f-12022763a815",
+    "b237c8cd-a2da-41cc-8334-c35c6eeabca1",
+    "b909a90c-e0d2-4524-a4bf-2410f9e237ad",
+    "c07304ba-aed5-4577-ae46-5d6628dc8452",
+    "c5a9e86f-0dce-4aeb-bd26-dc46fbd7555b",
+    "c78dd90d-2078-4454-bc31-8b32028c32cd",
+    "c79b6401-14c6-438a-aef5-865e46a99953",
+    "e0a61b63-6927-462a-9331-0c6c8b260823",
+    "fffbe263-f438-422e-aa58-f99c5e8ca3dd"
+   ]
+  },
+  {
+   "x0": 422.4928663828214,
+   "y0": 338.99449387393844,
+   "x1": 509.63280473731356,
+   "y1": 370.99449387393844,
+   "memberIds": [
+    "1642f502-f226-460d-8c3e-0b619f7b3317",
+    "1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df",
+    "22e498f3-2ba8-4679-b9e9-0c10af834113",
+    "317fe1ea-2df6-47d9-bb05-9426d5f1a474",
+    "375f72b9-f90f-4789-8a5a-fbc6c5907a40",
+    "54ec1a61-e1c1-4c5e-81d6-ece7848fc306",
+    "5c49d17a-6662-45b0-bc83-b01427aa5741",
+    "6f5b918a-663c-4c95-bc74-7bdd1adc64ce",
+    "7f162dfc-c480-4c66-a378-da21e0a312db",
+    "8e4f1793-3b6a-4b87-ad2e-ed9588784706",
+    "8eb04c46-8be4-4998-b1b8-6d1c4f0eda0e",
+    "8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+    "955f4773-38a1-4d33-950d-ed6594fc6e9d",
+    "97a338a8-7d72-47b3-a4a0-2de2c363e45e",
+    "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+    "b29e4901-4aa9-4bca-9b5b-87aeb487e6cf",
+    "b3ef9331-83b2-4cf4-a86a-0c134afd71fa",
+    "b675ae73-d5ba-4f38-aaaa-852c99a81648",
+    "c463b84a-dc82-4edd-b5ca-bbdbe943281f",
+    "dba33af5-547f-4ed0-8354-bfbc2a948f16",
+    "e3517221-f35c-459e-8fe3-cf62c12a8bbe",
+    "e774f1ba-d4a6-4244-9bec-febb7a22cd01",
+    "f82be75e-7578-47fb-8967-b7422733b1d1"
+   ]
+  },
+  {
+   "x0": 385.8671099180453,
+   "y0": 465.6256292006652,
+   "x1": 488.8350054258578,
+   "y1": 497.6256292006652,
+   "memberIds": [
+    "0fd49a99-4b7f-476f-828e-6f9cd7b5e046",
+    "2223e82d-e0e1-4c10-af26-46a246ea3ffd",
+    "28b6983b-9781-4ccd-a493-6faa003a8b81",
+    "2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+    "4a29bb78-6be4-48aa-ac36-f25f2aed4d4e",
+    "54052acf-3640-47d3-914b-a62a8b53f674",
+    "551029d9-fbe1-4c8f-bf3c-6f5aee129470",
+    "594658ff-0393-479f-b9fc-87c135f16228",
+    "5ae26457-9194-49d8-aa92-e8f60237a7f7",
+    "634c1d57-c52c-438f-b8a0-c9c36e2152fe",
+    "8488e5fa-934e-4bba-a71b-8479c21db3b6",
+    "88c7aa27-5b6a-4483-b12c-0a945157d0ec",
+    "9838159a-c2a0-4be6-a7d7-1263d402e62c",
+    "9aa261d6-c6a3-41fc-8aa3-3fb89e4ab142",
+    "ad338b07-b4b0-411b-9ec4-7f0fbf6c955b",
+    "c667d542-984e-4f30-85a4-4d890fa1a7ae",
+    "e10bfbc2-a129-4a1d-b7ca-18f35ba48e21",
+    "e658c8ae-3c98-4b15-8412-293f4d5a7fde",
+    "f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+    "f4fb8a97-1a2e-421f-aaf0-276d95d55a0c"
+   ]
+  },
+  {
+   "x0": 564.7235627763366,
+   "y0": 222.92511768444456,
+   "x1": 685.9074769609069,
+   "y1": 254.92511768444456,
+   "memberIds": [
+    "0de9a099-0808-4367-a744-b5db6843f09e",
+    "1853b2bf-4039-4ed7-8e80-6c640f169397",
+    "22cabc68-31a8-465e-8f37-bcbabeb61ffd",
+    "440a0bab-1b7f-4466-9474-615733f741cd",
+    "58406be5-da3c-471b-a5a2-fff33383ba98",
+    "8d405220-2462-4b8d-bcd8-bb09499fe289",
+    "a4b7412e-e5fc-4767-9c8f-28fb41bde25a",
+    "cc7acffa-d3bc-48c6-8938-ec8aae42a202"
+   ]
+  }
+ ],
+ "ui": {
+  "lens": "all",
+  "filesOpen": true,
+  "tooltip": false
+ }
+}

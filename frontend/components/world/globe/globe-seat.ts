@@ -8,6 +8,15 @@ export const PLANET_SEAT = {
   pitch: 0.38,
 } as const;
 
+/**
+ * Where a settle rotates the active course to (unit direction in globe-parent
+ * space): up and left of the globe's centre as the seated camera sees it.
+ */
+export const GLOBE_FOCUS_DIRECTION: readonly [number, number, number] = (() => {
+  const l = Math.hypot(-0.55, 0.48, 1);
+  return [-0.55 / l, 0.48 / l, 1 / l];
+})();
+
 /** Landmark world scale that held the old 0.78-fit on-screen size. */
 export const LANDMARK_REF_FIT = 0.78;
 export const LANDMARK_REF_SCALE = 0.058;

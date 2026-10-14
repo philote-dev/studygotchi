@@ -23,6 +23,7 @@ import {
   type Slot,
 } from '../layout/terrain'
 import { Surf } from '../render/materials'
+import { landSpan } from '@/lib/world/land-marks'
 import { useCollider } from '../../collision/ColliderRegistry'
 // The visual scale tables live with the collider footprints so the two can never drift apart.
 import { BUILDING_SCALE, PROP_SCALE, districtColliders, dockColliders } from '../../collision/ice-town-footprints'
@@ -132,7 +133,7 @@ function Dock({ path, seaLevel }: { path: LocalPath; seaLevel: number }) {
 }
 
 export function Paths({ layout, progress }: { layout: BiomeLayout; progress: DistrictProgress }) {
-  const paths = useMemo(() => localPaths(layout), [layout])
+  const paths = useMemo(() => landSpan('paths', () => localPaths(layout)), [layout])
   const bands = useMemo(() => new Map<string, number>(layout.districts.map((c) => [c.id, populationFor(c, progress[c.id] ?? 0).band])), [layout, progress])
   // Docks are 1 m plank decks over the water: a body walks into their edge.
   useCollider(useMemo(() => dockColliders(layout, progress), [layout, progress]))
@@ -267,10 +268,10 @@ export function Districts({
   night: boolean
   darkDistrict: string | null
 }) {
-  const slotsById = useMemo(() => new Map<string, Slot[]>(layout.districts.map((c) => [c.id, districtSlots(layout, c)])), [layout])
-  const placements = useMemo(() => propPlacements(layout, seed), [layout, seed])
+  const slotsById = useMemo(() => landSpan('slots', () => new Map<string, Slot[]>(layout.districts.map((c) => [c.id, districtSlots(layout, c)]))), [layout])
+  const placements = useMemo(() => landSpan('props', () => propPlacements(layout, seed)), [layout, seed])
   // Houses, anchors and props as XZ colliders, derived from the same slots / placements / fixtures.
-  useCollider(useMemo(() => districtColliders(layout, seed, progress), [layout, seed, progress]))
+  useCollider(useMemo(() => landSpan('district-colliders', () => districtColliders(layout, seed, progress)), [layout, seed, progress]))
   return (
     <group>
       {layout.districts.map((district) => {

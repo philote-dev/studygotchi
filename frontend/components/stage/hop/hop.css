@@ -1,0 +1,27 @@
+/* The hop (S2-3 / S2-4 / S3-2 / S4; permanent since 2026-10-13): the spring's per-frame
+   drivers own every opacity below, so nothing here animates. */
+
+/* The leaving page's chrome, snapshotted so it can fade on the spring after its page is gone
+   (`ghostChrome`): same box as the page, inert. */
+.sg-shell [data-hop-ghost] {
+  pointer-events: none !important;
+}
+
+/* The constellation chrome starts hidden on the spring; the twin's driver fades it in from
+   L 1.75 (`twinCurvesAt().chrome`) and writes an explicit 1 at rest. */
+.sg-shell .sg-constellation {
+  opacity: 0;
+}
+
+/* The planet arrives by the stage camera (the pull-back, the approach from under the cloud deck)
+   and its chrome's opacity is driven per frame (`planetPoseAt().chrome`): no CSS motion on the
+   earth stage, the navigator, the flag, or a ghost. The globe host's cold-load arrival is the
+   one keyframe left (globe.css). */
+.sg-shell .sg-page .earth-stage,
+.sg-shell .sg-page .earth-stage > *,
+.sg-shell .course-navigator,
+.sg-shell .landmark-flag,
+.sg-shell [data-hop-ghost],
+.sg-shell [data-hop-ghost] * {
+  animation: none;
+}

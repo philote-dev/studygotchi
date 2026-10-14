@@ -1,4 +1,10 @@
-/** Coastal Ruins camera stations. Pitch is elevation; azimuth runs from +z toward +x. */
+/**
+ * Coastal Ruins camera stations. Pitch is elevation; azimuth runs from +z toward +x.
+ *
+ * Station distances are render units (the land is drawn at `layout.renderScale`, 0.17); the free
+ * camera limits and boxes below are metres, the land's own unit, and `toRender` converts.
+ */
+import type { BiomeLayout } from '../layout/biome-layout'
 
 export type StationId = 'arrival' | 'overview' | 'district' | 'landmark' | 'resident'
 
@@ -84,4 +90,84 @@ export function divePose(arrival: Pose): Pose {
 
 export function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+/** What the overview / arrival stations frame: the mainland centre, a little south so the escarpment is the back. */
+export function overviewSubject(layout: BiomeLayout): { center: [number, number, number]; chord: number } {
+  const scale = layout.renderScale
+  return { center: [8 * scale, layout.groundHeight * scale, 23 * scale], chord: layout.frameRadius * 2 * scale }
+}
+
+/* ---------- free camera (metres) ---------- */
+
+export interface CoastalCameraLimits {
+  /** Half yaw range in degrees; 180 means unlimited orbit. */
+  yawDeg: number
+  pitchMinDeg: number
+  pitchMaxDeg: number
+  /** Metres from the look-at. */
+  minDistance: number
+  maxDistance: number
+}
+
+export interface Box {
+  min: [number, number, number]
+  max: [number, number, number]
+}
+
+/**
+ * Full orbit, pitch 12–64° (low enough for the horizon, high enough for a plan view), 40–470 m
+ * from the look-at: 470 m zooms past the overview (447 m) and keeps a centred camera inside the
+ * ±460 m box at the lowest pitch (470 · cos 12° = 459.7).
+ */
+export const COASTAL_CAMERA_LIMITS: CoastalCameraLimits = {
+  yawDeg: 180,
+  pitchMinDeg: 12,
+  pitchMaxDeg: 64,
+  minDistance: 40,
+  maxDistance: 470,
+}
+
+/** CameraControls.setBoundary clamps the look-at, not the camera. This box is the land: districts, escarpment, headland. */
+export const COASTAL_LOOK_BOX: Box = {
+  min: [-160, -1, -130],
+  max: [160, 30, 120],
+}
+
+/** Where the camera may sit: all round the land, low enough for a horizon shot. */
+export const COASTAL_CAMERA_BOX: Box = {
+  min: [-460, 8, -460],
+  max: [460, 320, 460],
+}
+
+function clampToBox(box: Box, x: number, y: number, z: number): [number, number, number] {
+  return [
+    Math.min(box.max[0], Math.max(box.min[0], x)),
+    Math.min(box.max[1], Math.max(box.min[1], y)),
+    Math.min(box.max[2], Math.max(box.min[2], z)),
+  ]
+}
+
+export function clampLookTarget(x: number, y: number, z: number, box: Box = COASTAL_LOOK_BOX): [number, number, number] {
+  return clampToBox(box, x, y, z)
+}
+
+export function clampCameraPosition(x: number, y: number, z: number, box: Box = COASTAL_CAMERA_BOX): [number, number, number] {
+  return clampToBox(box, x, y, z)
+}
+
+/** Farthest the camera can be from the land centre: a look-at on the look box's corner plus the full zoom. */
+export function cameraReach(limits: CoastalCameraLimits = COASTAL_CAMERA_LIMITS, look: Box = COASTAL_LOOK_BOX): number {
+  const corner = Math.hypot(Math.max(-look.min[0], look.max[0]), Math.max(-look.min[2], look.max[2]))
+  return corner + limits.maxDistance * Math.cos((limits.pitchMinDeg * Math.PI) / 180)
+}
+
+/** Metres → render units. */
+export function toRender(layout: BiomeLayout, point: [number, number, number]): [number, number, number] {
+  const s = layout.renderScale
+  return [point[0] * s, point[1] * s, point[2] * s]
+}
+
+export function boxToRender(layout: BiomeLayout, box: Box): Box {
+  return { min: toRender(layout, box.min), max: toRender(layout, box.max) }
 }

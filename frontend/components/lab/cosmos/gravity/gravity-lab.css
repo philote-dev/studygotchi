@@ -1,0 +1,242 @@
+/* Gravity lab chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.gravity-lab {
+  --lab-bg: #0d0b1c;
+  --lab-panel: rgba(16, 14, 34, 0.86);
+  --lab-ink: #efe9ff;
+  --lab-muted: #9b94b8;
+  --lab-line: rgba(198, 186, 236, 0.22);
+  --lab-accent: #ffd36a;
+  --lab-accent-ink: #1b1530;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--lab-bg);
+  color: var(--lab-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.gravity-lab[data-theme="light"] {
+  --lab-bg: #cfd6e4;
+  --lab-panel: rgba(244, 241, 251, 0.88);
+  --lab-ink: #17151d;
+  --lab-muted: #5b5884;
+  --lab-line: rgba(23, 21, 29, 0.18);
+  --lab-accent: #d9a92e;
+  --lab-accent-ink: #17151d;
+}
+
+.gravity-lab[data-chrome="0"] .gravity-lab__chrome {
+  display: none;
+}
+
+.gravity-lab[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.gravity-lab__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--lab-line);
+  background: var(--lab-panel);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.gravity-lab__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+.gravity-lab__tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+}
+
+.gravity-lab__tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--lab-muted);
+  padding: 5px 11px;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.gravity-lab__tab[aria-selected="true"] {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+  font-weight: 600;
+}
+
+.gravity-lab__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lab-muted);
+}
+
+.gravity-lab__field input[type="text"] {
+  width: 9em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--lab-line);
+  background: transparent;
+  color: var(--lab-ink);
+  font: inherit;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+}
+
+.gravity-lab__field input[type="range"] {
+  width: 100px;
+  accent-color: var(--lab-accent);
+}
+
+.gravity-lab__btn {
+  appearance: none;
+  border: 1px solid var(--lab-line);
+  background: transparent;
+  color: var(--lab-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.gravity-lab__btn:hover {
+  border-color: var(--lab-accent);
+}
+
+.gravity-lab__btn--primary {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.gravity-lab__btn[aria-pressed="true"] {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+}
+
+.gravity-lab__stage {
+  position: relative;
+  min-height: 0;
+}
+
+.gravity-lab__stage canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.gravity-lab__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 272px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--lab-line);
+  border-radius: 12px;
+  background: var(--lab-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+}
+
+.gravity-lab__side[hidden] {
+  display: none;
+}
+
+.gravity-lab__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+.gravity-lab__side p {
+  margin: 0;
+  color: var(--lab-muted);
+}
+
+.gravity-lab__section {
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--lab-line);
+}
+
+.gravity-lab__section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.gravity-lab__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.gravity-lab__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+}
+
+.gravity-lab__grid .gravity-lab__field {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.gravity-lab__grid .gravity-lab__field input[type="range"] {
+  width: 100%;
+}
+
+.gravity-lab__budget {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 10.5px;
+  color: var(--lab-muted);
+  letter-spacing: 0.02em;
+}
+
+.gravity-lab__readout {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+  background: var(--lab-panel);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  display: grid;
+  gap: 2px;
+  min-width: 240px;
+}
+
+.gravity-lab__readout strong {
+  color: var(--lab-accent);
+  font-weight: 400;
+}

@@ -1,0 +1,262 @@
+/* Cosmos galaxy A/B lab chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.cosmos-galaxy {
+  --cg-bg: #0d0b1c;
+  --cg-panel: rgba(16, 14, 34, 0.86);
+  --cg-ink: #efe9ff;
+  --cg-muted: #9b94b8;
+  --cg-line: rgba(198, 186, 236, 0.22);
+  --cg-accent: #ffd36a;
+  --cg-accent-ink: #1b1530;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--cg-bg);
+  color: var(--cg-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.cosmos-galaxy[data-theme="light"] {
+  --cg-bg: #cfd6e4;
+  --cg-panel: rgba(244, 241, 251, 0.88);
+  --cg-ink: #17151d;
+  --cg-muted: #5b5884;
+  --cg-line: rgba(23, 21, 29, 0.18);
+  --cg-accent: #d9a92e;
+  --cg-accent-ink: #17151d;
+}
+
+.cosmos-galaxy[data-chrome="0"] .cosmos-galaxy__chrome {
+  display: none;
+}
+
+.cosmos-galaxy[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.cosmos-galaxy__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--cg-line);
+  background: var(--cg-panel);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.cosmos-galaxy__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cg-muted);
+}
+
+.cosmos-galaxy__tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--cg-line);
+  border-radius: 10px;
+}
+
+.cosmos-galaxy__tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--cg-muted);
+  padding: 5px 11px;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cosmos-galaxy__tab[aria-selected="true"] {
+  background: var(--cg-accent);
+  color: var(--cg-accent-ink);
+  font-weight: 600;
+}
+
+.cosmos-galaxy__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cg-muted);
+}
+
+.cosmos-galaxy__field input[type="text"] {
+  width: 10em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--cg-line);
+  background: transparent;
+  color: var(--cg-ink);
+  font: inherit;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+}
+
+.cosmos-galaxy__field input[type="range"] {
+  width: 110px;
+  accent-color: var(--cg-accent);
+}
+
+.cosmos-galaxy__btn {
+  appearance: none;
+  border: 1px solid var(--cg-line);
+  background: transparent;
+  color: var(--cg-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cosmos-galaxy__btn:hover {
+  border-color: var(--cg-accent);
+}
+
+.cosmos-galaxy__btn[aria-pressed="true"] {
+  background: var(--cg-accent);
+  color: var(--cg-accent-ink);
+}
+
+.cosmos-galaxy__stage {
+  position: relative;
+  min-height: 0;
+}
+
+.cosmos-galaxy__stage canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.cosmos-galaxy__tag {
+  position: absolute;
+  top: 12px;
+  padding: 4px 9px;
+  border: 1px solid var(--cg-line);
+  border-radius: 8px;
+  background: var(--cg-panel);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cg-muted);
+}
+
+.cosmos-galaxy__tag--a {
+  left: 12px;
+}
+
+.cosmos-galaxy__tag--b {
+  left: calc(50% + 12px);
+}
+
+.cosmos-galaxy__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 300px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--cg-line);
+  border-radius: 12px;
+  background: var(--cg-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+}
+
+.cosmos-galaxy__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cg-muted);
+}
+
+.cosmos-galaxy__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.cosmos-galaxy__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.cosmos-galaxy__feature {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--cg-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cg-muted);
+  padding: 6px 9px;
+  font: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+}
+
+.cosmos-galaxy__feature[aria-pressed="true"] {
+  border-color: var(--cg-accent);
+  color: var(--cg-ink);
+}
+
+.cosmos-galaxy__feature-title {
+  font-weight: 600;
+}
+
+.cosmos-galaxy__feature[aria-pressed="true"] .cosmos-galaxy__feature-title {
+  color: var(--cg-accent);
+}
+
+.cosmos-galaxy__feature-what {
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.cosmos-galaxy__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  margin: 0;
+}
+
+.cosmos-galaxy__kv dt {
+  color: var(--cg-muted);
+}
+
+.cosmos-galaxy__kv dd {
+  margin: 0;
+}
+
+.cosmos-galaxy__swatches {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.cosmos-galaxy__swatches i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--cg-line);
+}

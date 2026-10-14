@@ -44,16 +44,16 @@ export interface ScreenPoint {
   y: number;
 }
 
-export interface CourseGlobeCanvasProps {
+/** What `CourseGlobe` hands the stage host (`CourseGlobeStageHost`): the globe's data, its cold-load arrival and callbacks. */
+export interface CourseGlobeHostProps {
   courses: CourseGlobeCourse[];
   activeCourseId: string | null;
   theme: SpaceTheme;
+  /** The page's cold-load entrance (the host slides in); false when the planet arrives by the stage camera. */
   arriving: boolean;
-  diving: boolean;
-  rising: boolean;
-  diveAnchor: ScreenPoint | null;
   reducedMotion: boolean;
   onActiveCourseChange(courseId: string): void;
   onCourseTownOpen(courseId: string, anchor: ScreenPoint): void;
   onLandmarkAnchor?(anchor: ScreenPoint | null): void;
+  onHoverCourse?(courseId: string | null): void;
 }

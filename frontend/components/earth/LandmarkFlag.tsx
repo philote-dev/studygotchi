@@ -13,10 +13,12 @@ export interface LandmarkFlagProps {
   course: CourseGlobeCourse;
   record?: CourseOverviewCacheRecord;
   onLand(): void;
+  /** The pointer reached the card: warm this course's land before a Land press (the cloud dive's readiness). */
+  onWarm?(): void;
 }
 
 /** Detached card under Classes. Active-course status, never a raw fraction. */
-export function LandmarkFlag({ course, record, onLand }: LandmarkFlagProps) {
+export function LandmarkFlag({ course, record, onLand, onWarm }: LandmarkFlagProps) {
   const overview = record?.status === "ready" ? record.data : null;
   const fileTitles = visibleCourseFileTitles(course.id);
   const copy = buildLandmarkFlagCopy(
@@ -43,6 +45,7 @@ export function LandmarkFlag({ course, record, onLand }: LandmarkFlagProps) {
       role="region"
       aria-label="Active course"
       aria-labelledby="landmark-flag-title"
+      onPointerEnter={onWarm}
     >
       <span className="landmark-flag-tab">Flag</span>
       <span className="sg-eyebrow">{course.code ?? "Course"}</span>

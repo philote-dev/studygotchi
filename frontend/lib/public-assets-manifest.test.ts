@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { keepPublicAsset, PUBLIC_ASSET_TRACKS } from "../scripts/public-assets-manifest.mjs";
 import { AUDIO_BASE, sfxFile, SFX_NAMES, usedBgmTracks, VOICE_SPECIES, voiceFile } from "./audio/catalog";
-import { SPIRAL_GALAXY_SVG_SRC } from "./spiral-galaxy";
 
 /** `/assets/foo/bar` → `foo/bar`, the path the build script sees under the assets tree. */
 function rel(url: string): string {
@@ -39,15 +38,16 @@ describe("public assets manifest (what Vercel serves under /assets)", () => {
   });
 
   it("lets a copier recurse into every directory on the way to a kept file", () => {
-    for (const dir of ["audio", "audio/music", "audio/music/tracks", "creatures", "creatures/animated", "creatures/cc0", "creatures/tripo-cleaned", "space"]) {
+    for (const dir of ["audio", "audio/music", "audio/music/tracks", "creatures", "creatures/animated", "creatures/cc0", "creatures/tripo-cleaned"]) {
       expect(keepPublicAsset(dir), dir).toBe(true);
     }
     expect(keepPublicAsset("creatures/tripo")).toBe(false);
     expect(keepPublicAsset("landmarks")).toBe(false);
   });
 
-  it("keeps the generated spiral and drops design-only trees", () => {
-    expect(keepPublicAsset(rel(SPIRAL_GALAXY_SVG_SRC))).toBe(true);
+  it("drops design-only trees and the retired spiral (S5-3; the SVG export went on 2026-10-13)", () => {
+    expect(keepPublicAsset("space/studygotchi-spiral.svg")).toBe(false);
+    expect(keepPublicAsset("space")).toBe(false);
     expect(keepPublicAsset("landmarks/anything.glb")).toBe(false);
     expect(keepPublicAsset("growth/anything.png")).toBe(false);
     expect(keepPublicAsset("biomes/anything.json")).toBe(false);

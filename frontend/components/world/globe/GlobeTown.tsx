@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import { Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -40,7 +40,39 @@ interface GlobeTownProps {
   night: boolean;
 }
 
-export function GlobeTown({
+/** What a town draws from its course row (the rest of `CourseGlobeCourse` never reaches the scene). */
+export function courseDrawKey(course: CourseGlobeCourse): string {
+  const s = course.stats;
+  return `${course.id}\u0001${course.code ?? ""}\u0001${course.biome}\u0001${course.markerId ?? ""}\u0001${course.progress ?? ""}\u0001${s ? `${s.reached}/${s.total}/${s.mastered}/${s.residents}/${s.sources}` : ""}`;
+}
+
+/**
+ * Props equality for a town (and its walkers): the course row by what is
+ * drawn from it, the course list only by what `sampleTerrain` reads (its
+ * first id), everything else by identity. The earth page rebuilds its course
+ * array for every overview record that lands and every settle; without this
+ * each rebuild re-rendered every bouquet on the globe (dozens of meshes each)
+ * in one synchronous frame.
+ */
+export function townPropsEqual<P extends { course: CourseGlobeCourse; courses: CourseGlobeCourse[] }>(a: P, b: P): boolean {
+  for (const key of Object.keys(a) as (keyof P)[]) {
+    if (key === "course") {
+      if (courseDrawKey(a.course) !== courseDrawKey(b.course)) return false;
+    } else if (key === "courses") {
+      if (a.courses.length !== b.courses.length || a.courses[0]?.id !== b.courses[0]?.id) return false;
+    } else if (!Object.is(a[key], b[key])) return false;
+  }
+  return Object.keys(a).length === Object.keys(b).length;
+}
+
+/**
+ * One course's bouquet on the globe. Memoised (`townPropsEqual`): a settle on
+ * another course (the hop's `lockCourse`, a bead click) changes `active` on
+ * two towns, and the bouquet subtrees of the others (dozens of meshes each)
+ * are not rebuilt, which kept a ~50 ms synchronous re-render off the first
+ * frames of a hop.
+ */
+export const GlobeTown = memo(function GlobeTown({
   course,
   direction,
   courses,
@@ -144,7 +176,7 @@ export function GlobeTown({
       </group>
     </group>
   );
-}
+}, townPropsEqual);
 
 interface GlobeTownsProps {
   courses: CourseGlobeCourse[];

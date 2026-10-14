@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { CameraControls, Html, PerspectiveCamera } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { clampBiomeYaw } from '../camera/stations'
 import type { JungleState } from '../jungle-state'
 import {
   JUNGLE_LAYOUT as L,
@@ -12,13 +11,58 @@ import {
   courseProgress,
   landmarkStage,
   populationFor,
-  seeded,
   seededDistricts,
   type LandmarkStage,
   type SeededDistrict,
 } from '../layout/jungle-layout'
+import {
+  CANOPY_SPOTS,
+  CLUSTER_LOGS,
+  CLUSTER_ROCKS,
+  DISTRICT_TREES,
+  FALLS_HOMES,
+  FALLS_SHELF_TREE,
+  FALLS_SHELVES,
+  FALLS_STALLS,
+  FALL_CLIFFS,
+  FALL_ROCKS,
+  FARM_PLOTS,
+  GROUND_CLUSTERS,
+  LAGOON_BOARDWALKS,
+  LAGOON_CANOES,
+  LAGOON_LOBES,
+  LAGOON_REED_SPOTS,
+  LAGOON_SPOTS,
+  LAMP_SPOTS,
+  MILL_SHEDS,
+  PATHS,
+  PATH_WIDTH,
+  ROOT_GATE_BLOCKS,
+  ROOT_GATE_PILLARS,
+  ROOT_GATE_ROOTS,
+  RUINS_ARCHIVES,
+  RUINS_HOMES,
+  SHRINE_BOARDWALK,
+  SLUICE_BRIDGE,
+  SLUICE_POINTS,
+  SLUICE_WET_WIDTH,
+  STILT_HALL,
+  WILD_VEGETATION,
+  fallsHomeScale,
+  lagoonPier,
+  lampRng,
+  rootGateBlock,
+} from '../layout/placements'
 import { PixelComposer } from '../render/PixelComposer'
 import { Glow, Surf } from '../render/materials'
+import { ColliderProvider, useCollider, useColliderRegistry, useColliderSet, collidersDebugEnabled, type WalkerDevHook } from '../../collision/ColliderRegistry'
+import { ColliderDebug } from '../../collision/ColliderDebug'
+import { jungleLandColliders } from '../collision/footprints'
+import { createWalker, stepWalkers, type WalkerBody } from './walkers'
+import { JungleCameraRig } from '../camera/CameraRig'
+import { OuterWorldScene } from '../edge/Outer'
+import { JungleEdgePanel } from '../edge/JungleEdgePanel'
+import { OUTER_FOG } from '../edge/outer/heightfield'
 
 function ribbonGeometry(points: Array<[number, number]>, width: number, y: number): THREE.BufferGeometry {
   const vertices: number[] = []
@@ -50,27 +94,6 @@ function Ribbon({ points, width, y, color }: { points: Array<[number, number]>; 
   return (
     <mesh geometry={geometry} receiveShadow>
       <Surf color={color} side={THREE.DoubleSide} />
-    </mesh>
-  )
-}
-
-function Ellipse({
-  center,
-  size,
-  y,
-  color,
-  opacity = 1,
-}: {
-  center: [number, number]
-  size: [number, number]
-  y: number
-  color: string
-  opacity?: number
-}) {
-  return (
-    <mesh position={[center[0], y, center[1]]} scale={[size[0] * 0.5, 1, size[1] * 0.5]} receiveShadow>
-      <cylinderGeometry args={[1, 1, 0.16, 32]} />
-      <Surf color={color} transparent={opacity < 1} opacity={opacity} />
     </mesh>
   )
 }
@@ -422,7 +445,7 @@ function GroundCluster({ variant = 0 }: { variant?: number }) {
     <group rotation={[0, variant * 0.73, 0]}>
       {variant % 3 === 0 && (
         <>
-          {[-1.3, 0, 1.25].map((x, index) => (
+          {CLUSTER_LOGS.map((x, index) => (
             <mesh key={x} position={[x, 0.32 + index * 0.08, 0]} rotation={[Math.PI / 2, 0, index * 0.17]}>
               <cylinderGeometry args={[0.22, 0.26, 2.6, 7]} />
               <Surf color={index % 2 ? '#75513a' : P.bark} />
@@ -431,11 +454,7 @@ function GroundCluster({ variant = 0 }: { variant?: number }) {
         </>
       )}
       {variant % 3 === 1 &&
-        [
-          [-1.2, 0.55, 0, 0.85],
-          [0.4, 0.38, 0.5, 0.58],
-          [1.35, 0.28, -0.35, 0.45],
-        ].map(([x, y, z, scale], index) => (
+        CLUSTER_ROCKS.map(([x, y, z, scale], index) => (
           <mesh key={index} position={[x, y, z]} rotation={[0, index * 0.8, 0]} scale={scale}>
             <dodecahedronGeometry args={[1, 0]} />
             <Surf color={index % 2 ? '#71805d' : '#617454'} />
@@ -451,10 +470,10 @@ function GroundCluster({ variant = 0 }: { variant?: number }) {
   )
 }
 
-function Waterwheel({ night }: { night: boolean }) {
+function Waterwheel({ night, still = false }: { night: boolean; still?: boolean }) {
   const wheel = useRef<THREE.Group>(null)
   useFrame((_, delta) => {
-    if (wheel.current) wheel.current.rotation.z += delta * 0.25
+    if (wheel.current && !still) wheel.current.rotation.z += delta * 0.25
   })
   return (
     <group>
@@ -489,12 +508,7 @@ function Waterwheel({ night }: { night: boolean }) {
 function RootGate() {
   return (
     <group>
-      {[
-        [-5.3, 3.6, 2.3, 7.2],
-        [-2.9, 6.6, 1.8, 3],
-        [4.8, 4.7, 2.5, 9.4],
-        [2.6, 8.2, 2, 2.8],
-      ].map(([x, y, w, h], index) => (
+      {ROOT_GATE_PILLARS.map(([x, y, w, h], index) => (
         <mesh key={index} position={[x, y, index % 2 ? 0.35 : 0]} rotation={[0, index * 0.08, index % 2 ? -0.08 : 0.05]} castShadow>
           <boxGeometry args={[w, h, 2.6 + (index % 2) * 0.7]} />
           <Surf color={index % 2 ? '#a89880' : P.ruin} />
@@ -510,7 +524,7 @@ function RootGate() {
           <Surf color={index === 1 ? '#948673' : P.ruin} />
         </mesh>
       ))}
-      {[-4.6, 4.5].map((x, index) => (
+      {ROOT_GATE_ROOTS.map((x, index) => (
         <mesh key={`root-${x}`} position={[x, 4, 0.8]} rotation={[0, 0, index ? -0.3 : 0.3]}>
           <cylinderGeometry args={[0.45, 1.05, 9, 6]} />
           <Surf color={P.bark} />
@@ -527,12 +541,15 @@ function RootGate() {
           <Surf color={index % 2 ? '#4f7f45' : '#668d4f'} />
         </mesh>
       ))}
-      {Array.from({ length: 9 }, (_, index) => (
-        <mesh key={`block-${index}`} position={[-8 + (index % 5) * 3.6, 0.35 + (index % 2) * 0.2, -4 + Math.floor(index / 5) * 8]} rotation={[0, index * 0.61, 0]}>
-          <boxGeometry args={[2.4, 0.6, 1.8]} />
-          <Surf color={index % 3 ? '#a89880' : '#7d8c62'} />
-        </mesh>
-      ))}
+      {Array.from({ length: ROOT_GATE_BLOCKS }, (_, index) => {
+        const block = rootGateBlock(index)
+        return (
+          <mesh key={`block-${index}`} position={[block.x, 0.35 + (index % 2) * 0.2, block.z]} rotation={[0, block.yaw, 0]}>
+            <boxGeometry args={[2.4, 0.6, 1.8]} />
+            <Surf color={index % 3 ? '#a89880' : '#7d8c62'} />
+          </mesh>
+        )
+      })}
       <group position={[0, 9.2, 0.7]}>
         <HangingVines height={7} spread={10} />
       </group>
@@ -545,37 +562,20 @@ function DistrictScene({
   progress,
   seed,
   night,
+  still = false,
 }: {
   district: SeededDistrict
   progress: number
   seed: number
   night: boolean
+  still?: boolean
 }) {
   const population = populationFor(district, progress)
   const lit = night
-  const rng = seeded(seed * 151 + district.id.length * 37)
-  const canopySpots = [
-    [-12, -8, 7, 0.45, 1.05],
-    [9, -11, 11, -0.7, 0.92],
-    [-19, 4, 5.5, 1.15, 0.88],
-    [15, 2, 8.5, -1.2, 1.08],
-    [-7, 12, 13, 2.45, 0.95],
-    [21, 11, 6.5, -2.4, 0.86],
-    [-23, -14, 10, 0.2, 0.82],
-    [3, -19, 15, -0.15, 0.9],
-    [24, -6, 12, -1.7, 0.78],
-    [-16, 17, 8, 2.8, 0.86],
-  ] as const
-  const lagoonSpots = [
-    [-15, -8, -0.25, 1.1],
-    [-7, 3, 0.45, 0.86],
-    [6, -6, -0.75, 1.25],
-    [14, 2, 0.2, 0.95],
-    [-18, 10, 0.8, 0.8],
-    [3, 12, -0.15, 1.05],
-    [19, 12, -0.55, 0.82],
-    [11, -14, 0.65, 0.9],
-  ] as const
+  // The same stream the collider footprints draw the lamp jitter from (layout/placements.ts).
+  const rng = lampRng(seed, district)
+  const canopySpots = CANOPY_SPOTS
+  const lagoonSpots = LAGOON_SPOTS
   const yaw = (district.yaw * Math.PI) / 180
   return (
     <group position={[district.center[0], 0, district.center[1]]} rotation={[0, yaw, 0]}>
@@ -617,11 +617,7 @@ function DistrictScene({
       )}
       {district.id === 'falls' && (
         <>
-          {[
-            [0, 6.3, -20, 13, 4.2],
-            [-1.5, 3.6, -11, 17, 3.2],
-            [1, 1.5, -2, 21, 2.2],
-          ].map(([x, y, z, width, depth], index) => (
+          {FALLS_SHELVES.map(([x, y, z, width, depth], index) => (
             <group key={`shelf-${index}`} position={[x, y, z]}>
               <mesh scale={[width / 2, 1.15, depth / 2]} castShadow>
                 <dodecahedronGeometry args={[1, 0]} />
@@ -654,27 +650,12 @@ function DistrictScene({
             </mesh>
           ))}
           <RopeBridge a={[-11, -12]} b={[11, -12]} y={8.6} width={1.8} />
-          {[
-            [-14, -16, 7.5, 0.5],
-            [13, -15, 6, -0.7],
-            [-17, -3, 4.5, 1.2],
-            [16, 0, 3.2, -1.1],
-            [-10, 10, 2.2, 2.4],
-          ]
-            .slice(0, Math.min(5, population.primary))
-            .map(([x, z, height, rotation], index) => (
-              <group key={index} position={[x, 0, z]} rotation={[0, rotation, 0]} scale={0.76 + (index % 3) * 0.08}>
-                <ElevatedTreehouse index={index + 2} height={height} lit={lit} night={night} />
-              </group>
-            ))}
-          {[
-            [-14, 8, 0.2],
-            [-8, 12, -0.35],
-            [-2, 11, 0.45],
-            [6, 14, -0.2],
-          ]
-            .slice(0, population.secondary)
-            .map(([x, z, rotation], index) => (
+          {FALLS_HOMES.slice(0, Math.min(5, population.primary)).map(([x, z, height, rotation], index) => (
+            <group key={index} position={[x, 0, z]} rotation={[0, rotation, 0]} scale={fallsHomeScale(index)}>
+              <ElevatedTreehouse index={index + 2} height={height} lit={lit} night={night} />
+            </group>
+          ))}
+          {FALLS_STALLS.slice(0, population.secondary).map(([x, z, rotation], index) => (
               <group key={`stall-${index}`} position={[x, 0, z]} rotation={[0, rotation, 0]}>
                 <mesh position={[0, 1.05, 0]} castShadow>
                   <boxGeometry args={[3.8 + (index % 2), 2.1, 2.7]} />
@@ -689,14 +670,14 @@ function DistrictScene({
           <group position={[9, 0.2, 10]}>
             <Reeds count={10} />
           </group>
-          <group position={[-7, 5.5, -11]} scale={0.75}>
-            <JungleTree height={15} broad={0.95} night={night} />
+          <group position={[...FALLS_SHELF_TREE.position]} scale={FALLS_SHELF_TREE.scale}>
+            <JungleTree height={FALLS_SHELF_TREE.height} broad={FALLS_SHELF_TREE.broad} night={night} />
           </group>
         </>
       )}
       {district.id === 'lagoon' && (
         <>
-          <group position={[-1, 0, -1]} rotation={[0, 0.18, 0]} scale={[1.75, 1.2, 1.05]}>
+          <group position={[STILT_HALL.position[0], 0, STILT_HALL.position[1]]} rotation={[0, STILT_HALL.yaw, 0]} scale={[...STILT_HALL.scale]}>
             <StiltHome index={0} lit={lit} />
           </group>
           {lagoonSpots.slice(0, population.primary).map(([x, z, rotation, scale], index) => (
@@ -704,21 +685,23 @@ function DistrictScene({
               <StiltHome index={index + 1} lit={lit} />
             </group>
           ))}
-          <Ribbon points={[[-18, -7], [-8, -3], [0, -1], [10, -5], [18, 1]]} width={1.6} y={2.5} color={P.deck} />
-          <Ribbon points={[[-7, -3], [-9, 6], [-17, 10]]} width={1.4} y={2.5} color="#b1844d" />
-          <Ribbon points={[[4, -2], [5, 7], [4, 14]]} width={1.45} y={2.5} color="#c29250" />
-          {Array.from({ length: population.secondary }, (_, index) => (
-            <mesh key={`pier-${index}`} position={[-12 + index * 8.5, 2.45, 17 + (index % 2) * 3]} rotation={[0, (index % 2 ? -0.22 : 0.18), 0]} castShadow>
-              <boxGeometry args={[1.8, 0.22, 9 + index]} />
-              <Surf color={index % 2 ? '#b1844d' : P.deck} />
-            </mesh>
+          {LAGOON_BOARDWALKS.map((walk, index) => (
+            <Ribbon key={`walk-${index}`} points={walk.points} width={walk.width} y={2.5} color={walk.color === 'deck' ? P.deck : walk.color} />
           ))}
-          <group position={[14, 0.55, 17]} rotation={[0, -0.45, 0]}>
-            <Canoe />
-          </group>
-          <group position={[-18, 0.25, 14]}>
-            <Canoe color="#dca34f" />
-          </group>
+          {Array.from({ length: population.secondary }, (_, index) => {
+            const pier = lagoonPier(index)
+            return (
+              <mesh key={`pier-${index}`} position={[pier.x, 2.45, pier.z]} rotation={[0, pier.yaw, 0]} castShadow>
+                <boxGeometry args={[1.8, 0.22, pier.length]} />
+                <Surf color={index % 2 ? '#b1844d' : P.deck} />
+              </mesh>
+            )
+          })}
+          {LAGOON_CANOES.map((canoe, index) => (
+            <group key={`canoe-${index}`} position={[...canoe.position]} rotation={[0, canoe.yaw, 0]}>
+              <Canoe color={canoe.color === 'coral' ? P.coral : canoe.color} />
+            </group>
+          ))}
           {[
             [-22, -5],
             [-21, 8],
@@ -755,18 +738,7 @@ function DistrictScene({
       {district.id === 'ruins' && (
         <>
           <RootGate />
-          {[
-            [-14, 7, -0.2],
-            [-8, 13, 0.4],
-            [2, 14, -0.5],
-            [11, 11, 0.25],
-            [15, 3, -0.8],
-            [-17, -5, 0.75],
-            [7, -9, -0.3],
-            [-5, -12, 0.55],
-          ]
-            .slice(0, population.primary)
-            .map(([x, z, rotation], index) => (
+          {RUINS_HOMES.slice(0, population.primary).map(([x, z, rotation], index) => (
               <group key={index} position={[x, 0, z]} rotation={[0, rotation, 0]}>
                 <mesh position={[0, 1.2, 0]} castShadow>
                   <boxGeometry args={[4.2 + (index % 3), 2.4, 3.2]} />
@@ -778,14 +750,7 @@ function DistrictScene({
                 </mesh>
               </group>
             ))}
-          {[
-            [-11, -9, 0.5],
-            [-4, -11, -0.1],
-            [8, -12, 0.25],
-            [14, -7, -0.45],
-          ]
-            .slice(0, population.secondary)
-            .map(([x, z, rotation], index) => (
+          {RUINS_ARCHIVES.slice(0, population.secondary).map(([x, z, rotation], index) => (
               <group key={`archive-${index}`} position={[x, 0, z]} rotation={[0, rotation, 0]}>
                 <mesh position={[0, 1.45, 0]} castShadow>
                   <boxGeometry args={[4.8, 2.9, 3.6]} />
@@ -801,9 +766,9 @@ function DistrictScene({
       )}
       {district.id === 'riverworks' && (
         <>
-          <Ribbon points={[[-9, -18], [-5, -10], [0, -3], [2, 5], [10, 16]]} width={7} y={0.12} color={P.wet} />
-          <Ribbon points={[[-9, -18], [-5, -10], [0, -3], [2, 5], [10, 16]]} width={4.6} y={0.2} color={P.water} />
-          <Waterwheel night={night} />
+          <Ribbon points={SLUICE_POINTS} width={SLUICE_WET_WIDTH} y={0.12} color={P.wet} />
+          <Ribbon points={SLUICE_POINTS} width={4.6} y={0.2} color={P.water} />
+          <Waterwheel night={night} still={still} />
           <group position={[1.2, 0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             {[1.1, 1.8, 2.5].map((radius, index) => (
               <mesh key={radius}>
@@ -812,22 +777,11 @@ function DistrictScene({
               </mesh>
             ))}
           </group>
-          <mesh position={[1, 1, 8]} rotation={[0, -0.12, 0]} castShadow>
-            <boxGeometry args={[10, 0.35, 2.3]} />
+          <mesh position={[...SLUICE_BRIDGE.position]} rotation={[0, SLUICE_BRIDGE.yaw, 0]} castShadow>
+            <boxGeometry args={[...SLUICE_BRIDGE.size]} />
             <Surf color={P.deck} />
           </mesh>
-          {[
-            [-17, -11, -0.28, 7, 3.4],
-            [-16, -2, 0.18, 5.5, 4.4],
-            [-13, 8, -0.5, 8, 3.2],
-            [13, -13, 0.38, 6.5, 4],
-            [15, -3, -0.15, 8.5, 3.3],
-            [16, 8, 0.52, 6, 4.5],
-            [-4, 15, -0.32, 7.5, 3.5],
-            [9, 17, 0.2, 5.5, 3.8],
-          ]
-            .slice(0, population.primary)
-            .map(([x, z, rotation, width, depth], index) => (
+          {FARM_PLOTS.slice(0, population.primary).map(([x, z, rotation, width, depth], index) => (
               <group key={`farm-${index}`} position={[x, 0, z]} rotation={[0, rotation, 0]}>
                 <mesh position={[0, 0.18, 0]} receiveShadow scale={[width * 0.5, 0.28, depth * 0.5]}>
                   <dodecahedronGeometry args={[1, 0]} />
@@ -849,14 +803,7 @@ function DistrictScene({
                 ))}
               </group>
             ))}
-          {[
-            [9, -7, 0.35],
-            [13, 3, -0.28],
-            [-10, 13, 0.5],
-            [6, 15, -0.15],
-          ]
-            .slice(0, population.secondary)
-            .map(([x, z, rotation], index) => (
+          {MILL_SHEDS.slice(0, population.secondary).map(([x, z, rotation], index) => (
               <group key={`shed-${index}`} position={[x, 0, z]} rotation={[0, rotation, 0]}>
                 <mesh position={[0, 1.5, 0]} castShadow>
                   <boxGeometry args={[4.4 + index * 0.4, 3, 3.7]} />
@@ -874,12 +821,7 @@ function DistrictScene({
         </>
       )}
       {population.lamps &&
-        [
-          [-15, -10],
-          [13, -7],
-          [-8, 14],
-          [16, 12],
-        ].map(([x, z], index) => (
+        LAMP_SPOTS.map(([x, z], index) => (
           <group key={`lamp-${index}`} position={[x + (rng() - 0.5) * 2, 0, z + (rng() - 0.5) * 2]}>
             <mesh position={[0, 2.2, 0]}>
               <cylinderGeometry args={[0.06, 0.1, 4.4, 5]} />
@@ -891,12 +833,7 @@ function DistrictScene({
             </mesh>
           </group>
         ))}
-      {[
-        [-20, -17, 0.55],
-        [20, -16, 0.7],
-        [-24, 12, 0.48],
-        [23, 15, 0.62],
-      ].map(([x, z, scale], index) => (
+      {DISTRICT_TREES.map(([x, z, scale], index) => (
         <group key={`vegetation-${index}`} position={[x, 0, z]} scale={scale} rotation={[0, index * 1.3, 0]}>
           <JungleTree height={11 + (index % 2) * 3} broad={0.7} night={night} />
         </group>
@@ -957,34 +894,42 @@ function RootCrownShrine({ stage, night }: { stage: LandmarkStage; night: boolea
   )
 }
 
-function Terrain({ night }: { night: boolean }) {
+function Terrain({ night, plateOnly }: { night: boolean; plateOnly: boolean }) {
   const riverWet = useMemo(() => ribbonGeometry(L.hydrology.river, L.hydrology.wetWidth, 0.02), [])
   const riverCore = useMemo(() => ribbonGeometry(L.hydrology.river, L.hydrology.riverWidth, 0.08), [])
-  const vegetation = [
-    [-122, -42, 0.75],
-    [-108, 42, 0.65],
-    [-34, -92, 0.72],
-    [61, -72, 0.62],
-    [110, -44, 0.7],
-    [128, 12, 0.6],
-    [-126, 78, 0.58],
-  ] as const
-  const groundClusters = [
-    [-116, -8, 0],
-    [-104, 27, 1],
-    [-48, -72, 2],
-    [53, -63, 3],
-    [113, -13, 4],
-    [116, 66, 5],
-    [-124, 94, 6],
-    [34, 92, 7],
-  ] as const
+  const vegetation = WILD_VEGETATION
+  const groundClusters = GROUND_CLUSTERS
+  const plate = L.worldExtent * 2
+  const groundColor = night ? '#294a38' : P.ground
   return (
     <group>
-      <mesh position={[0, -0.55, 100]} receiveShadow>
-        <boxGeometry args={[900, 1.1, 1100]} />
-        <Surf color={night ? '#294a38' : P.ground} />
+      {/* The authored plate: flat ground to |x|,|z| = worldExtent. The outer world continues it seam-exact. */}
+      <mesh position={[0, -0.55, 0]} receiveShadow>
+        <boxGeometry args={[plate, 1.1, plate]} />
+        <Surf color={groundColor} />
       </mesh>
+      {!plateOnly && (
+        // The shipped baseline: the same flat green on to the old 900 × 1100 m footprint (four
+        // aprons round the plate, so the plate box itself is identical in both modes).
+        <>
+          <mesh position={[0, -0.55, -320]} receiveShadow>
+            <boxGeometry args={[900, 1.1, 260]} />
+            <Surf color={groundColor} />
+          </mesh>
+          <mesh position={[0, -0.55, 420]} receiveShadow>
+            <boxGeometry args={[900, 1.1, 460]} />
+            <Surf color={groundColor} />
+          </mesh>
+          <mesh position={[-320, -0.55, 0]} receiveShadow>
+            <boxGeometry args={[260, 1.1, plate]} />
+            <Surf color={groundColor} />
+          </mesh>
+          <mesh position={[320, -0.55, 0]} receiveShadow>
+            <boxGeometry args={[260, 1.1, plate]} />
+            <Surf color={groundColor} />
+          </mesh>
+        </>
+      )}
       <Ribbon points={L.hydrology.river} width={19} y={0.005} color={night ? '#315f43' : '#609b58'} />
       <mesh geometry={riverWet} receiveShadow>
         <Surf color={P.wet} side={THREE.DoubleSide} />
@@ -992,32 +937,18 @@ function Terrain({ night }: { night: boolean }) {
       <mesh geometry={riverCore} receiveShadow>
         <Surf color={night ? P.waterNight : P.water} side={THREE.DoubleSide} />
       </mesh>
-      {[
-        [65, 24, 35, 0.18, 29, P.wet],
-        [86, 33, 26, 0.18, 22, P.wet],
-        [51, 29, 21, 0.16, 18, P.wet],
-        [66, 24, 30, 0.22, 25, night ? P.waterNight : P.water],
-        [86, 32, 22, 0.22, 18, night ? P.waterNight : P.water],
-        [53, 30, 17, 0.2, 15, night ? P.waterNight : P.water],
-        [72, 27, 22, 0.24, 17, night ? '#2c7073' : P.waterLight],
-      ].map(([x, z, sx, sy, sz, color], index) => (
-        <mesh key={`lagoon-lobe-${index}`} position={[x as number, 0.08 + index * 0.01, z as number]} rotation={[0, index * 0.37, 0]} scale={[sx as number, sy as number, sz as number]} receiveShadow>
+      {LAGOON_LOBES.map(([x, z, sx, sy, sz, which], index) => (
+        <mesh key={`lagoon-lobe-${index}`} position={[x, 0.08 + index * 0.01, z]} rotation={[0, index * 0.37, 0]} scale={[sx, sy, sz]} receiveShadow>
           <dodecahedronGeometry args={[1, 0]} />
-          <Surf color={color as string} />
+          <Surf color={which === 'wet' ? P.wet : which === 'water' ? (night ? P.waterNight : P.water) : night ? '#2c7073' : P.waterLight} />
         </mesh>
       ))}
-      <mesh position={[22, 7.2, -118]} castShadow receiveShadow scale={[16, 4.8, 4]}>
-        <dodecahedronGeometry args={[1, 0]} />
-        <Surf color="#617c55" />
-      </mesh>
-      <mesh position={[22, 4.2, -108]} castShadow receiveShadow scale={[13, 3.1, 4.5]}>
-        <dodecahedronGeometry args={[1, 0]} />
-        <Surf color="#71895c" />
-      </mesh>
-      <mesh position={[22, 2, -98]} castShadow receiveShadow scale={[11, 1.5, 4.8]}>
-        <dodecahedronGeometry args={[1, 0]} />
-        <Surf color="#85926a" />
-      </mesh>
+      {FALL_CLIFFS.map(([x, y, z, sx, sy, sz], index) => (
+        <mesh key={`fall-cliff-${index}`} position={[x, y, z]} castShadow receiveShadow scale={[sx, sy, sz]}>
+          <dodecahedronGeometry args={[1, 0]} />
+          <Surf color={['#617c55', '#71895c', '#85926a'][index]} />
+        </mesh>
+      ))}
       <mesh position={[22, 8.2, -113.3]}>
         <planeGeometry args={[10, 12]} />
         <Surf color="#f2fff1" side={THREE.DoubleSide} />
@@ -1026,12 +957,7 @@ function Terrain({ night }: { night: boolean }) {
         <planeGeometry args={[11, 7]} />
         <Surf color={P.waterLight} side={THREE.DoubleSide} />
       </mesh>
-      {[
-        [8, -118, 1.3],
-        [36, -116, 1.1],
-        [7, -103, 0.85],
-        [38, -99, 0.9],
-      ].map(([x, z, scale], index) => (
+      {FALL_ROCKS.map(([x, z, scale], index) => (
         <mesh key={`fall-rock-${index}`} position={[x, 1.1 * scale, z]} rotation={[0, index * 0.8, 0]} scale={scale}>
           <dodecahedronGeometry args={[2.4, 0]} />
           <Surf color={index % 2 ? '#71895c' : '#617c55'} />
@@ -1041,13 +967,13 @@ function Terrain({ night }: { night: boolean }) {
         <dodecahedronGeometry args={[1, 0]} />
         <Surf color={night ? '#3d5b42' : '#8c9361'} />
       </mesh>
-      <Ribbon points={[[84, 46], [92, 59], [102, 67]]} width={3.1} y={0.24} color={P.deck} />
-      <Ribbon points={[[-82, 54], [-71, 35], [-63, 11], [-54, -12]]} width={6.2} y={0.035} color={night ? '#31563e' : '#609854'} />
-      <Ribbon points={[[-45, -22], [-23, -34], [-4, -40], [10, -48]]} width={5.8} y={0.035} color={night ? '#31563e' : '#609854'} />
-      <Ribbon points={[[25, 68], [44, 62], [54, 52], [62, 44]]} width={5.8} y={0.035} color={night ? '#31563e' : '#609854'} />
-      <Ribbon points={[[-82, 54], [-71, 35], [-63, 11], [-54, -12]]} width={3.8} y={0.1} color={P.path} />
-      <Ribbon points={[[-45, -22], [-23, -34], [-4, -40], [10, -48]]} width={3.4} y={0.1} color={P.path} />
-      <Ribbon points={[[25, 68], [44, 62], [54, 52], [62, 44]]} width={3.4} y={0.1} color={P.path} />
+      <Ribbon points={SHRINE_BOARDWALK} width={3.1} y={0.24} color={P.deck} />
+      {PATHS.map((points, index) => (
+        <Ribbon key={`verge-${index}`} points={points} width={index === 0 ? 6.2 : 5.8} y={0.035} color={night ? '#31563e' : '#609854'} />
+      ))}
+      {PATHS.map((points, index) => (
+        <Ribbon key={`path-${index}`} points={points} width={index === 0 ? 3.8 : PATH_WIDTH} y={0.1} color={P.path} />
+      ))}
       {L.bridges.map((bridge) => (
         <RopeBridge key={bridge.id} a={bridge.a} b={bridge.b} y={2.4} />
       ))}
@@ -1067,12 +993,7 @@ function Terrain({ night }: { night: boolean }) {
           <GroundCluster variant={variant} />
         </group>
       ))}
-      {[
-        [48, 49],
-        [57, 55],
-        [96, 18],
-        [102, 30],
-      ].map(([x, z], index) => (
+      {LAGOON_REED_SPOTS.map(([x, z], index) => (
         <group key={`lagoon-reed-${index}`} position={[x, 0.2, z]} rotation={[0, index * 0.7, 0]}>
           <Reeds count={10} />
         </group>
@@ -1081,10 +1002,10 @@ function Terrain({ night }: { night: boolean }) {
   )
 }
 
-function Mist() {
+function Mist({ still = false }: { still?: boolean }) {
   const group = useRef<THREE.Group>(null)
   useFrame(({ clock }) => {
-    if (!group.current) return
+    if (!group.current || still) return
     group.current.children.forEach((child, index) => {
       child.position.x += Math.sin(clock.elapsedTime * 0.25 + index) * 0.003
       child.position.y = 3 + index * 1.2 + Math.sin(clock.elapsedTime * 0.4 + index) * 0.5
@@ -1102,11 +1023,11 @@ function Mist() {
   )
 }
 
-function BirdEvent({ seed }: { seed: number }) {
+function BirdEvent({ seed, still = false }: { seed: number; still?: boolean }) {
   const group = useRef<THREE.Group>(null)
   const schedule = useMemo(() => birdSchedule(seed), [seed])
   useFrame(({ clock }) => {
-    if (!group.current) return
+    if (!group.current || still) return
     const cycle = schedule[schedule.length - 1].startAt + schedule[schedule.length - 1].duration
     const time = clock.elapsedTime % cycle
     const event = schedule.find((candidate) => time >= candidate.startAt && time < candidate.startAt + candidate.duration)
@@ -1134,10 +1055,10 @@ function BirdEvent({ seed }: { seed: number }) {
   )
 }
 
-function WaterEvent() {
+function WaterEvent({ still = false }: { still?: boolean }) {
   const rings = useRef<THREE.Group>(null)
   useFrame(({ clock }) => {
-    if (!rings.current) return
+    if (!rings.current || still) return
     rings.current.children.forEach((child, index) => {
       const k = (clock.elapsedTime * 0.35 + index / 3) % 1
       child.scale.setScalar(1 + k * 5)
@@ -1157,54 +1078,123 @@ function WaterEvent() {
   )
 }
 
-function DioramaFog({ mist }: { mist: boolean }) {
+/** The shipped diorama fog: camera-relative, so the rear canopy stays atmospheric from every station. */
+function dioramaFog(distance: number, mist: boolean): { near: number; far: number } {
+  return { near: distance + (mist ? 72 : 96), far: distance + (mist ? 285 : 330) }
+}
+
+/**
+ * Fog targets for the camera's pitch. Looking down at the land (the product overview at 38°) the
+ * shipped diorama fog is kept exactly, so the overview renders pixel-identical to the land as
+ * shipped; as the camera drops toward the horizon the fog is pushed out to ~1.5 km (humid: nearer
+ * than the ice shelf's 1.7 km) so the outer rows and the far sea read through the haze.
+ */
+export function fogForPitch(pitchDeg: number, distance: number, mist: boolean, night: boolean, outer: boolean): { near: number; far: number } {
+  const base = dioramaFog(distance, mist)
+  if (!outer) return base
+  const pushed = night ? OUTER_FOG.night : OUTER_FOG.day
+  const t = 1 - THREE.MathUtils.smoothstep(pitchDeg, 26, 36)
+  return { near: base.near + (pushed.near - base.near) * t, far: base.far + (pushed.far - base.far) * t }
+}
+
+function DioramaFog({ mist, night, outer }: { mist: boolean; night: boolean; outer: boolean }) {
   const scene = useThree((store) => store.scene)
   const center = useMemo(() => new THREE.Vector3(0, 4, 0), [])
+  const forward = useMemo(() => new THREE.Vector3(), [])
   useFrame(({ camera }) => {
     const fog = scene.fog as THREE.Fog | null
     if (!fog) return
     const distance = camera.position.distanceTo(center)
-    // Keep the rear canopy atmospheric without washing the authored skyline
-    // into a white band at the product overview camera.
-    const near = distance + (mist ? 72 : 96)
-    const far = distance + (mist ? 285 : 330)
-    fog.near += (near - fog.near) * 0.12
-    fog.far += (far - fog.far) * 0.12
+    camera.getWorldDirection(forward)
+    const pitchDeg = (Math.asin(THREE.MathUtils.clamp(-forward.y, -1, 1)) * 180) / Math.PI
+    const target = fogForPitch(pitchDeg, distance, mist, night, outer)
+    fog.near += (target.near - fog.near) * 0.12
+    fog.far += (target.far - fog.far) * 0.12
   })
   return null
 }
 
+/** Every hut, trunk, rock, totem and dock of the land, registered from the shared placement data. */
+function JungleColliders({ districts, progress, seed }: { districts: SeededDistrict[]; progress: JungleState['progress']; seed: number }) {
+  const colliders = useMemo(() => jungleLandColliders(districts, progress, seed), [districts, progress, seed])
+  useCollider(colliders)
+  return null
+}
+
+const WALKER_AGENTS_ID = 'jungle-walkers'
+/** Frames the collider registry must hold still before the first bodies are placed. */
+const SETTLE_FRAMES = 2
+
+/**
+ * Residents parade round their district anchors on the shared collision API: one deterministic
+ * simulation (`stepWalkers`) runs once per frame at priority −1; each body steers round the
+ * registered colliders, sweeps its circle (no tunnelling), stays off the water, and is kept apart
+ * from the others. Reduced motion holds them still (separation and the safety push only).
+ */
 function Residents({ state, districts }: { state: JungleState; districts: SeededDistrict[] }) {
-  const spots = useMemo(() => {
-    const rng = seeded(state.seed * 13 + 5)
-    return Array.from({ length: state.residents }, (_, index) => {
-      const district = districts[index % districts.length]
-      const angle = rng() * Math.PI * 2
-      const radius = 4 + rng() * 10
-      return {
-        x: district.center[0] + Math.cos(angle) * radius,
-        z: district.center[1] + Math.sin(angle) * radius,
-        phase: rng() * Math.PI * 2,
-      }
-    })
-  }, [districts, state.residents, state.seed])
+  const registry = useColliderRegistry()
+  const colliders = useColliderSet()
+  const bodies = useRef<WalkerBody[]>([])
+  const settle = useRef({ version: -1, frames: 0 })
+  const world = useMemo(() => ({ districts }), [districts])
   const group = useRef<THREE.Group>(null)
-  useFrame(({ clock }) => {
-    if (!group.current) return
-    group.current.children.forEach((child, index) => {
-      const spot = spots[index]
-      const t = clock.elapsedTime * 0.32 + spot.phase
-      child.position.x = spot.x + Math.sin(t) * 4.5
-      child.position.z = spot.z + Math.sin(t * 2 + 0.5) * 3.2
-      child.position.y = Math.abs(Math.sin(clock.elapsedTime * 5.2 + spot.phase)) * 0.16
-      child.rotation.y = Math.atan2(Math.cos(t) * 4.5, Math.cos(t * 2 + 0.5) * 6.4)
+  const stats = useRef({ ms: 0 })
+
+  useEffect(() => {
+    registry.setAgents(WALKER_AGENTS_ID, bodies.current)
+    return () => registry.clearAgents(WALKER_AGENTS_ID)
+  }, [registry])
+
+  useEffect(() => {
+    if (!collidersDebugEnabled()) return
+    const hook: WalkerDevHook = Object.assign(() => bodies.current.map((body) => ({ x: body.x, z: body.z, r: body.r })), {
+      ms: () => stats.current.ms,
     })
-  })
+    window.__iceWalkers = hook
+    return () => {
+      delete window.__iceWalkers
+    }
+  }, [])
+
+  useFrame(({ clock }, dt) => {
+    const set = colliders.current
+    const list = bodies.current
+    if (registry.version !== settle.current.version) {
+      settle.current.version = registry.version
+      settle.current.frames = 0
+    } else settle.current.frames += 1
+    if (list.length === 0 && settle.current.frames < SETTLE_FRAMES) return
+    if (list.length > state.residents) list.length = state.residents
+    while (list.length < state.residents) list.push(createWalker(world, set, list.length))
+    if (list.length === 0) return
+    const t0 = performance.now()
+    if (state.reducedMotion) {
+      for (const w of list) w.moving = false
+    } else stepWalkers(world, list, set, dt)
+    stats.current.ms += (performance.now() - t0 - stats.current.ms) * 0.1
+    const root = group.current
+    if (!root) return
+    for (let index = 0; index < root.children.length; index++) {
+      const child = root.children[index]
+      const body = list[index]
+      if (!body) {
+        child.visible = false
+        continue
+      }
+      child.visible = true
+      child.position.x = body.x
+      child.position.z = body.z
+      child.position.y = body.moving ? Math.abs(Math.sin(clock.elapsedTime * 5.2 + index)) * 0.16 : 0
+      // Bodies face +z: a heading (cos h, sin h) in XZ is rotation.y = atan2(dirX, dirZ).
+      child.rotation.y = Math.atan2(Math.cos(body.heading), Math.sin(body.heading))
+    }
+  }, -1)
+
   const scale = L.creature.scale
   return (
-    <group ref={group}>
-      {spots.map((spot, index) => (
-        <group key={index} position={[spot.x, 0, spot.z]} scale={scale}>
+    <group ref={group} name="jungle-residents">
+      {Array.from({ length: state.residents }, (_, index) => (
+        <group key={index} visible={false} scale={scale}>
           <mesh position={[0, 0.7, 0]} castShadow>
             <dodecahedronGeometry args={[0.55, 1]} />
             <Surf color={index % 2 ? '#f5ddb5' : '#d9ead5'} />
@@ -1259,75 +1249,6 @@ function Catastrophe({ state, districts }: { state: JungleState; districts: Seed
   )
 }
 
-function JungleCamera({
-  state,
-  districts,
-  onDiveEnd,
-}: {
-  state: JungleState
-  districts: SeededDistrict[]
-  onDiveEnd: () => void
-}) {
-  const controls = useRef<CameraControls>(null)
-  const hasPose = useRef(false)
-  const camera = useThree((store) => store.camera)
-  const focused = districts.find((district) => district.id === state.focusDistrict)
-  useEffect(() => {
-    const control = controls.current
-    if (!control) return
-    const station = state.station
-    const center: [number, number, number] =
-      station === 'district' && focused
-        ? [focused.center[0], 5.5, focused.center[1]]
-        : station === 'district'
-          ? [L.headland.center[0], 8, L.headland.center[1]]
-        : station === 'resident' && focused
-          ? [focused.center[0], 1.5, focused.center[1]]
-          : [0, 4, 0]
-    const distance =
-      (station === 'resident' ? 10 : station === 'district' ? 74 : station === 'arrival' ? 205 : 270) *
-      state.camera.dolly
-    const pitch = (Math.min(40, Math.max(34, state.camera.pitchDeg)) * Math.PI) / 180
-    const azimuth = (clampBiomeYaw(state.camera.azimuthDeg) * Math.PI) / 180
-    const horizontal = Math.cos(pitch) * distance
-    const position: [number, number, number] = [
-      center[0] + Math.sin(azimuth) * horizontal,
-      center[1] + Math.sin(pitch) * distance,
-      center[2] + Math.cos(azimuth) * horizontal,
-    ]
-    if (state.diving) {
-      void control.setLookAt(position[0] * 1.45, position[1] * 4.6, position[2] * 1.45, ...center, false)
-      const frame = window.requestAnimationFrame(() => {
-        void control.setLookAt(...position, ...center, true)
-      })
-      const timeout = window.setTimeout(onDiveEnd, 1800)
-      return () => {
-        window.cancelAnimationFrame(frame)
-        window.clearTimeout(timeout)
-      }
-    }
-    void control.setLookAt(...position, ...center, hasPose.current)
-    hasPose.current = true
-  }, [camera, districts, focused, onDiveEnd, state.camera, state.diving, state.station])
-  return (
-    <>
-      <PerspectiveCamera makeDefault fov={state.camera.fov} near={0.3} far={900} position={[100, 90, 140]} />
-      <CameraControls
-        ref={controls}
-        makeDefault
-        minDistance={5}
-        maxDistance={340}
-        minPolarAngle={(50 * Math.PI) / 180}
-        maxPolarAngle={(56 * Math.PI) / 180}
-        minAzimuthAngle={(-35 * Math.PI) / 180}
-        maxAzimuthAngle={(35 * Math.PI) / 180}
-        truckSpeed={0}
-        smoothTime={0.45}
-      />
-    </>
-  )
-}
-
 interface JungleSceneProps {
   state: JungleState
   onDiveEnd: () => void
@@ -1338,11 +1259,12 @@ export function JungleScene({ state, onDiveEnd }: JungleSceneProps) {
   const fraction = courseProgress(state.progress)
   const stage = landmarkStage(fraction)
   const sky = state.night ? P.skyNight : P.sky
+  const outer = state.edge === 'outer'
   return (
-    <>
+    <ColliderProvider>
       <color attach="background" args={[sky]} />
       <fog attach="fog" args={[sky, 320, 510]} />
-      <DioramaFog mist={state.mist} />
+      <DioramaFog mist={state.mist} night={state.night} outer={outer} />
       <hemisphereLight args={[state.night ? '#7fa6a0' : '#efffdc', state.night ? '#284638' : '#487447', state.night ? 1.1 : 1.05]} />
       <directionalLight
         position={state.night ? [-55, 74, 30] : [65, 105, 62]}
@@ -1356,11 +1278,14 @@ export function JungleScene({ state, onDiveEnd }: JungleSceneProps) {
         shadow-camera-top={150}
         shadow-camera-bottom={-150}
       />
-      <Terrain night={state.night} />
+      <Terrain night={state.night} plateOnly={outer} />
+      {outer && <OuterWorldScene seed={state.seed} night={state.night} reducedMotion={state.reducedMotion} />}
       <HorizonCanopy fraction={fraction} night={state.night} />
+      <JungleColliders districts={districts} progress={state.progress} seed={state.seed} />
+      <ColliderDebug groundAt={() => L.groundHeight} />
       {districts.map((district) => (
         <group key={district.id}>
-          <DistrictScene district={district} progress={state.progress[district.id] ?? 0} seed={state.seed} night={state.night} />
+          <DistrictScene district={district} progress={state.progress[district.id] ?? 0} seed={state.seed} night={state.night} still={state.reducedMotion} />
           {state.focusDistrict === district.id && (
             <Html position={[district.center[0], 18, district.center[1]]} center distanceFactor={32} className="region-label">
               <span>{district.name}</span>
@@ -1371,11 +1296,12 @@ export function JungleScene({ state, onDiveEnd }: JungleSceneProps) {
       <RootCrownShrine stage={stage} night={state.night} />
       <Residents state={state} districts={districts} />
       <Catastrophe state={state} districts={districts} />
-      {state.mist && <Mist />}
-      {state.birds && <BirdEvent seed={state.seed} />}
-      {state.waterEvent && <WaterEvent />}
-      <JungleCamera state={state} districts={districts} onDiveEnd={onDiveEnd} />
+      {state.mist && <Mist still={state.reducedMotion} />}
+      {state.birds && <BirdEvent seed={state.seed} still={state.reducedMotion} />}
+      {state.waterEvent && <WaterEvent still={state.reducedMotion} />}
+      <JungleCameraRig state={state} districts={districts} onDiveEnd={onDiveEnd} poseId={state.pose} readyKey={state.edge} />
+      {state.edgeLab && <JungleEdgePanel />}
       {state.pixel && <PixelComposer />}
-    </>
+    </ColliderProvider>
   )
 }

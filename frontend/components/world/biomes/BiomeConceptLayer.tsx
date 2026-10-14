@@ -2,6 +2,7 @@
 
 import { Html } from "@react-three/drei";
 import type { CanvasSpot, CanvasWorld } from "@/lib/world/types";
+import { useBiomeStageHost } from "./stage-host";
 import type { LocalBiomeId } from "./types";
 
 const FRAME: Record<
@@ -48,6 +49,8 @@ export function BiomeConceptLayer({
   onSelect(conceptId: string | null): void;
   onHover(conceptId: string | null): void;
 }) {
+  // S4-1: through the stage the labels portal into the page-side host (see stage-host.tsx).
+  const stageHost = useBiomeStageHost();
   if (!world) return null;
   const frame = FRAME[visual];
 
@@ -93,7 +96,7 @@ export function BiomeConceptLayer({
                 toneMapped={false}
               />
             </mesh>
-            <Html center position={[0, 2.4, 0]} zIndexRange={[24, 0]}>
+            <Html center position={[0, 2.4, 0]} zIndexRange={[24, 0]} portal={stageHost?.ref}>
               <button
                 type="button"
                 className="biome-concept-label"

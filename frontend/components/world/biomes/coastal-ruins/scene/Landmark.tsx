@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { COASTAL_PALETTE as P, type LandmarkStage } from '../layout/biome-layout'
 import { Glow, Surf } from '../render/materials'
+import { useCollider } from '../../collision/ColliderRegistry'
+import { landmarkColliders } from '../collision/footprints'
 
 function FloorLamp({ x, z, night }: { x: number; z: number; night: boolean }) {
   return (
@@ -27,6 +30,7 @@ export function Landmark({
 }) {
   const s2 = stage === 's2' || stage === 's3'
   const s3 = stage === 's3'
+  useCollider(useMemo(() => landmarkColliders(position[0], position[2], stage), [position, stage]))
   return (
     <group position={position}>
       <mesh position={[0, 0.35, 0]} receiveShadow castShadow>

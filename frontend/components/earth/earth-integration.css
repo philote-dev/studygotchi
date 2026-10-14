@@ -18,8 +18,21 @@
   transform-origin: 72% 56%;
 }
 
+/* The ice land is drawn by the stage canvas behind the page (S4-1, gate 4): its land stage never
+   paints over the stage, not while its chunk loads either (the cloud dive is running behind it; the
+   stage shows the planet under the deck, never a loading card). */
 .biome-land-stage[data-visual="ice-town"] {
-  background: #dbe2ee;
+  background: transparent;
+}
+
+.biome-land-stage[data-visual="ice-town"] .biome-canvas-loading {
+  display: none;
+}
+
+/* A land with its own canvas (every developed biome but ice-town, `OWN_CANVAS_BIOMES`) is not
+   part of the cloud dive: it dissolves in over the planet on the view beat. */
+.biome-land-stage:not([data-visual="ice-town"]) {
+  animation: sg-fade var(--a-t-view, 250ms) var(--a-ease-out-quad, ease-out) both;
 }
 
 .biome-land-stage canvas {
@@ -62,27 +75,6 @@
 .biome-concept-label:focus-visible {
   opacity: 1;
   pointer-events: auto;
-}
-
-.sg-shell:has(.biome-land-stage):not(:has([data-leave-phase="rise"])) .sg-field,
-.sg-shell:has(.biome-land-stage):not(:has([data-leave-phase="rise"])) .sg-sky-spiral {
-  display: none;
-}
-
-.biome-land-stage[data-arriving="true"] {
-  animation: biome-land-arrive 720ms cubic-bezier(0.83, 0, 0.17, 1) both;
-}
-
-@keyframes biome-land-arrive {
-  from {
-    opacity: 0;
-    transform: scale(1.18);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .earth-page .earth-panel {
@@ -859,96 +851,6 @@
   margin-top: 6px;
 }
 
-.demo-theater {
-  position: absolute;
-  left: 50%;
-  bottom: 18px;
-  z-index: 28;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 6px 5px 10px;
-  color: var(--a-ink);
-  background: color-mix(in srgb, var(--a-sheet) 88%, transparent);
-  border-radius: 999px;
-  box-shadow: var(--a-shadow-sheet);
-  transform: translateX(-50%);
-  backdrop-filter: blur(10px);
-}
-
-.demo-theater-label {
-  margin-right: 4px;
-  color: var(--a-ink-55);
-  font-family: var(--a-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.demo-theater button {
-  min-width: 44px;
-  padding: 4px 8px;
-  border: 0;
-  border-radius: 999px;
-  color: var(--a-ink-75);
-  background: transparent;
-  font-family: var(--a-mono);
-  font-size: 11px;
-  line-height: 16px;
-}
-
-.demo-theater button[data-active] {
-  color: var(--a-ink);
-  background: var(--a-ink-10);
-}
-
-.demo-theater-hint {
-  position: absolute;
-  left: 50%;
-  bottom: 58px;
-  z-index: 28;
-  margin: 0;
-  padding: 6px 12px;
-  color: var(--a-ink-75);
-  background: color-mix(in srgb, var(--a-sheet) 88%, transparent);
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 16px;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-.demo-confetti {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  overflow: hidden;
-}
-
-.demo-confetti i {
-  position: absolute;
-  top: -18px;
-  width: 8px;
-  height: 12px;
-  border-radius: 1px;
-  animation: demo-confetti-fall 4.4s ease-in both;
-}
-
-@keyframes demo-confetti-fall {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, -8vh, 0) rotate(0deg);
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate3d(var(--sway, 18px), 118vh, 0) rotate(540deg);
-    opacity: 0.15;
-  }
-}
-
 ::view-transition {
   pointer-events: none;
 }
@@ -1008,7 +910,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .biome-land-stage[data-arriving="true"],
+  .biome-land-stage:not([data-visual="ice-town"]),
   .course-navigator,
   .provenance-bubble,
   .landmark-flag {

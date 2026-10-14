@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   COASTAL_PALETTE as P,
   type BiomeLayout,
@@ -5,6 +6,7 @@ import {
   landmarkStage,
   skylineProfile,
 } from '../layout/biome-layout'
+import { sampleTerrain } from '../layout/terrain'
 import { PixelComposer } from '../render/PixelComposer'
 import { CameraRig } from '../camera/CameraRig'
 import type { LabState } from '../state'
@@ -14,6 +16,11 @@ import { Landmark } from './Landmark'
 import { Residents } from './Residents'
 import { Districts, Paths } from './Structures'
 import { CoastalDressing, CoastFoam, Escarpment, GlobeMarker, HorizonStacks, Terrain, Water } from './Terrain'
+import { ColliderProvider } from '../../collision/ColliderRegistry'
+import { ColliderDebug } from '../../collision/ColliderDebug'
+import { OuterWorld, createHazeUniforms } from '../edge/outer'
+import { outerFog } from '../edge/endless/outer-world'
+import { EdgeLabOverlay } from '../edge/EdgeLabPanel'
 
 interface BiomeSceneProps {
   layout: BiomeLayout
@@ -26,11 +33,21 @@ export function BiomeScene({ layout, state, onDiveEnd }: BiomeSceneProps) {
   const profile = skylineProfile(fraction)
   const blighted = state.catastrophe.phase !== 'calm' ? state.catastrophe.districtId : null
   const sky = state.night ? P.skyNight : state.catastrophe.phase === 'squall' ? '#b8aa99' : P.sky
+  // The outer world (default) pushes the fog out for aerial perspective; its near stays where the
+  // shipped fog starts, so nothing the overview sees changes. `?edge=none` keeps the shipped fog.
+  const outer = (state.edge ?? 'outer') !== 'none'
+  const fog = useMemo<[number, number]>(() => {
+    if (!outer) return [layout.fog.near * 0.56, layout.fog.far * 0.56]
+    const metres = outerFog(state.night, layout)
+    return [metres.near * layout.renderScale, metres.far * layout.renderScale]
+  }, [layout, outer, state.night])
+  const haze = useMemo(() => (outer ? createHazeUniforms(layout.renderScale) : null), [outer, layout.renderScale])
+  const reducedMotion = state.reducedMotion ?? false
 
   return (
-    <>
+    <ColliderProvider>
       <color attach="background" args={[sky]} />
-      <fog attach="fog" args={[sky, layout.fog.near * 0.56, layout.fog.far * 0.56]} />
+      <fog attach="fog" args={[sky, fog[0], fog[1]]} />
       <hemisphereLight args={[state.night ? '#61748b' : '#eef8f4', state.night ? '#28323b' : '#9b806b', state.night ? 0.65 : 0.75]} />
       <directionalLight
         position={state.night ? [-60, 80, 35] : [80, 120, 75]}
@@ -58,7 +75,7 @@ export function BiomeScene({ layout, state, onDiveEnd }: BiomeSceneProps) {
         </>
       ) : (
         <group scale={layout.renderScale}>
-          <Water layout={layout} night={state.night} />
+          <Water layout={layout} night={state.night} haze={haze} />
           <Terrain layout={layout} night={state.night} />
           <CoastFoam layout={layout} night={state.night} />
           <CoastalDressing night={state.night} />
@@ -77,6 +94,7 @@ export function BiomeScene({ layout, state, onDiveEnd }: BiomeSceneProps) {
             stage={landmarkStage(fraction)}
             night={state.night}
           />
+          {outer && haze ? <OuterWorld layout={layout} night={state.night} seed={state.seed} reducedMotion={reducedMotion} haze={haze} /> : null}
           <Residents
             layout={layout}
             progress={state.progress}
@@ -85,9 +103,10 @@ export function BiomeScene({ layout, state, onDiveEnd }: BiomeSceneProps) {
             phase={state.catastrophe.phase}
             night={state.night}
           />
+          <ColliderDebug groundAt={(x, z) => Math.max(layout.seaLevel, sampleTerrain(layout, x, z).height)} />
           <Catastrophe layout={layout} seed={state.seed} state={state.catastrophe} />
-          {state.clouds && <Clouds layout={layout} night={state.night} />}
-          {state.boatEvent && <BoatEvent layout={layout} seed={state.seed} paused={state.catastrophe.phase !== 'calm'} />}
+          {state.clouds && <Clouds layout={layout} night={state.night} still={reducedMotion} />}
+          {state.boatEvent && <BoatEvent layout={layout} seed={state.seed} paused={state.catastrophe.phase !== 'calm' || reducedMotion} />}
           {state.night && <Stars />}
         </group>
       )}
@@ -101,8 +120,11 @@ export function BiomeScene({ layout, state, onDiveEnd }: BiomeSceneProps) {
         diving={state.diving}
         markerMode={state.markerMode}
         onDiveEnd={onDiveEnd}
+        poseId={state.pose ?? null}
+        readyKey={state.edge ?? 'outer'}
       />
+      {state.edgeLab ? <EdgeLabOverlay /> : null}
       {state.pixel && <PixelComposer />}
-    </>
+    </ColliderProvider>
   )
 }

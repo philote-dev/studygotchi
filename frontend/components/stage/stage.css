@@ -1,0 +1,50 @@
+/* The persistent stage canvas: the very back of the shell (first in the DOM),
+   behind .sg-page (10) and .sg-header (40). It hosts the sky and the globe, so
+   it sits at z 2, where the globe's own canvas sat in the stacking order
+   before gate 1 (2026-10-13) made the stage the only globe path. Pointer
+   events pass through (the globe's input lives on its page-side host). */
+.sg-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Every pixel-path pass is drawn in cells of 2 CSS px (composer-model.ts). When the
+   PerformanceMonitor drops the canvas dpr to 1 on a Retina screen the browser upscales
+   the canvas 2x: nearest, so the cells stay square blocks instead of going soft. At the
+   native dpr the canvas is 1:1 and this changes nothing. */
+.sg-stage canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* Frame-time overlay (?stage=sky&perf=1): bottom-right, left of the sound chip, over the page chrome. */
+.sg-stage-perf {
+  position: absolute;
+  right: calc(var(--sg-gutter) + 48px);
+  bottom: var(--sg-gutter);
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--a-sheet);
+  color: var(--a-ink);
+  box-shadow: var(--a-shadow-hairline);
+  font-family: var(--a-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  pointer-events: none;
+}
+
+.sg-stage-perf small {
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+.sg-stage-perf[data-over="1"] {
+  outline: 1px solid #f87171;
+}

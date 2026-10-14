@@ -1,0 +1,20 @@
+/* The galaxy rung's pointer surface: over the page (10), under the header (40)
+   so the Courses / Information pills keep working. Inert (no pointer events,
+   nothing drawn) unless the director rests on the galaxy with the layer
+   faded in; the stage canvas itself never takes input. The course flags
+   (course-flags.css) live inside it, so a card's "Open" is reachable while
+   the surface is live and the flag coordinates are the host's. */
+.sg-galaxy-input {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.sg-galaxy-input[data-active="true"] {
+  pointer-events: auto;
+}
+
+.sg-galaxy-input[data-hover="true"] {
+  cursor: pointer;
+}

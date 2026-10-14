@@ -1,0 +1,229 @@
+/* Galaxy stage preview chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.galaxy-stage {
+  --gs-bg: #080716;
+  --gs-panel: rgba(16, 14, 34, 0.86);
+  --gs-ink: #efe9ff;
+  --gs-muted: #9b94b8;
+  --gs-line: rgba(198, 186, 236, 0.22);
+  --gs-accent: #ffd36a;
+  --gs-accent-ink: #1b1530;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--gs-bg);
+  color: var(--gs-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.lab-nav ~ .galaxy-stage {
+  top: 30px;
+}
+
+.galaxy-stage[data-theme="light"] {
+  --gs-bg: #cfd6e4;
+  --gs-panel: rgba(244, 241, 251, 0.88);
+  --gs-ink: #17151d;
+  --gs-muted: #5b5884;
+  --gs-line: rgba(23, 21, 29, 0.18);
+  --gs-accent: #d9a92e;
+  --gs-accent-ink: #17151d;
+}
+
+.galaxy-stage[data-chrome="0"] .galaxy-stage__chrome {
+  display: none;
+}
+
+.galaxy-stage[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.galaxy-stage__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--gs-line);
+  background: var(--gs-panel);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.galaxy-stage__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--gs-line);
+  border-radius: 10px;
+}
+
+.galaxy-stage__tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--gs-muted);
+  padding: 5px 11px;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.galaxy-stage__tab[aria-selected="true"] {
+  background: var(--gs-accent);
+  color: var(--gs-accent-ink);
+  font-weight: 600;
+}
+
+.galaxy-stage__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__field input[type="text"] {
+  width: 10em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--gs-line);
+  background: transparent;
+  color: var(--gs-ink);
+  font: inherit;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+}
+
+.galaxy-stage__field input[type="range"] {
+  width: 120px;
+  accent-color: var(--gs-accent);
+}
+
+.galaxy-stage__btn {
+  appearance: none;
+  border: 1px solid var(--gs-line);
+  background: transparent;
+  color: var(--gs-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.galaxy-stage__btn:hover {
+  border-color: var(--gs-accent);
+}
+
+.galaxy-stage__btn[aria-pressed="true"] {
+  background: var(--gs-accent);
+  color: var(--gs-accent-ink);
+}
+
+/* The stage itself: a transparent canvas over the CSS sky, exactly like the product's .sg-stage. */
+.galaxy-stage__stage {
+  position: relative;
+  min-height: 0;
+  background: var(--gs-bg);
+}
+
+.galaxy-stage__stage canvas {
+  display: block;
+}
+
+.galaxy-stage__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 280px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--gs-line);
+  border-radius: 12px;
+  background: var(--gs-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+}
+
+.galaxy-stage__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__side p {
+  margin: 0;
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  margin: 0;
+}
+
+.galaxy-stage__kv dt {
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__kv dd {
+  margin: 0;
+}
+
+.galaxy-stage__kv dd[data-over="1"] {
+  color: #f87171;
+}
+
+.galaxy-stage__courses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.galaxy-stage__courses li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.galaxy-stage__courses li[data-current="1"] {
+  border-color: var(--gs-accent);
+}
+
+.galaxy-stage__courses li[data-clicked="1"] {
+  background: var(--gs-line);
+}
+
+.galaxy-stage__courses li[data-archived="1"] {
+  color: var(--gs-muted);
+}
+
+.galaxy-stage__courses small {
+  color: var(--gs-muted);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 10.5px;
+}

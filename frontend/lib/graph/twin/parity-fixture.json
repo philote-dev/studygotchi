@@ -1,0 +1,379 @@
+{
+ "source": "tools/qa/out/constellation-2d/8.223/dark/{zoomed-out,zoomed-in}[@2x].json (T-1 baseline, graph 0b652e13); cluster label boxes are what the 2D canvas recorded from its own screen-space labels",
+ "states": {
+  "zoomed-out": {
+   "camera": {
+    "x": 1.5610567079311295,
+    "y": -65.408665115551,
+    "k": 0.31169780713658707
+   },
+   "size": {
+    "w": 1440,
+    "h": 900
+   },
+   "labelLayer": "clusters",
+   "clusters": [
+    {
+     "id": "family:Constrained motion",
+     "label": "Constrained motion",
+     "x": 729.141408910255,
+     "y": 133.43018738975798,
+     "count": 37,
+     "mastery": 0.44142537995405406
+    },
+    {
+     "id": "family:Hamiltonian mechanics",
+     "label": "Hamiltonian mechanics",
+     "x": 86.926256182037,
+     "y": 119.47970571267577,
+     "count": 33,
+     "mastery": 0.41397901850606056
+    },
+    {
+     "id": "family:Lagrangian mechanics",
+     "label": "Lagrangian mechanics",
+     "x": -217.3570477907265,
+     "y": -108.56550362658027,
+     "count": 32,
+     "mastery": 0.43917594709375
+    },
+    {
+     "id": "family:Oscillations",
+     "label": "Oscillations",
+     "x": -813.1291933542274,
+     "y": -312.46047094464194,
+     "count": 23,
+     "mastery": 0.5554487231130435
+    },
+    {
+     "id": "family:Orbital motion",
+     "label": "Orbital motion",
+     "x": -905.2433411946524,
+     "y": 93.8020449518414,
+     "count": 20,
+     "mastery": 0.5265212777399999
+    },
+    {
+     "id": "family:Conserved quantities",
+     "label": "Conserved quantities",
+     "x": -55.55381272395891,
+     "y": 111.02989125612503,
+     "count": 17,
+     "mastery": 0.45785502307647047
+    },
+    {
+     "id": "family:Rigid body motion",
+     "label": "Rigid body motion",
+     "x": 982.1349027125389,
+     "y": 153.50450482172408,
+     "count": 16,
+     "mastery": 0.5189724142625001
+    },
+    {
+     "id": "family:Electromagnetism",
+     "label": "Electromagnetism",
+     "x": -302.2090628228977,
+     "y": -684.8383752223962,
+     "count": 8,
+     "mastery": 0.4874351744499999
+    }
+   ],
+   "clusterLabelBoxes": [
+    {
+     "clusterId": "family:Constrained motion",
+     "x0": 881.5552656047472,
+     "y0": 477.9776342994601,
+     "x1": 1012.0151349895128,
+     "y1": 509.9776342994601
+    },
+    {
+     "clusterId": "family:Hamiltonian mechanics",
+     "x0": 672.5162112777546,
+     "y0": 473.6292997522144,
+     "x1": 820.7000796859577,
+     "y1": 505.6292997522144
+    },
+    {
+     "clusterId": "family:Lagrangian mechanics",
+     "x0": 579.6997649297037,
+     "y0": 402.54810807316437,
+     "x1": 723.8276488408366,
+     "y1": 434.54810807316437
+    },
+    {
+     "clusterId": "family:Oscillations",
+     "x0": 422.4928663828214,
+     "y0": 338.99449387393844,
+     "x1": 509.63280473731356,
+     "y1": 370.99449387393844
+    },
+    {
+     "clusterId": "family:Orbital motion",
+     "x0": 385.8671099180453,
+     "y0": 465.6256292006652,
+     "x1": 488.8350054258578,
+     "y1": 497.6256292006652
+    },
+    {
+     "clusterId": "family:Electromagnetism",
+     "x0": 564.7235627763366,
+     "y0": 222.92511768444456,
+     "x1": 685.9074769609069,
+     "y1": 254.92511768444456
+    }
+   ],
+   "clusterLabelBoxesAt2x": [
+    {
+     "clusterId": "family:Constrained motion",
+     "x0": 881.5552656047472,
+     "y0": 477.9776342994601,
+     "x1": 1012.0151349895128,
+     "y1": 509.9776342994601
+    },
+    {
+     "clusterId": "family:Hamiltonian mechanics",
+     "x0": 672.5162112777546,
+     "y0": 473.6292997522144,
+     "x1": 820.7000796859577,
+     "y1": 505.6292997522144
+    },
+    {
+     "clusterId": "family:Lagrangian mechanics",
+     "x0": 579.6997649297037,
+     "y0": 402.54810807316437,
+     "x1": 723.8276488408366,
+     "y1": 434.54810807316437
+    },
+    {
+     "clusterId": "family:Oscillations",
+     "x0": 422.4928663828214,
+     "y0": 338.99449387393844,
+     "x1": 509.63280473731356,
+     "y1": 370.99449387393844
+    },
+    {
+     "clusterId": "family:Orbital motion",
+     "x0": 385.8671099180453,
+     "y0": 465.6256292006652,
+     "x1": 488.8350054258578,
+     "y1": 497.6256292006652
+    },
+    {
+     "clusterId": "family:Electromagnetism",
+     "x0": 564.7235627763366,
+     "y0": 222.92511768444456,
+     "x1": 685.9074769609069,
+     "y1": 254.92511768444456
+    }
+   ],
+   "anchorNode": {
+    "id": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+    "label": "Canonical Transformation",
+    "x": 549.5203099929662,
+    "y": 498.41207769041335,
+    "radius": 35.44889153843304,
+    "weight": 1,
+    "kind": "concept"
+   },
+   "sampleNodes": [
+    {
+     "id": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+     "kind": "concept",
+     "x": 549.5203099929662,
+     "y": 498.41207769041335,
+     "radius": 35.44889153843304,
+     "weight": 1
+    },
+    {
+     "id": "36019b68-0b16-4199-8ea6-f287aabaa260",
+     "kind": "concept",
+     "x": 558.0858284329053,
+     "y": -1044.29227812553,
+     "radius": 35.44889165348332,
+     "weight": 0.7
+    },
+    {
+     "id": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+     "kind": "concept",
+     "x": -731.7990714571135,
+     "y": 81.45543054675954,
+     "radius": 31.228756555322953,
+     "weight": 0.9
+    },
+    {
+     "id": "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+     "kind": "concept",
+     "x": 411.4695767231736,
+     "y": -920.4928254592114,
+     "radius": 35.44889165348332,
+     "weight": 0.7
+    },
+    {
+     "id": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+     "kind": "concept",
+     "x": 29.464858192561813,
+     "y": -1080.8176655320085,
+     "radius": 35.44889165348332,
+     "weight": 1
+    },
+    {
+     "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:19:Legendre Transforms for Dummies.pdf",
+     "kind": "resource",
+     "x": 94.21051599407274,
+     "y": 1070.7061140941023,
+     "radius": 22,
+     "weight": 0.48
+    }
+   ],
+   "counts": {
+    "nodes": 205,
+    "links": 343,
+    "clusters": 8
+   }
+  },
+  "zoomed-in": {
+   "camera": {
+    "x": 549.5203099929662,
+    "y": 498.41207769041335,
+    "k": 2
+   },
+   "size": {
+    "w": 1440,
+    "h": 900
+   },
+   "labelLayer": "nodes",
+   "clusters": [
+    {
+     "id": "family:Constrained motion",
+     "label": "Constrained motion",
+     "x": 729.141408910255,
+     "y": 133.43018738975798,
+     "count": 37,
+     "mastery": 0.44142537995405406
+    },
+    {
+     "id": "family:Hamiltonian mechanics",
+     "label": "Hamiltonian mechanics",
+     "x": 86.926256182037,
+     "y": 119.47970571267577,
+     "count": 33,
+     "mastery": 0.41397901850606056
+    },
+    {
+     "id": "family:Lagrangian mechanics",
+     "label": "Lagrangian mechanics",
+     "x": -217.3570477907265,
+     "y": -108.56550362658027,
+     "count": 32,
+     "mastery": 0.43917594709375
+    },
+    {
+     "id": "family:Oscillations",
+     "label": "Oscillations",
+     "x": -813.1291933542274,
+     "y": -312.46047094464194,
+     "count": 23,
+     "mastery": 0.5554487231130435
+    },
+    {
+     "id": "family:Orbital motion",
+     "label": "Orbital motion",
+     "x": -905.2433411946524,
+     "y": 93.8020449518414,
+     "count": 20,
+     "mastery": 0.5265212777399999
+    },
+    {
+     "id": "family:Conserved quantities",
+     "label": "Conserved quantities",
+     "x": -55.55381272395891,
+     "y": 111.02989125612503,
+     "count": 17,
+     "mastery": 0.45785502307647047
+    },
+    {
+     "id": "family:Rigid body motion",
+     "label": "Rigid body motion",
+     "x": 982.1349027125389,
+     "y": 153.50450482172408,
+     "count": 16,
+     "mastery": 0.5189724142625001
+    },
+    {
+     "id": "family:Electromagnetism",
+     "label": "Electromagnetism",
+     "x": -302.2090628228977,
+     "y": -684.8383752223962,
+     "count": 8,
+     "mastery": 0.4874351744499999
+    }
+   ],
+   "clusterLabelBoxes": [],
+   "clusterLabelBoxesAt2x": [],
+   "anchorNode": {
+    "id": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+    "label": "Canonical Transformation",
+    "x": 549.5203099929662,
+    "y": 498.41207769041335,
+    "radius": 35.44889153843304,
+    "weight": 1,
+    "kind": "concept"
+   },
+   "sampleNodes": [
+    {
+     "id": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+     "kind": "concept",
+     "x": 549.5203099929662,
+     "y": 498.41207769041335,
+     "radius": 35.44889153843304,
+     "weight": 1
+    },
+    {
+     "id": "36019b68-0b16-4199-8ea6-f287aabaa260",
+     "kind": "concept",
+     "x": 558.0858284329053,
+     "y": -1044.29227812553,
+     "radius": 35.44889165348332,
+     "weight": 0.7
+    },
+    {
+     "id": "6f4bffe5-863a-4b99-893e-86568318c7a9",
+     "kind": "concept",
+     "x": -731.7990714571135,
+     "y": 81.45543054675954,
+     "radius": 31.228756555322953,
+     "weight": 0.9
+    },
+    {
+     "id": "9d71d668-cef2-4320-9cb1-dde3f6a33378",
+     "kind": "concept",
+     "x": 411.4695767231736,
+     "y": -920.4928254592114,
+     "radius": 35.44889165348332,
+     "weight": 0.7
+    },
+    {
+     "id": "d41f044b-ecb5-4b9c-bd2e-410a21f78275",
+     "kind": "concept",
+     "x": 29.464858192561813,
+     "y": -1080.8176655320085,
+     "radius": 35.44889165348332,
+     "weight": 1
+    },
+    {
+     "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f:ingest:19:Legendre Transforms for Dummies.pdf",
+     "kind": "resource",
+     "x": 94.21051599407274,
+     "y": 1070.7061140941023,
+     "radius": 22,
+     "weight": 0.48
+    }
+   ],
+   "counts": {
+    "nodes": 205,
+    "links": 343,
+    "clusters": 8
+   }
+  }
+ }
+}

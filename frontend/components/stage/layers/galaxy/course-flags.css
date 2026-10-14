@@ -1,0 +1,236 @@
+/* Course flags at the galaxy rung: the product's flag / sheet language (LandmarkFlag's tab, .sg-btn's pill)
+   on the design-system tokens, with a 1-cell pixel-snapped leader from the blob's core glow. The anti-radial
+   direction, the fallback sectors and the collision rule are in lib/galaxy/flags.ts; CourseFlags.tsx writes
+   the solved positions to the DOM every frame (transform only: no layout properties move).
+
+   Motion (Philote, 2026-10-13): enter 180 ms ease-out with a 6 px slide along the leader, exit 120 ms;
+   reduced motion keeps the opacity fade and drops the slide. Leaders fade with their card and never move on
+   their own (the inka rule: only opacity animates). */
+
+.sg-flags {
+  --fl-leader: color-mix(in srgb, var(--a-ink) 82%, transparent);
+  --fl-leader-current: var(--a-lamp);
+  --fl-shadow: 0 0 0 1px var(--a-ink-10), 0 1px 0 var(--a-ink-7), 0 4px 12px color-mix(in srgb, var(--a-ink) 12%, transparent);
+  --fl-t-in: 180ms;
+  --fl-t-out: 120ms;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+:root[data-space-theme="dark"] .sg-flags {
+  --fl-shadow: 0 0 0 1px color-mix(in srgb, var(--a-ink) 16%, transparent), 0 1px 0 color-mix(in srgb, #000 30%, transparent), 0 4px 12px color-mix(in srgb, #000 35%, transparent);
+}
+
+.sg-flags__leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sg-flags__leader path {
+  stroke: var(--fl-leader);
+}
+
+.sg-flags__leader rect {
+  fill: var(--fl-leader);
+}
+
+.sg-flags__leader[data-current="1"] path {
+  stroke: var(--fl-leader-current);
+}
+
+.sg-flags__leader[data-current="1"] rect {
+  fill: var(--fl-leader-current);
+}
+
+.sg-flags__leader {
+  opacity: 1;
+  transition: opacity var(--fl-t-in) var(--a-ease-out-quint);
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.sg-flags__leader[data-phase="out"] {
+  opacity: 0;
+  transition-duration: var(--fl-t-out);
+  transition-timing-function: var(--a-ease-out-quad);
+}
+
+/* The card's outer element is positioned per frame by transform only; the inner card carries the enter / exit
+   motion so the two transforms never fight. */
+.sg-flag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.sg-flag__card {
+  --fl-dx: 0px;
+  --fl-dy: 0px;
+  pointer-events: auto;
+  display: grid;
+  gap: 4px;
+  width: max-content;
+  max-width: 220px;
+  padding: 8px 10px 8px;
+  color: var(--a-ink);
+  background: var(--a-sheet);
+  border-radius: var(--a-r-8);
+  box-shadow: var(--fl-shadow);
+  font-family: var(--a-ui);
+  opacity: 1;
+  transform: translate(0, 0);
+  transition:
+    opacity var(--fl-t-in) var(--a-ease-out-quint),
+    transform var(--fl-t-in) var(--a-ease-out-quint);
+  @starting-style {
+    opacity: 0;
+    transform: translate(var(--fl-dx), var(--fl-dy));
+  }
+}
+
+.sg-flag[data-phase="out"] .sg-flag__card {
+  opacity: 0;
+  transform: translate(calc(var(--fl-dx) * 0.5), calc(var(--fl-dy) * 0.5));
+  transition-duration: var(--fl-t-out);
+  transition-timing-function: var(--a-ease-out-quad);
+  pointer-events: none;
+}
+
+.sg-flag[data-current="1"] .sg-flag__card {
+  box-shadow:
+    var(--fl-shadow),
+    0 0 0 1px color-mix(in srgb, var(--a-lamp) 55%, transparent);
+}
+
+.sg-flag__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sg-flag__head .sg-flag__open {
+  margin-left: auto;
+}
+
+/* The landmark flag's tab: ink block, paper text, mono uppercase. */
+.sg-flag__tab {
+  display: inline-block;
+  height: 18px;
+  padding: 1px 6px;
+  color: var(--a-paper);
+  background: var(--a-ink);
+  border-radius: var(--a-r-4);
+  font-family: var(--a-mono);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* The current course's tab is the lamp; the lamp is light in both themes, so its text is the night paper ink. */
+.sg-flag[data-current="1"] .sg-flag__tab {
+  background: var(--a-lamp);
+  color: #2e283d;
+}
+
+.sg-flag__here {
+  font-family: var(--a-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--a-ink-75);
+}
+
+.sg-flag__title {
+  margin: 0;
+  color: var(--a-ink);
+  font-family: var(--a-display);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Resting flags in a lab's `all` mode: tab + title, the inka callout's weight. */
+.sg-flag[data-compact="1"] .sg-flag__stat,
+.sg-flag[data-compact="1"] .sg-flag__open {
+  display: none;
+}
+
+.sg-flag[data-compact="1"] .sg-flag__card {
+  gap: 3px;
+  padding: 6px 9px;
+  max-width: 160px;
+}
+
+.sg-flag[data-compact="1"] .sg-flag__title {
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.sg-flag__stat {
+  margin: 0;
+  color: var(--a-ink-75);
+  font-family: var(--a-mono);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A small .sg-btn: pill, UI font, sheet-on-sheet raised by the ink tint. */
+.sg-flag__open {
+  appearance: none;
+  flex: none;
+  border: 0;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--a-ink);
+  background: var(--a-ink-10);
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 100ms var(--a-ease-out-quad),
+    transform 120ms var(--a-ease-out-quint);
+}
+
+.sg-flag__open:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sg-flag__open:hover {
+    background: color-mix(in srgb, var(--a-ink) 18%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-flag__card {
+    transform: none !important;
+    transition: opacity var(--fl-t-in) linear;
+    @starting-style {
+      transform: none;
+    }
+  }
+
+  .sg-flags__leader {
+    transition: opacity var(--fl-t-in) linear;
+  }
+}

@@ -1,47 +1,14 @@
-/** Shared sky behind /earth (globe) and /knowledge. */
-
 /**
- * One revolution every 48 s: slow enough to read as a sky object, fast enough
- * that the turn is visible within a few seconds of looking at it.
+ * Constellation edge helpers shared by the Canvas2D `KnowledgeCanvas`, the
+ * WebGL twin (`lib/graph/twin/style.ts`) and the clusters lab: which edges
+ * form the backbone at a given zoom, how they are drawn, and the short
+ * mid-span accent for weak edges.
+ *
+ * (The sky constants that used to live here — `SPIRAL_*`, `spiralPlacement`,
+ * `fieldStarCount`, `skyClockMs`, `spiralSpinAngle` — went with the Canvas2D
+ * SpaceField and the corner spiral in S5-3; the stage sky is in
+ * `components/stage/layers/sky`.)
  */
-export const SPIRAL_SPIN_PERIOD_MS = 48_000;
-
-/** Rendered width in CSS px; the CSS slot clamps this against the viewport. */
-export const SPIRAL_SKY_SIZE_PX = 112;
-
-/** Final opacity per sky theme. Light sky also darkens the arms (see product.css). */
-export const SPIRAL_SKY_OPACITY = { dark: 0.68, light: 0.8 } as const;
-
-export function spiralPlacement(width: number, height: number): {
-  cx: number;
-  cy: number;
-  size: number;
-  fade: number;
-} {
-  return {
-    cx: width * 0.82,
-    cy: height * 0.16,
-    size: Math.min(SPIRAL_SKY_SIZE_PX, Math.min(width, height) * 0.14),
-    fade: SPIRAL_SKY_OPACITY.dark,
-  };
-}
-
-export function fieldStarCount(width: number, height: number): number {
-  return Math.round((width * height) / 3000);
-}
-
-/**
- * Shared sky clock. Pass an explicit timestamp in tests; live frames use
- * wall time so a remount is already mid-orbit, not diskSpin = 0.
- */
-export function skyClockMs(nowMs?: number): number {
-  return nowMs ?? Date.now();
-}
-
-export function spiralSpinAngle(nowMs: number, reduced = false): number {
-  if (reduced) return 0;
-  return (nowMs / SPIRAL_SPIN_PERIOD_MS) * Math.PI * 2;
-}
 
 export function edgeBackboneScore(input: {
   kind: "concept" | "resource";

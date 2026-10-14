@@ -1,0 +1,242 @@
+/* Galaxy clusters C lab chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.clusters-lab {
+  --cl-bg: #080716;
+  --cl-panel: rgba(16, 14, 34, 0.86);
+  --cl-ink: #efe9ff;
+  --cl-muted: #9b94b8;
+  --cl-line: rgba(198, 186, 236, 0.22);
+  --cl-accent: #ffd36a;
+  --cl-accent-ink: #1b1530;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--cl-bg);
+  color: var(--cl-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.lab-nav ~ .clusters-lab {
+  top: 30px;
+}
+
+.clusters-lab[data-theme="light"] {
+  --cl-bg: #cfd6e4;
+  --cl-panel: rgba(244, 241, 251, 0.88);
+  --cl-ink: #17151d;
+  --cl-muted: #5b5884;
+  --cl-line: rgba(23, 21, 29, 0.18);
+  --cl-accent: #d9a92e;
+  --cl-accent-ink: #17151d;
+}
+
+.clusters-lab[data-chrome="0"] .clusters-lab__chrome {
+  display: none;
+}
+
+.clusters-lab[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.clusters-lab__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--cl-line);
+  background: var(--cl-panel);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.clusters-lab__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+}
+
+.clusters-lab__tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--cl-line);
+  border-radius: 10px;
+}
+
+.clusters-lab__tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--cl-muted);
+  padding: 5px 11px;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clusters-lab__tab[aria-selected="true"] {
+  background: var(--cl-accent);
+  color: var(--cl-accent-ink);
+  font-weight: 600;
+}
+
+.clusters-lab__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cl-muted);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.clusters-lab__field input[type="text"] {
+  width: 7em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--cl-line);
+  background: transparent;
+  color: var(--cl-ink);
+  font: inherit;
+}
+
+.clusters-lab__field input[type="range"] {
+  width: 96px;
+  accent-color: var(--cl-accent);
+}
+
+.clusters-lab__btn {
+  appearance: none;
+  border: 1px solid var(--cl-line);
+  background: transparent;
+  color: var(--cl-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clusters-lab__btn:hover {
+  border-color: var(--cl-accent);
+}
+
+.clusters-lab__btn[aria-pressed="true"] {
+  background: var(--cl-accent);
+  color: var(--cl-accent-ink);
+}
+
+/* The stage: a transparent canvas over the CSS sky, like the product's .sg-stage. */
+.clusters-lab__stage {
+  position: relative;
+  min-height: 0;
+  background: var(--cl-bg);
+}
+
+.clusters-lab__stage canvas {
+  display: block;
+}
+
+/* `box=N`: the stage is a centred N x N box (the product's 112 px corner), the rest is the sky. The canvas
+   wrapper and the flag overlay share the one grid cell so the flags stay in the box's coordinates. */
+.clusters-lab[data-box="1"] .clusters-lab__stage {
+  display: grid;
+  place-items: center;
+}
+
+.clusters-lab[data-box="1"] .clusters-lab__stage > div:first-child,
+.clusters-lab[data-box="1"] .clusters-lab__stage > .sg-flags {
+  grid-area: 1 / 1;
+  width: var(--cl-box) !important;
+  height: var(--cl-box) !important;
+  position: relative !important;
+  inset: auto;
+}
+
+/* The course flags' chrome is the product's (components/stage/layers/galaxy/course-flags.css); the lab mirrors its
+   theme toggle onto `data-space-theme` so the design-system tokens follow. */
+
+.clusters-lab__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 300px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--cl-line);
+  border-radius: 12px;
+  background: var(--cl-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+}
+
+.clusters-lab__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+}
+
+.clusters-lab__side p {
+  margin: 0;
+  color: var(--cl-muted);
+  font-size: 12px;
+}
+
+.clusters-lab__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  margin: 0;
+}
+
+.clusters-lab__kv dt {
+  color: var(--cl-muted);
+}
+
+.clusters-lab__kv dd {
+  margin: 0;
+}
+
+.clusters-lab__courses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.clusters-lab__courses li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.clusters-lab__courses li[data-current="1"] {
+  border-color: var(--cl-accent);
+}
+
+.clusters-lab__courses li[data-hover="1"] {
+  background: var(--cl-line);
+}
+
+.clusters-lab__courses small {
+  color: var(--cl-muted);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 10.5px;
+}

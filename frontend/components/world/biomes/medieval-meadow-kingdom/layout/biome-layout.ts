@@ -112,6 +112,8 @@ export const MEADOW_PALETTE = {
   sky: '#cfe5dc',
   skyNight: '#17223a',
   meadow: '#9fcf75',
+  /** The flat plate at night (scene/Terrain.tsx); the outer world's tone-0 night green. */
+  meadowNight: '#405b48',
   meadowLight: '#b9dc83',
   meadowDark: '#6f8055',
   forest: '#4f7d4a',

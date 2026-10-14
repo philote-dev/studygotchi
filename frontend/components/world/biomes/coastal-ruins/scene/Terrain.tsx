@@ -1,8 +1,14 @@
-import { useMemo } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { COASTAL_PALETTE as P, type BiomeLayout, type SkylineProfile, seeded } from '../layout/biome-layout'
-import { fbm, sampleTerrain, seaStacks, type GroundMaterial } from '../layout/terrain'
-import { Surf } from '../render/materials'
+import { COASTAL_PALETTE as P, COASTAL_RUINS_LAYOUT, type BiomeLayout, type SkylineProfile, seeded } from '../layout/biome-layout'
+import { fbm, sampleTerrain, seaStacks, smoothstep, type GroundMaterial } from '../layout/terrain'
+import { OLIVE_SPOTS, STONE_SPOTS, WATCH_X, stoneSpotScale } from '../layout/dressing'
+import { buildEscarpmentGrid, escarpmentHeight, hillDots, type EscarpmentGrid, type HillDot } from '../layout/escarpment'
+import { Surf, toonRamp } from '../render/materials'
+import { useCollider } from '../../collision/ColliderRegistry'
+import { dressingColliders, escarpmentColliders, seaStackColliders } from '../collision/footprints'
+import { bindHazeSpace, patchHaze, type HazeUniforms } from '../edge/sea/horizon-haze'
+import { SEA_HORIZON } from '../edge/sea/sea-horizon'
 
 const SEGMENTS = 280
 
@@ -70,13 +76,36 @@ export function Terrain({ layout, night }: { layout: BiomeLayout; night: boolean
   )
 }
 
-export function Water({ layout, night }: { layout: BiomeLayout; night: boolean }) {
+/**
+ * The authored water disc. With the outer world on, `haze` installs the horizon haze on its
+ * material (identical to the plain fog within the land's view depths) and the disc runs out to
+ * the horizon radius under the haze wall; neither changes a pixel the overview sees.
+ */
+export function Water({ layout, night, haze = null }: { layout: BiomeLayout; night: boolean; haze?: HazeUniforms | null }) {
+  const colour = night ? P.waterNight : P.water
+  const hazed = useMemo(() => {
+    if (!haze) return null
+    const material = new THREE.MeshToonMaterial({ color: colour, gradientMap: toonRamp(), transparent: true, opacity: 0.78 })
+    patchHaze(material, haze, 1, true, 1 / layout.renderScale)
+    return material
+  }, [haze, colour, layout.renderScale])
+  useEffect(() => () => hazed?.dispose(), [hazed])
+  const bind = useMemo(() => (object: THREE.Object3D | null) => {
+    if (object && haze) bindHazeSpace(object, haze)
+  }, [haze])
   return (
     <group>
-      <mesh position={[0, layout.seaLevel, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[1800, 72]} />
-        <Surf color={night ? P.waterNight : P.water} transparent opacity={0.78} />
-      </mesh>
+      {hazed ? (
+        // Keyed apart from the plain disc: a swapped `material` prop on a reused mesh would reset to the default material.
+        <mesh key="hazed" ref={bind} position={[0, layout.seaLevel, 0]} rotation={[-Math.PI / 2, 0, 0]} material={hazed} receiveShadow>
+          <circleGeometry args={[SEA_HORIZON.horizonRadius, 144]} />
+        </mesh>
+      ) : (
+        <mesh key="plain" position={[0, layout.seaLevel, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <circleGeometry args={[1800, 72]} />
+          <Surf color={colour} transparent opacity={0.78} />
+        </mesh>
+      )}
       <mesh position={[0, layout.seaLevel + 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[520, 72]} />
         <meshBasicMaterial color={night ? '#1d5265' : '#3f97aa'} transparent opacity={0.12} depthWrite={false} />
@@ -176,14 +205,9 @@ function GrassTuft({ position, yaw }: { position: [number, number, number]; yaw:
 
 /** Authored negative-space dressing: broad material seams, sparse olives, scrub, and limestone. */
 export function CoastalDressing({ night }: { night: boolean }) {
-  const stoneSpots: Array<[number, number, number, number]> = [
-    [-74, 2.45, -66, 0.4], [-67, 2.45, -19, 1.2], [24, 2.45, -39, 2.1], [33, 2.45, -8, 0.7],
-    [-73, 2.45, 28, 1.8], [31, 2.45, 35, 0.2], [116, 2.45, -18, 1.1], [-53, 2.45, 54, 2.5],
-  ]
-  const oliveSpots: Array<[number, number, number, number]> = [
-    [-61, 2.45, -58, 0.85], [-58, 2.45, -48, 0.72], [17, 2.45, -61, 0.82], [27, 2.45, -53, 0.68],
-    [35, 2.45, -31, 0.74], [-72, 2.45, 8, 0.78], [-62, 2.45, 16, 0.65], [34, 2.45, 16, 0.7],
-  ]
+  const stoneSpots = STONE_SPOTS
+  const oliveSpots = OLIVE_SPOTS
+  useCollider(useMemo(() => dressingColliders(), []))
   const grass = useMemo(() => {
     const rng = seeded(4409)
     return Array.from({ length: 38 }, (_, index) => ({
@@ -199,7 +223,7 @@ export function CoastalDressing({ night }: { night: boolean }) {
       <GroundPatch color={night ? '#5e615e' : '#ded5b8'} points={[[10, -67], [38, -70], [44, -48], [25, -35], [5, -44]]} />
       <GroundPatch color={night ? '#555d5c' : '#d3c6a0'} points={[[-82, -5], [-52, -10], [-42, 14], [-61, 30], [-89, 20]]} />
       <GroundPatch color={night ? '#596260' : '#e0d7bc'} points={[[18, -14], [48, -8], [51, 17], [33, 30], [12, 18]]} />
-      {stoneSpots.map(([x, y, z, yaw], index) => <StoneCluster key={index} position={[x, y, z]} yaw={yaw} scale={0.75 + (index % 3) * 0.14} />)}
+      {stoneSpots.map(([x, y, z, yaw], index) => <StoneCluster key={index} position={[x, y, z]} yaw={yaw} scale={stoneSpotScale(index)} />)}
       {oliveSpots.map(([x, y, z, scale], index) => <OliveTree key={index} position={[x, y, z]} scale={scale} />)}
       {grass.map((item, index) => <GrassTuft key={index} position={item.position} yaw={item.yaw} />)}
       <mesh position={[-9, 2.5, -10]} rotation={[-Math.PI / 2, 0, 0.18]}>
@@ -210,63 +234,105 @@ export function CoastalDressing({ night }: { night: boolean }) {
   )
 }
 
-function shoulderData(profile: SkylineProfile) {
-  const rng = seeded(3401)
-  const all = Array.from({ length: 9 }, (_, index) => ({
-    x: -108 + index * 27 + (rng() - 0.5) * 4,
-    z: -95 - Math.abs(index - 4) * 1.2 + (rng() - 0.5) * 3,
-    width: 20 + rng() * 7,
-    depth: 11 + rng() * 4,
-    scale: 0.72 + rng() * 0.3,
-    offset: (rng() - 0.5) * 5,
-  }))
-  const order = [4, 1, 7, 2, 6, 3, 5, 0, 8]
-  return order.slice(0, profile.shoulders).map((index) => all[index])
+/** Escarpment colours: cream treads (two tones alternating), a darker retaining-wall riser, the back row paler and greyer. */
+const HILL_DAY = { tread: '#b4a67c', tread2: '#c6b890', riser: '#7d6c48', backTread: '#a7b1a4', backRiser: '#7f8c84', crest: P.ground }
+const HILL_NIGHT = { tread: '#5d5753', tread2: '#605a56', riser: '#433e3a', backTread: '#3d4c57', backRiser: '#303d47', crest: '#6a6762' }
+
+/** The terraced hill surface as one indexed mesh with smooth normals and per-vertex colours. */
+function hillGeometry(grid: EscarpmentGrid, night: boolean): THREE.BufferGeometry {
+  const { nx, nz, cell, minX, minZ } = grid
+  const positions = new Float32Array(nx * nz * 3)
+  const colors = new Float32Array(nx * nz * 3)
+  const palette = night ? HILL_NIGHT : HILL_DAY
+  const c = new THREE.Color()
+  const riserColour = new THREE.Color()
+  const crest = new THREE.Color(palette.crest)
+  for (let j = 0; j < nz; j++) {
+    for (let i = 0; i < nx; i++) {
+      const k = j * nx + i
+      const x = minX + i * cell
+      const z = minZ + j * cell
+      positions[k * 3] = x
+      // Lifted a hair so the strip never fights the plain it rests on where the hills fade out.
+      positions[k * 3 + 1] = grid.height[k] + 0.04
+      positions[k * 3 + 2] = z
+      const back = grid.back[k]
+      const even = grid.tread[k] % 2 === 0
+      // Front hills: two close tread tones with a clearly darker wall stripe; the back row one soft tone.
+      c.set(back > 0.5 ? palette.backTread : even ? palette.tread : palette.tread2)
+      c.lerp(riserColour.set(back > 0.5 ? palette.backRiser : palette.riser), grid.riser[k] * (back > 0.5 ? 0.6 : 1))
+      // The high crests pale toward the cap colour; a little grain like the plain.
+      c.lerp(crest, 0.35 * smoothstep(9, 16, grid.mass[k]) * (1 - grid.riser[k]))
+      c.offsetHSL(0, 0, fbm(x * 0.11, z * 0.11) * 0.03)
+      colors[k * 3] = c.r
+      colors[k * 3 + 1] = c.g
+      colors[k * 3 + 2] = c.b
+    }
+  }
+  const indices: number[] = []
+  for (let j = 0; j < nz - 1; j++) {
+    for (let i = 0; i < nx - 1; i++) {
+      const a = j * nx + i
+      const b = a + 1
+      const d = a + nx
+      const e = d + 1
+      // Skip cells that lie flat on the plain (no hill under any corner).
+      if (grid.mass[a] + grid.mass[b] + grid.mass[d] + grid.mass[e] < 0.05) continue
+      if ((i + j) % 2 === 0) indices.push(a, d, b, b, d, e)
+      else indices.push(a, d, e, a, e, b)
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+  geometry.setIndex(indices)
+  geometry.computeVertexNormals()
+  geometry.computeBoundingSphere()
+  return geometry
 }
 
-function CliffShoulder({
-  x,
-  z,
-  width,
-  depth,
-  height,
-  offset,
-  color,
-}: {
-  x: number
-  z: number
-  width: number
-  depth: number
-  height: number
-  offset: number
-  color: string
-}) {
+/** Scrub and olive dots on the treads (one instanced mesh per kind). */
+function HillDots({ dots, night }: { dots: HillDot[]; night: boolean }) {
+  const scrub = useRef<THREE.InstancedMesh>(null)
+  const olive = useRef<THREE.InstancedMesh>(null)
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const counts = [dots.filter((d) => d.kind === 0).length, dots.filter((d) => d.kind === 1).length]
+  useLayoutEffect(() => {
+    for (const [kind, ref] of [[0, scrub], [1, olive]] as const) {
+      const mesh = ref.current
+      if (!mesh) continue
+      let i = 0
+      for (const d of dots) {
+        if (d.kind !== kind) continue
+        dummy.position.set(d.x, d.y + (kind === 1 ? 1.1 * d.scale : 0.25 * d.scale), d.z)
+        dummy.rotation.set(0, d.x * 0.7, 0)
+        dummy.scale.set(d.scale * (kind === 1 ? 1.3 : 1.1), d.scale * (kind === 1 ? 0.9 : 0.55), d.scale)
+        dummy.updateMatrix()
+        mesh.setMatrixAt(i++, dummy.matrix)
+      }
+      mesh.count = i
+      mesh.instanceMatrix.needsUpdate = true
+      mesh.computeBoundingSphere()
+    }
+  }, [dots, dummy])
   return (
-    <group position={[x, 2.4, z]}>
-      <mesh position={[0, height * 0.24, 0]} castShadow receiveShadow>
-        <boxGeometry args={[width, height * 0.48, depth]} />
-        <Surf color={color} />
-      </mesh>
-      <mesh position={[offset * 0.45, height * 0.58, -1.2]} castShadow receiveShadow>
-        <boxGeometry args={[width * 0.72, height * 0.36, depth * 0.78]} />
-        <Surf color="#c3b58f" />
-      </mesh>
-      <mesh position={[offset, height * 0.83, -2]} castShadow receiveShadow>
-        <boxGeometry args={[width * 0.42, height * 0.24, depth * 0.55]} />
-        <Surf color={P.ground} />
-      </mesh>
-      <mesh position={[offset - width * 0.13, height * 0.78, depth * 0.28]} rotation={[0, 0.08, 0]}>
-        <boxGeometry args={[width * 0.18, 0.55, 0.8]} />
-        <Surf color={P.ruinDark} />
-      </mesh>
-    </group>
+    <>
+      <instancedMesh ref={scrub} args={[undefined, undefined, Math.max(1, counts[0])]} frustumCulled={false}>
+        <dodecahedronGeometry args={[1, 0]} />
+        <Surf color={night ? '#4d5a50' : '#8e9470'} />
+      </instancedMesh>
+      <instancedMesh ref={olive} args={[undefined, undefined, Math.max(1, counts[1])]} frustumCulled={false}>
+        <dodecahedronGeometry args={[1, 0]} />
+        <Surf color={night ? '#3f4c43' : P.olive} />
+      </instancedMesh>
+    </>
   )
 }
 
-function WatchVillage({ x, z, index, night }: { x: number; z: number; index: number; night: boolean }) {
+function WatchVillage({ x, y, z, index, night }: { x: number; y: number; z: number; index: number; night: boolean }) {
   const height = 4.6 + (index % 2) * 1.2
   return (
-    <group position={[x, 18.4, z]} rotation={[0, (index - 1.5) * 0.12, 0]}>
+    <group position={[x, y, z]} rotation={[0, (index - 1.5) * 0.12, 0]}>
       <mesh position={[0, height / 2, 0]} castShadow>
         <boxGeometry args={[6.8, height, 5.4]} />
         <Surf color={night ? '#89847d' : P.plaster} />
@@ -287,61 +353,35 @@ function WatchVillage({ x, z, index, night }: { x: number; z: number; index: num
   )
 }
 
-export function Escarpment({ profile, night }: { profile: SkylineProfile; night: boolean }) {
-  const shoulders = useMemo(() => shoulderData(profile), [profile])
-  const back = useMemo(() => {
-    const rng = seeded(910)
-    return Array.from({ length: 10 }, (_, index) => ({
-      x: -135 + index * 30,
-      z: -122 + (rng() - 0.5) * 6,
-      height: 7 + rng() * 3,
-      width: 26 + rng() * 7,
-      depth: 10 + rng() * 4,
-    }))
-  }, [])
+/**
+ * The north escarpment: terraced limestone hills on a 2.5 m lattice (see layout/escarpment.ts),
+ * grown by the skyline profile exactly where the box comb stood, with scrub and olive dots on the
+ * treads and the four watch villages sitting on the crests at 100 %.
+ */
+export function Escarpment({ profile, night, layout = COASTAL_RUINS_LAYOUT }: { profile: SkylineProfile; night: boolean; layout?: BiomeLayout }) {
+  const grid = useMemo(() => buildEscarpmentGrid(layout, profile), [layout, profile])
+  const geometry = useMemo(() => hillGeometry(grid, night), [grid, night])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  const dots = useMemo(() => hillDots(layout, profile), [layout, profile])
+  useCollider(useMemo(() => escarpmentColliders(profile), [profile]))
   return (
     <group>
-      {Array.from({ length: 12 }, (_, index) => {
-        const x = -137.5 + index * 25
-        const height = 5.5 + (index % 4) * 0.55
-        return (
-          <mesh key={`foot-${index}`} position={[x, 2.4 + height / 2, -89 - (index % 3) * 1.2]} rotation={[0, (index % 2 ? 1 : -1) * 0.035, 0]} castShadow receiveShadow>
-            <boxGeometry args={[27, height, 15 + (index % 2) * 2]} />
-            <Surf color={night ? '#5d5753' : index % 3 === 1 ? '#b9a982' : P.horizon} />
-          </mesh>
-        )
+      <mesh geometry={geometry} castShadow receiveShadow>
+        <Surf color="#ffffff" vertexColors />
+      </mesh>
+      <HillDots dots={dots} night={night} />
+      {Array.from({ length: profile.slitMasses }, (_, index) => {
+        const x = WATCH_X[index]
+        const z = -94 - (index % 2) * 5
+        return <WatchVillage key={`watch-${index}`} x={x} y={escarpmentHeight(layout, x, z, profile) + 0.2} z={z} index={index} night={night} />
       })}
-      {shoulders.map((shoulder, index) => (
-        <CliffShoulder
-          key={index}
-          x={shoulder.x}
-          z={shoulder.z}
-          width={shoulder.width}
-          depth={shoulder.depth}
-          height={profile.height * shoulder.scale}
-          offset={shoulder.offset}
-          color={night ? '#66594e' : index % 3 === 1 ? '#b5a47c' : P.horizon}
-        />
-      ))}
-      {back.map((shoulder, index) => (
-        <mesh
-          key={`back-${index}`}
-          position={[shoulder.x, shoulder.height / 2, shoulder.z]}
-          rotation={[0, (index % 2 ? 1 : -1) * 0.06, 0]}
-        >
-          <boxGeometry args={[shoulder.width, shoulder.height, shoulder.depth]} />
-          <Surf color={night ? '#394954' : P.horizonBack} transparent opacity={profile.secondRowOpacity} />
-        </mesh>
-      ))}
-      {Array.from({ length: profile.slitMasses }, (_, index) => (
-        <WatchVillage key={`watch-${index}`} x={[-91, -24, 48, 108][index]} z={-94 - (index % 2) * 5} index={index} night={night} />
-      ))}
     </group>
   )
 }
 
 export function HorizonStacks({ night }: { night: boolean }) {
   const stacks = useMemo(seaStacks, [])
+  useCollider(useMemo(() => seaStackColliders(), []))
   return (
     <group>
       {stacks.map((stack, index) => (

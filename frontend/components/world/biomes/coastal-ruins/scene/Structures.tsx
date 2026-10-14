@@ -19,6 +19,8 @@ import {
 } from '../layout/terrain'
 import { Surf } from '../render/materials'
 import { Building, Prop } from './Props'
+import { useCollider } from '../../collision/ColliderRegistry'
+import { districtColliders, dockColliders } from '../collision/footprints'
 
 export const ruin = { districtId: null as string | null, amount: 0 }
 
@@ -59,6 +61,8 @@ function PathRibbon({ path }: { path: LocalPath }) {
 
 export function Paths({ layout, seed }: { layout: BiomeLayout; seed: number }) {
   const paths = useMemo(() => localPaths(layout, seed), [layout, seed])
+  // Lanes and stairs are walkable; the raised quay deck is a wall for the residents.
+  useCollider(useMemo(() => dockColliders(layout, seed), [layout, seed]))
   return <group>{paths.map((path) => <PathRibbon key={path.districtId} path={path} />)}</group>
 }
 
@@ -405,6 +409,8 @@ export function Districts({
   const slots = useMemo(() => new Map(layout.districts.map((district) => [district.id, districtSlots(layout, district, seed)])), [layout, seed])
   const placements = useMemo(() => propPlacements(layout, seed), [layout, seed])
   const visible = visibleProps(placements, layout, progress)
+  // Anchors, visible buildings and standing props, from the same placement data as the meshes.
+  useCollider(useMemo(() => districtColliders(layout, seed, progress), [layout, seed, progress]))
   return (
     <group>
       {layout.districts.map((district) => {

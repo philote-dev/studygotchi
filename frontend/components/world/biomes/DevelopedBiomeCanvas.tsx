@@ -3,10 +3,14 @@
 import dynamic from "next/dynamic";
 import { Canvas } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
-import { useEffect, useState } from "react";
-import type { IceDemoState } from "@/lib/world/demo-theater";
+import { useContext, useEffect, useState } from "react";
+import { HopContext } from "@/components/stage/hop/HopProvider";
+import { stageHostsBiome } from "@/components/stage/layers/world/world-layer-model";
+import { useStageCover } from "@/components/stage/StageSlots";
+import type { StageDirector } from "@/lib/stage/director";
 import type { CanvasWorld } from "@/lib/world/types";
 import { BiomeConceptLayer } from "./BiomeConceptLayer";
+import type { CatastropheEvent } from "./ice-town/scene/catastrophe-sequence";
 import type { LocalBiomeId } from "./types";
 
 const FrontierMount = dynamic(() => import("./frontier-town/Mount").then((mod) => mod.FrontierMount), { ssr: false });
@@ -14,24 +18,38 @@ const CoastalMount = dynamic(() => import("./coastal-ruins/Mount").then((mod) =>
 const JungleMount = dynamic(() => import("./jungle-forest-village/Mount").then((mod) => mod.JungleMount), { ssr: false });
 const MeadowMount = dynamic(() => import("./medieval-meadow-kingdom/Mount").then((mod) => mod.MeadowMount), { ssr: false });
 const NordicMount = dynamic(() => import("./nordic-volcanic-highlands/Mount").then((mod) => mod.NordicMount), { ssr: false });
-const IceTownMount = dynamic(() => import("./ice-town/Mount").then((mod) => mod.IceTownMount), { ssr: false });
-const EdgeLabPanel = dynamic(() => import("./ice-town/edge/EdgeLabPanel").then((mod) => mod.EdgeLabPanel), { ssr: false });
+// The stage-hosted land (ice-town, S4-1; permanent since gate 4): loads the ice-town scene with it.
+const DevelopedBiomeStageHost = dynamic(() => import("./DevelopedBiomeStageHost").then((mod) => mod.DevelopedBiomeStageHost), { ssr: false });
 
-/** `?edge=` on the ice land opens the edge lab (free camera, technique switcher, fixed poses). */
-function useEdgeLabRequested(visual: string): boolean {
-  const [requested, setRequested] = useState(false);
+/**
+ * A land with its own canvas (`OWN_CANVAS_BIOMES`) stands in for the stage's
+ * world layer toward the director: it is the world rung while mounted (a
+ * teleport on mount and back to the planet on unmount at rest, as
+ * `WorldLayer` does) and a ready world layer at once (the cloud dive's hold
+ * waits for `readiness.world`; this canvas has nothing to compile under the
+ * deck), and it covers the stage so the stage pauses while the director
+ * rests behind it. Outside the product shell (a shared-world visit, a design
+ * page) there is no director and nothing to do.
+ */
+function useOwnCanvasLand(director: StageDirector | null): void {
+  useStageCover(director !== null);
   useEffect(() => {
-    if (visual !== "ice-town") return;
-    setRequested(new URLSearchParams(window.location.search).has("edge"));
-  }, [visual]);
-  return requested;
+    if (!director) return;
+    director.readiness.set("world", true);
+    if (!director.sample().moving) director.teleport("world");
+    return () => {
+      director.readiness.set("world", false);
+      const s = director.sample();
+      if (!s.moving && s.rung === "world") director.teleport("planet");
+    };
+  }, [director]);
 }
 
 export function DevelopedBiomeCanvas({
   visual,
   progress,
   focusDistrict,
-  iceDemo,
+  result,
   onFocusDistrict,
   world = null,
   selectedId = null,
@@ -43,7 +61,8 @@ export function DevelopedBiomeCanvas({
   visual: Exclude<LocalBiomeId, "ice-golden" | "island">;
   progress: number;
   focusDistrict?: string | null;
-  iceDemo?: IceDemoState;
+  /** The latest result that landed on the course (`landOutcome`); the ice town storms on `fail` and heals on `pass`. */
+  result?: CatastropheEvent;
   onFocusDistrict?: (id: string | null) => void;
   world?: CanvasWorld | null;
   selectedId?: string | null;
@@ -52,9 +71,53 @@ export function DevelopedBiomeCanvas({
   onSelect?(conceptId: string | null): void;
   onHover?(conceptId: string | null): void;
 }) {
+  // The ice land renders as a layer of the persistent stage and no canvas is created here
+  // (`STAGE_WORLD_BIOMES`); every other developed biome keeps its own canvas.
+  if (stageHostsBiome(visual)) {
+    return (
+      <DevelopedBiomeStageHost
+        visual={visual}
+        progress={progress}
+        focusDistrict={focusDistrict}
+        result={result}
+        onFocusDistrict={onFocusDistrict}
+        world={world}
+        selectedId={selectedId}
+        hoveredId={hoveredId}
+        changedIds={changedIds}
+        onSelect={onSelect}
+        onHover={onHover}
+      />
+    );
+  }
+  return (
+    <OwnCanvasLand
+      visual={visual}
+      progress={progress}
+      world={world}
+      selectedId={selectedId}
+      hoveredId={hoveredId}
+      changedIds={changedIds}
+      onSelect={onSelect}
+      onHover={onHover}
+    />
+  );
+}
+
+function OwnCanvasLand({
+  visual,
+  progress,
+  world,
+  selectedId,
+  hoveredId,
+  changedIds,
+  onSelect,
+  onHover,
+}: Required<Pick<Parameters<typeof DevelopedBiomeCanvas>[0], "visual" | "progress" | "world" | "selectedId" | "hoveredId" | "onSelect" | "onHover">> &
+  Pick<Parameters<typeof DevelopedBiomeCanvas>[0], "changedIds">) {
   const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
   const [frameloop, setFrameloop] = useState<"always" | "demand">("always");
-  const edgeLab = useEdgeLabRequested(visual);
+  useOwnCanvasLand(useContext(HopContext)?.director ?? null);
 
   useEffect(() => {
     const onVis = () => setFrameloop(document.hidden ? "demand" : "always");
@@ -88,14 +151,6 @@ export function DevelopedBiomeCanvas({
         {visual === "jungle-forest-village" ? <JungleMount progress={progress} /> : null}
         {visual === "medieval-meadow-kingdom" ? <MeadowMount progress={progress} /> : null}
         {visual === "nordic-volcanic-highlands" ? <NordicMount progress={progress} /> : null}
-        {visual === "ice-town" ? (
-          <IceTownMount
-            progress={progress}
-            focusDistrict={focusDistrict}
-            iceDemo={iceDemo}
-            onFocusDistrict={onFocusDistrict}
-          />
-        ) : null}
         <BiomeConceptLayer
           visual={visual}
           world={world}
@@ -106,7 +161,6 @@ export function DevelopedBiomeCanvas({
           onHover={onHover}
         />
       </Canvas>
-      {edgeLab ? <EdgeLabPanel /> : null}
     </div>
   );
 }

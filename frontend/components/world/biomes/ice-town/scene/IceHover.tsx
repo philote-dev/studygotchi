@@ -16,11 +16,15 @@ import { sampleTerrain } from "../layout/terrain";
 import { conceptsForIceDistrict } from "@/lib/world/ice-district-concepts";
 import { galaxyHrefForConcept } from "@/lib/world/earth-nav";
 import { useRouter } from "next/navigation";
+import { useBiomeStageHost } from "../../stage-host";
 
 function HoverCard({ name, concepts }: { name: string; concepts: readonly string[] }) {
   const router = useRouter();
+  // S4-1: through the stage, the card portals into the page-side host (the stage canvas's parent
+  // is behind the page and takes no pointer events); on the land's own canvas drei's default.
+  const stageHost = useBiomeStageHost();
   return (
-    <Html position={[0, 0, 0]} center style={{ pointerEvents: "auto" }} zIndexRange={[40, 20]}>
+    <Html position={[0, 0, 0]} center style={{ pointerEvents: "auto" }} zIndexRange={[40, 20]} portal={stageHost?.ref}>
       <div
         className="world-marker ice-hover-tab"
         data-concepts={concepts.join("|")}
@@ -136,10 +140,15 @@ function IcePointer({
 }) {
   const gl = useThree((three) => three.gl);
   const camera = useThree((three) => three.camera);
+  const stageHost = useBiomeStageHost()?.element ?? null;
   const down = useRef<{ x: number; y: number; id: string | null } | null>(null);
 
   useEffect(() => {
-    const element = (gl.domElement.closest(".biome-land-stage") ??
+    // S4-1: through the stage the land's input element is the page-side host (or its land stage
+    // wrapper, which carries the `data-ice-*` attributes the harness reads); otherwise the canvas's.
+    const element = (stageHost?.closest(".biome-land-stage") ??
+      stageHost ??
+      gl.domElement.closest(".biome-land-stage") ??
       gl.domElement.parentElement ??
       gl.domElement) as HTMLElement;
     const ndc = new THREE.Vector2();
@@ -193,7 +202,7 @@ function IcePointer({
       element.removeEventListener("pointerleave", leave);
       element.style.cursor = "";
     };
-  }, [camera, gl.domElement, layout, onHover, onPick]);
+  }, [camera, gl.domElement, layout, onHover, onPick, stageHost]);
 
   return null;
 }

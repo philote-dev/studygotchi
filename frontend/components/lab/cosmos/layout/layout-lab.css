@@ -1,0 +1,316 @@
+/* Cosmos layout lab chrome. Self-contained: nothing here touches product.css or globals.css. */
+
+.cosmos-lab {
+  --lab-bg: #0d0b1c;
+  --lab-panel: rgba(16, 14, 34, 0.86);
+  --lab-ink: #efe9ff;
+  --lab-muted: #9b94b8;
+  --lab-line: rgba(198, 186, 236, 0.22);
+  --lab-accent: #ffd36a;
+  --lab-accent-ink: #1b1530;
+  --lab-label: #fff6df;
+  --lab-label-halo: rgba(8, 7, 22, 0.82);
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--lab-bg);
+  color: var(--lab-ink);
+  font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.cosmos-lab[data-theme="light"] {
+  --lab-bg: #cfd6e4;
+  --lab-panel: rgba(244, 241, 251, 0.88);
+  --lab-ink: #17151d;
+  --lab-muted: #5b5884;
+  --lab-line: rgba(23, 21, 29, 0.18);
+  --lab-accent: #d9a92e;
+  --lab-accent-ink: #17151d;
+  --lab-label: #17151d;
+  --lab-label-halo: rgba(244, 241, 251, 0.9);
+}
+
+.cosmos-lab[data-chrome="0"] .cosmos-lab__chrome {
+  display: none;
+}
+
+.cosmos-lab[data-chrome="0"] {
+  grid-template-rows: 1fr;
+}
+
+.cosmos-lab__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--lab-line);
+  background: var(--lab-panel);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.cosmos-lab__title {
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__seg {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+}
+
+.cosmos-lab__seg button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--lab-muted);
+  padding: 5px 11px;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cosmos-lab__seg button[aria-pressed="true"] {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+  font-weight: 600;
+}
+
+.cosmos-lab__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__field input[type="text"] {
+  width: 9em;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--lab-line);
+  background: transparent;
+  color: var(--lab-ink);
+  font: inherit;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+}
+
+.cosmos-lab__field input[type="range"] {
+  width: 90px;
+  accent-color: var(--lab-accent);
+}
+
+.cosmos-lab__btn {
+  appearance: none;
+  border: 1px solid var(--lab-line);
+  background: transparent;
+  color: var(--lab-ink);
+  padding: 5px 11px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cosmos-lab__btn:hover {
+  border-color: var(--lab-accent);
+}
+
+.cosmos-lab__btn[aria-pressed="true"] {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+}
+
+.cosmos-lab__stage {
+  position: relative;
+  min-height: 0;
+}
+
+.cosmos-lab__stage canvas {
+  display: block;
+  image-rendering: pixelated;
+  cursor: crosshair;
+}
+
+.cosmos-lab__side {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 290px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--lab-line);
+  border-radius: 12px;
+  background: var(--lab-panel);
+  backdrop-filter: blur(6px);
+  display: grid;
+  gap: 10px;
+  z-index: 40;
+}
+
+.cosmos-lab__side h2 {
+  margin: 0;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__side p {
+  margin: 0;
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  margin: 0;
+}
+
+.cosmos-lab__kv dt {
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__kv dd {
+  margin: 0;
+}
+
+/* Breadcrumb ladder: WORLD -> PLANET -> COURSE CLUSTER -> GALAXY, read right to left here. */
+.cosmos-lab__ladder {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  background: var(--lab-panel);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  z-index: 40;
+}
+
+.cosmos-lab__ladder span {
+  color: var(--lab-muted);
+}
+
+.cosmos-lab__ladder span[data-active="true"] {
+  color: var(--lab-accent-ink);
+  background: var(--lab-accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.cosmos-lab__ladder i {
+  color: var(--lab-muted);
+  font-style: normal;
+}
+
+.cosmos-lab__legend {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.cosmos-lab__legend div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cosmos-lab__legend b {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--lab-line);
+}
+
+.cosmos-lab__swatches {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.cosmos-lab__swatches i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--lab-line);
+}
+
+/* In-scene labels (drei Html). Dark halo so they sit on any backdrop; never cross the arm. */
+.cosmos-lab__html {
+  pointer-events: none;
+}
+
+.cosmos-lab__label {
+  display: inline-grid;
+  gap: 1px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--lab-label-halo);
+  color: var(--lab-label);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 11px;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.cosmos-lab__label strong {
+  font-weight: 600;
+}
+
+.cosmos-lab__label span {
+  color: var(--lab-muted);
+  font-size: 10px;
+}
+
+.cosmos-lab__label--current {
+  border-color: var(--lab-accent);
+}
+
+.cosmos-lab__label--current strong {
+  color: var(--lab-accent);
+}
+
+.cosmos-lab__label--selected {
+  border-color: var(--lab-accent);
+}
+
+.cosmos-lab__guide-label {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--lab-label-halo);
+  color: var(--lab-muted);
+  font-family: var(--font-pixel, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.cosmos-lab__guide-label--focal {
+  color: var(--lab-accent);
+}

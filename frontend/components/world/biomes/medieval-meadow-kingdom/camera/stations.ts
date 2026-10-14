@@ -39,6 +39,66 @@ export const CAMERA_LIMITS = {
   maxDolly: 1.65,
 } as const
 
+/**
+ * Free roam (edge rollout, Philote 2026-10-10): the camera orbits all the way round, drops to a
+ * 12° horizon look and pulls back far enough to see the whole plate, while the look-at stays on
+ * the land and the camera inside a ±460 m box. The stations above keep the diorama values; only
+ * the roam limits widened.
+ */
+export interface FreeCameraLimits {
+  /** Half yaw range in degrees; 180 means unlimited orbit. */
+  yawDeg: number
+  pitchMinDeg: number
+  pitchMaxDeg: number
+  minDistance: number
+  maxDistance: number
+}
+
+export const MEADOW_FREE_CAMERA_LIMITS: FreeCameraLimits = {
+  yawDeg: 180,
+  pitchMinDeg: 12,
+  pitchMaxDeg: 64,
+  minDistance: 40,
+  maxDistance: 380,
+}
+
+export interface Box {
+  min: [number, number, number]
+  max: [number, number, number]
+}
+
+/** CameraControls.setBoundary clamps the look-at, not the camera. This box is the authored land. */
+export const MEADOW_LOOK_BOX: Box = {
+  min: [-140, -1, -135],
+  max: [140, 40, 135],
+}
+
+/** Where the camera may sit: all round the land, low enough for a horizon shot, never under the plate. */
+export const MEADOW_CAMERA_BOX: Box = {
+  min: [-460, 10, -460],
+  max: [460, 300, 460],
+}
+
+function clampToBox(box: Box, x: number, y: number, z: number): [number, number, number] {
+  return [
+    Math.min(box.max[0], Math.max(box.min[0], x)),
+    Math.min(box.max[1], Math.max(box.min[1], y)),
+    Math.min(box.max[2], Math.max(box.min[2], z)),
+  ]
+}
+
+export function clampLookTarget(x: number, y: number, z: number, box: Box = MEADOW_LOOK_BOX): [number, number, number] {
+  return clampToBox(box, x, y, z)
+}
+
+export function clampCameraPosition(x: number, y: number, z: number, box: Box = MEADOW_CAMERA_BOX): [number, number, number] {
+  return clampToBox(box, x, y, z)
+}
+
+export function insideBox(box: Box, x: number, y: number, z: number): boolean {
+  return x >= box.min[0] && x <= box.max[0] && y >= box.min[1] && y <= box.max[1] && z >= box.min[2] && z <= box.max[2]
+}
+
 export function clampDioramaYaw(yawDeg: number): number {
   return Math.min(CAMERA_LIMITS.yawDeg, Math.max(-CAMERA_LIMITS.yawDeg, yawDeg))
 }
@@ -115,6 +175,11 @@ export function poseFor(
     ],
     target,
   }
+}
+
+/** The product overview as CameraRig frames the land (centre on the origin, 184 m chord) at a given aspect. */
+export function overviewPose(aspect: number, chord = 184): Pose {
+  return poseFor(STATIONS.overview, defaultOverride(STATIONS.overview), { center: [0, 0, 0], chord }, aspect)
 }
 
 /** Dive start: high above the arrival pose, so the flight passes the cloud layer (h ≈ 14 m). */

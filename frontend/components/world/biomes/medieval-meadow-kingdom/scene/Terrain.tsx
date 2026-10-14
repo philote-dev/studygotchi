@@ -7,7 +7,7 @@ import {
   type GreenCrownProfile,
   type Point2,
 } from '../layout/biome-layout'
-import { ambientPlacements, localLaneSegments, treePlacements } from '../layout/terrain'
+import { ambientPlacements, localLaneSegments, plateRect, treePlacements } from '../layout/terrain'
 import { Surf } from '../render/materials'
 import { FlowerPatch, RoundTree } from './Props'
 
@@ -36,17 +36,20 @@ export function ribbonGeometry(points: Point2[], width: number, y: number): THRE
   return geometry
 }
 
+/** The flat plate's colour by grade; the outer world's seam faces use the same two so the join has one voice. */
+export const PLATE_COLOUR = { day: P.meadow, night: P.meadowNight } as const
+
 export function Terrain({ layout, night }: { layout: GeneratedKingdom; night: boolean }) {
-  const width = layout.worldSize[0] + 320
-  const back = layout.diorama.backZ - 180
-  const front = layout.diorama.foregroundZ + 180
-  const depth = front - back
-  const centerZ = (front + back) / 2
+  // The plate is the flat meadow box the outer world (edge/) continues from; its rect is shared.
+  const plate = plateRect(layout)
+  const width = plate.maxX - plate.minX
+  const depth = plate.maxZ - plate.minZ
+  const centerZ = (plate.maxZ + plate.minZ) / 2
   return (
     <group>
       <mesh position={[0, -0.32, centerZ]} receiveShadow>
         <boxGeometry args={[width, 0.64, depth]} />
-        <Surf color={night ? '#405b48' : P.meadow} />
+        <Surf color={night ? PLATE_COLOUR.night : PLATE_COLOUR.day} />
       </mesh>
       <mesh position={[0, -0.68, centerZ]} receiveShadow>
         <boxGeometry args={[width + 4, 0.18, depth + 4]} />

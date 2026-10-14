@@ -1,7 +1,7 @@
 /**
  * What the deployed site serves under /assets. The repo's assets tree is ~410 MB; the app
  * loads about 80 MB of it. This is the allow-list the build script copies, and the test in
- * lib/public-assets-manifest.test.ts checks it against the audio catalog, roster, and spiral.
+ * lib/public-assets-manifest.test.ts checks it against the audio catalog and the roster.
  *
  * Plain .mjs (no TypeScript) so `node scripts/dereference-public-assets.mjs` runs anywhere.
  */
@@ -28,7 +28,6 @@ const KEEP_DIRS = [
   "creatures/cc0/kenney-cube-pets",
   "creatures/cc0/polypizza",
   "creatures/tripo-cleaned/textured",
-  "space",
 ];
 
 /** Single files that ship. */

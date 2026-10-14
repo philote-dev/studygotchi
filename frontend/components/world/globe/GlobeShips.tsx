@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type ReactNode } from "react";
+import { memo, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { containerShipHull } from "@/lib/world/container-ship";
@@ -370,7 +370,8 @@ function MovingShip({
   );
 }
 
-export function GlobeShips({ reducedMotion }: { reducedMotion: boolean }) {
+/** The ships (memoised: `reducedMotion` is all they read; the globe re-renders on every settle and page swap). */
+export const GlobeShips = memo(function GlobeShips({ reducedMotion }: { reducedMotion: boolean }) {
   const anchors = useMemo(
     () => [
       new THREE.Vector3(0.62, 0.18, 0.76).normalize(),
@@ -393,4 +394,4 @@ export function GlobeShips({ reducedMotion }: { reducedMotion: boolean }) {
       </MovingShip>
     </group>
   );
-}
+});

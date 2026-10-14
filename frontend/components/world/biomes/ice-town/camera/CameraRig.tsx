@@ -7,6 +7,7 @@ import { sampleTerrain } from '../layout/terrain'
 import { residentPositions } from '../scene/Residents'
 import { edgePose, edgePosePosition, type EdgePoseId } from '../edge/poses'
 import { EDGE_LAB_EVENT } from '../edge/use-edge-lab'
+import { useBiomeStageHost } from '../../stage-host'
 import {
   ICE_CAMERA_BOX,
   ICE_CAMERA_LIMITS,
@@ -39,6 +40,24 @@ interface CameraRigProps {
 }
 
 const DIVE_SECONDS = 1.6
+
+/**
+ * The dive path read backwards (S4-2, the merged rise): from `from` (the pose
+ * the land is seen from) up to its dive pose (`divePose`: 5.2x the height,
+ * 1.35x the ground offset, same target), on the dive's own ease. `t` 0 is the
+ * ground pose, 1 the top; the stage's world layer feeds it from the director's
+ * altitude, so the climb is the dive the land arrived by, in reverse.
+ */
+export function risePose(from: Pose, t: number): Pose {
+  const top = divePose(from)
+  const k = easeInOutCubic(Math.min(1, Math.max(0, t)))
+  const lerp = (a: readonly [number, number, number], b: readonly [number, number, number]): [number, number, number] => [
+    a[0] + (b[0] - a[0]) * k,
+    a[1] + (b[1] - a[1]) * k,
+    a[2] + (b[2] - a[2]) * k,
+  ]
+  return { position: lerp(from.position, top.position), target: from.target }
+}
 
 /** What the station looks at: the district shape (chord as seen from the azimuth), a resident, or the land. */
 export function stationSubject(layout: BiomeLayout, station: StationId, override: CameraOverride, focusDistrict: string | null) {
@@ -128,6 +147,10 @@ export function BoundedIceCamera({
   const controls = useRef<CameraControls>(null)
   const size = useThree((state) => state.size)
   const camera = useThree((state) => state.camera)
+  // S4-1: under the stage the camera is the world layer's portal camera (no `makeDefault` here,
+  // which would swap the camera the composer draws with) and the drag / wheel controls listen on
+  // the page-side host, since the stage canvas takes no pointer events.
+  const stageHost = useBiomeStageHost()
   const hasPose = useRef(false)
   const lastFocus = useRef<string | null>(null)
   const userTookOver = useRef(false)
@@ -187,6 +210,15 @@ export function BoundedIceCamera({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera, focusDistrict, layout, size.height, size.width])
 
+  // Under the stage the camera never swaps (no `makeDefault`), so the effect above runs once, before
+  // the controls exist; on the land's own canvas the default-camera swap re-ran it with the controls
+  // mounted. Seat the controls on the station pose once they are there, or they would orbit the origin.
+  useLayoutEffect(() => {
+    if (!stageHost || !controlsOn || !controls.current) return
+    applyPose(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageHost, controlsOn])
+
   // Edge lab: a fixed comparison pose overrides the station pose and flags readiness for captures.
   useLayoutEffect(() => {
     if (!free) return
@@ -242,12 +274,13 @@ export function BoundedIceCamera({
 
   return (
     <>
-      <PerspectiveCamera makeDefault fov={STATIONS.overview.fov} near={0.5} far={3000} position={[18, 78, 188]} />
+      {stageHost ? null : <PerspectiveCamera makeDefault fov={STATIONS.overview.fov} near={0.5} far={3000} position={[18, 78, 188]} />}
       {controlsOn ? (
       <CameraControls
         key={free ? 'free' : 'product'}
         ref={controls}
         makeDefault
+        domElement={stageHost?.element}
         minDistance={limits.minDistance}
         maxDistance={limits.maxDistance}
         minPolarAngle={minPolar}
@@ -271,6 +304,8 @@ export function CameraRig({ layout, station, override, focusDistrict, diving, on
   const aspect = useThree((s) => s.size.width / s.size.height)
   // drei rebuilds CameraControls when the default camera changes; re-apply the pose then.
   const camera = useThree((s) => s.camera)
+  // S4-1: under the stage, the portal camera and the page-side host (see BoundedIceCamera).
+  const stageHost = useBiomeStageHost()
   const dive = useRef<{ from: Pose; to: Pose; t: number } | null>(null)
   const hasPose = useRef(false)
 
@@ -314,10 +349,11 @@ export function CameraRig({ layout, station, override, focusDistrict, diving, on
 
   return (
     <>
-      <PerspectiveCamera makeDefault fov={override.fov} near={0.5} far={3000} position={[80, 60, 120]} />
+      {stageHost ? null : <PerspectiveCamera makeDefault fov={override.fov} near={0.5} far={3000} position={[80, 60, 120]} />}
       <CameraControls
         ref={controls}
         makeDefault
+        domElement={stageHost?.element}
         minDistance={4}
         maxDistance={1200}
         minPolarAngle={0.35}

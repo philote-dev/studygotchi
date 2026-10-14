@@ -1,10 +1,12 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { MEADOW_PALETTE as P, type DistrictProgress, type GeneratedKingdom } from '../layout/biome-layout'
-import { animalPlacements, residentSeats, sampleTerrain, type AnimalPlacement, type ResidentSeat } from '../layout/terrain'
+import { animalPlacements, sampleTerrain, type AnimalPlacement } from '../layout/terrain'
 import { Surf } from '../render/materials'
 import type { CatastrophePhase } from '../state'
+import { collidersDebugEnabled, useColliderRegistry, useColliderSet, type WalkerDevHook } from '../../collision/ColliderRegistry'
+import { createWalker, settleWalkers, stepWalkers, walkerDistricts, type WalkerBody } from '../collision/walkers'
 
 /** Live resident positions so the camera can follow one without React state churn. */
 export const residentPositions: THREE.Vector3[] = []
@@ -13,6 +15,10 @@ const ACCENTS = [P.coral, P.ochre, P.rose, P.wheat, P.forestLight, P.light]
 
 /** Height of the modelled creature (hat tip) at scale 1. */
 const MODEL_HEIGHT = 1.5
+
+const WALKER_AGENTS_ID = 'meadow-walkers'
+/** Frames the collider registry must hold still before the first bodies are placed. */
+const SETTLE_FRAMES = 2
 
 function Animal({ animal }: { animal: AnimalPlacement }) {
   const group = useRef<THREE.Group>(null)
@@ -54,17 +60,22 @@ function Animal({ animal }: { animal: AnimalPlacement }) {
   )
 }
 
+/** The blob faces +z: a heading (cos h, sin h) in XZ is rotation.y = atan2(dirX, dirZ). */
+function yawFromHeading(heading: number): number {
+  return Math.atan2(Math.cos(heading), Math.sin(heading))
+}
+
 function Resident({
   index,
   apart,
-  seat,
+  bodies,
   layout,
   sleeping,
   scale,
 }: {
   index: number
   apart: React.MutableRefObject<number>
-  seat: ResidentSeat
+  bodies: React.RefObject<WalkerBody[]>
   layout: GeneratedKingdom
   sleeping: boolean
   scale: number
@@ -74,30 +85,33 @@ function Resident({
   const head = useRef<THREE.Mesh>(null)
   const hat = useRef<THREE.Mesh>(null)
   const accent = ACCENTS[index % ACCENTS.length]
-  const last = useRef(new THREE.Vector3())
+  const phase = index * 1.7
 
   useFrame(({ clock }) => {
-    if (!group.current || !body.current || !head.current || !hat.current) return
+    const root = group.current
+    const walker = bodies.current?.[index]
+    if (!root || !body.current || !head.current || !hat.current) return
+    if (!walker) {
+      root.visible = false
+      return
+    }
+    root.visible = true
     const t = clock.elapsedTime
-    // Wander: a slow figure-of-eight loop inside the cluster, height read from the heightfield.
-    const u = sleeping ? seat.phase : t * 0.16 + seat.phase
-    const x = seat.center[0] + Math.sin(u) * seat.radius
-    const z = seat.center[1] + Math.sin(u * 2 + 0.6) * seat.radius * 0.55
-    const s = sampleTerrain(layout, x, z)
+    // Position from the collision simulation; height read from the heightfield.
+    const s = sampleTerrain(layout, walker.x, walker.z)
     const y = Math.max(layout.waterHeight + 0.5, s.height)
-    const p = group.current.position
-    if (!sleeping) group.current.rotation.y = Math.atan2(x - last.current.x, z - last.current.z)
-    last.current.set(x, y, z)
-    p.set(x, y, z)
+    root.position.set(walker.x, y, walker.z)
+    if (!sleeping) root.rotation.y = yawFromHeading(walker.heading)
     if (!residentPositions[index]) residentPositions[index] = new THREE.Vector3()
-    residentPositions[index].copy(p)
+    residentPositions[index].copy(root.position)
 
-    // Walk cycle: hop and lean. Fall apart: parts spring out and the head tumbles, then reassemble.
+    // Walk cycle: hop and lean while moving. Fall apart: parts spring out and the head tumbles, then reassemble.
     const a = apart.current
     const ease = a * a * (3 - 2 * a)
-    const bob = sleeping ? 0 : Math.abs(Math.sin(t * 6 + seat.phase * 10)) * 0.12
+    const walking = walker.moving && !sleeping
+    const bob = walking ? Math.abs(Math.sin(t * 6 + phase)) * 0.12 : 0
     body.current.position.set(0, 0.42 + bob - ease * 0.3, 0)
-    body.current.rotation.z = sleeping ? 1.4 : Math.sin(t * 6 + seat.phase * 10) * 0.08 + ease * 1.2
+    body.current.rotation.z = sleeping ? 1.4 : (walking ? Math.sin(t * 6 + phase) * 0.08 : 0) + ease * 1.2
     head.current.position.set(ease * 0.9, 0.86 + bob + ease * 0.4, ease * 0.5)
     head.current.rotation.x = ease * 2.4
     hat.current.position.set(-ease * 0.8, 1.25 + bob + ease * 1.1, -ease * 0.3)
@@ -105,7 +119,7 @@ function Resident({
   })
 
   return (
-    <group ref={group} scale={scale}>
+    <group ref={group} scale={scale} visible={false}>
       <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[0.42, 12]} />
         <meshBasicMaterial color={P.ink} transparent opacity={0.16} depthWrite={false} />
@@ -132,6 +146,13 @@ function Resident({
   )
 }
 
+/**
+ * Residents walk the land on the shared collision API: one simulation (`stepWalkers`) runs once per
+ * frame at priority −1, before the blobs read their bodies. Each body steers round the registered
+ * colliders, sweeps its circle (no tunnelling), stays out of the river, and is kept apart from
+ * the others. Sleeping residents (night) hold still; during the catastrophe everyone holds still
+ * and is only kept clear of colliders.
+ */
 export function Residents({
   layout,
   progress,
@@ -150,18 +171,65 @@ export function Residents({
   const apart = useRef(0)
   // Scale rule: base height × the per-course creature scale (biome-layout.ts, requiredCreatureScale).
   const scale = (layout.creatureHeight / MODEL_HEIGHT) * layout.creatureScale
-  useFrame((_, delta) => {
-    const target = phase === 'bang' || phase === 'ruin' ? 1 : 0
-    const rate = phase === 'bang' ? 4.5 : 1.6
-    apart.current += (target - apart.current) * Math.min(1, delta * rate)
-    if (Math.abs(target - apart.current) < 0.005) apart.current = target
-  })
-  const seats = useMemo(() => residentSeats(layout, progress, count, seed), [layout, progress, count, seed])
+  const districts = useMemo(() => walkerDistricts(layout, progress, count), [layout, progress, count])
   const animals = useMemo(() => animalPlacements(layout, seed), [layout, seed])
+  const dismantle = phase === 'bang' || phase === 'ruin'
+
+  const registry = useColliderRegistry()
+  const colliders = useColliderSet()
+  const bodies = useRef<WalkerBody[]>([])
+  const settle = useRef({ version: -1, frames: 0 })
+  const stats = useRef({ ms: 0 })
+
+  useEffect(() => {
+    registry.setAgents(WALKER_AGENTS_ID, bodies.current)
+    return () => registry.clearAgents(WALKER_AGENTS_ID)
+  }, [registry])
+
+  useEffect(() => {
+    if (!collidersDebugEnabled()) return
+    const hook: WalkerDevHook = Object.assign(() => bodies.current.map((body) => ({ x: body.x, z: body.z, r: body.r })), {
+      ms: () => stats.current.ms,
+    })
+    window.__iceWalkers = hook
+    return () => {
+      delete window.__iceWalkers
+    }
+  }, [])
+
+  // A district change (progress) rebuilds the bodies from scratch.
+  useEffect(() => {
+    bodies.current.length = 0
+  }, [districts])
+
+  useFrame((_, dt) => {
+    const target = dismantle ? 1 : 0
+    const rate = phase === 'bang' ? 4.5 : 1.6
+    apart.current += (target - apart.current) * Math.min(1, dt * rate)
+    if (Math.abs(target - apart.current) < 0.005) apart.current = target
+
+    const set = colliders.current
+    const list = bodies.current
+    // Wait for the registrations of the first frames to settle before placing anyone.
+    if (registry.version !== settle.current.version) {
+      settle.current.version = registry.version
+      settle.current.frames = 0
+    } else settle.current.frames += 1
+    if (list.length === 0 && settle.current.frames < SETTLE_FRAMES) return
+    if (list.length > districts.length) list.length = districts.length
+    while (list.length < districts.length) list.push(createWalker(layout, set, districts, list.length))
+    if (list.length === 0) return
+    for (const body of list) body.still = night && body.index % 3 === 0
+    const t0 = performance.now()
+    if (dismantle) settleWalkers(layout, list, set)
+    else stepWalkers(layout, list, set, dt)
+    stats.current.ms += (performance.now() - t0 - stats.current.ms) * 0.1
+  }, -1)
+
   return (
-    <group>
-      {seats.map((seat, i) => (
-        <Resident key={i} index={i} apart={apart} seat={seat} layout={layout} sleeping={night && i % 3 === 0} scale={scale} />
+    <group name="meadow-residents">
+      {districts.map((_, i) => (
+        <Resident key={i} index={i} apart={apart} bodies={bodies} layout={layout} sleeping={night && i % 3 === 0} scale={scale} />
       ))}
       {animals.map((animal, index) => <Animal key={`${animal.kind}-${index}`} animal={animal} />)}
     </group>

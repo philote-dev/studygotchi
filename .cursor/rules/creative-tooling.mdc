@@ -28,6 +28,13 @@ Skills live in `~/.agents/skills` (Cursor and Codex read it directly; Claude Cod
 - The pixel look is `RenderPixelatedPass`; keep pixel size resolution-independent (derive from renderer size, pixel-aligned frustum when panning).
 - New GLBs go through `gltf-transform optimize` before `frontend/public/assets`.
 
+## Browser captures and measurements: never pop windows on Philote's desktop
+
+- Default to headless Playwright: `chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] })` for parity/pixel captures (deterministic).
+- For real-GPU frame timing use the new headless mode with the GPU, still no window: `chromium.launch({ channel: 'chromium', headless: true, args: ['--use-angle=metal', '--ignore-gpu-blocklist', '--enable-gpu-rasterization'] })`; record with CDP `Page.startScreencast`, not `recordVideo`.
+- A headed window is a last resort. If one is unavoidable, launch exactly one persistent context for the whole task, positioned off-screen (`--window-position=-2400,0 --window-size=1440,900`), reuse it for every capture, and close it when done. Never one window per capture, never in front of the editor.
+- The Cursor IDE browser tab is fine for quick looks; prefer it over a headed Chromium.
+
 ## External generators (keys in env only, never in the repo; ask before spending credits)
 
 Tripo (rig model `v2.5-20260210` for quadruped / avian walk cycles), Meshy (`smart-topology` props), PixelLab (`https://api.pixellab.ai/v2/llms.txt`), Gemini `gemini-3-pro-image` (concept and expression sheets), ElevenLabs Music (`music_v2_5`), Poly Pizza (free key).

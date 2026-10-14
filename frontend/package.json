@@ -12,6 +12,8 @@
     "test:unit": "vitest run",
     "test:audio": "node --test lib/audio/*.test.mts",
     "test:watch": "vitest",
+    "qa:constellation": "node ../tools/qa/constellation/capture.mjs && node ../tools/qa/constellation/compare.mjs --threshold 0.015",
+    "qa:stage": "node --test ../tools/qa/stage/*.test.mjs && node ../tools/qa/stage/verify.mjs",
     "schema": "openapi-typescript ${NEXT_PUBLIC_API_URL:-http://localhost:8000}/openapi.json -o lib/api/schema.ts"
   },
   "dependencies": {

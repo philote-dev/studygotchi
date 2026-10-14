@@ -83,6 +83,55 @@ function terrainNoise(x: number, z: number): number {
   return Math.sin(x * 0.071 + z * 0.039) * 0.12 + Math.sin(x * 0.027 - z * 0.083) * 0.08
 }
 
+export interface Rect {
+  minX: number
+  maxX: number
+  minZ: number
+  maxZ: number
+}
+
+/**
+ * The authored meadow plate: the flat box `scene/Terrain.tsx` draws (top at y = 0), well past the
+ * authored world (600 × 540 m around the 278 × 260 m kingdom). Its edges sit on 60 m multiples so
+ * the outer world's LOD lattices (10 / 20 / 60 m) all land on the seam; the outer world continues
+ * the meadow from here, so the plate no longer needs to reach under the camera on its own.
+ */
+export function plateRect(layout: GeneratedKingdom): Rect {
+  const halfX = Math.ceil((layout.worldSize[0] / 2 + 160) / 60) * 60
+  return {
+    minX: -halfX,
+    maxX: halfX,
+    minZ: Math.floor((layout.diorama.backZ - 170) / 60) * 60,
+    maxZ: Math.ceil((layout.diorama.foregroundZ + 60) / 60) * 60,
+  }
+}
+
+/** The authored world (districts, river village, crown, preserves, woodland): nothing of the outer world may enter it. */
+export function authoredRect(layout: GeneratedKingdom, margin = 0): Rect {
+  return {
+    minX: -layout.worldSize[0] / 2 - margin,
+    maxX: layout.worldSize[0] / 2 + margin,
+    minZ: -layout.worldSize[1] / 2 - margin,
+    maxZ: layout.worldSize[1] / 2 + margin,
+  }
+}
+
+export function inRect(rect: Rect, x: number, z: number): boolean {
+  return x >= rect.minX && x <= rect.maxX && z >= rect.minZ && z <= rect.maxZ
+}
+
+/** Signed Chebyshev-style distance to a rectangle: negative inside, metres outside along the nearest axis. */
+export function rectDistance(rect: Rect, x: number, z: number): number {
+  return Math.max(rect.minX - x, x - rect.maxX, rect.minZ - z, z - rect.maxZ)
+}
+
+/** Euclidean distance from a point to a rectangle (0 inside). */
+export function rectEuclid(rect: Rect, x: number, z: number): number {
+  const dx = Math.max(rect.minX - x, 0, x - rect.maxX)
+  const dz = Math.max(rect.minZ - z, 0, z - rect.maxZ)
+  return Math.hypot(dx, dz)
+}
+
 export function districtAt(layout: GeneratedKingdom, x: number, z: number): DistrictDef | null {
   return layout.districts.find((district) => pointInPolygon(district.polygon, x, z)) ?? null
 }
@@ -288,6 +337,40 @@ export function ambientPlacements(layout: GeneratedKingdom, seed: number): Ambie
     out.push({ kind: 'hay', position: [x, sample.height, z], scale: 1.1 + rng() * 0.4, yaw: rng() * Math.PI })
   }
   return out
+}
+
+export interface CloudPlacement {
+  x: number
+  y: number
+  z: number
+  scale: number
+  speed: number
+}
+
+/**
+ * Drifting clouds (scene/Ambient.tsx). They ride at 96–118 m: above the eye line of every lab pose
+ * at 12° pitch (the horizon look at maximum zoom puts the camera at 83 m), so from a horizon look
+ * they sit in the sky and never read as pale boulders on the far fields; from the 38° overview
+ * they pass above the frame. Each drifts along x across `cloudDriftHalfWidth`.
+ */
+export function cloudPlacements(layout: GeneratedKingdom): CloudPlacement[] {
+  const rng = seeded(91)
+  return Array.from({ length: 8 }, () => ({
+    x: (rng() - 0.5) * layout.worldSize[0] * 1.3,
+    y: 96 + rng() * 22,
+    z: (rng() - 0.5) * layout.worldSize[1],
+    scale: 3 + rng() * 3,
+    speed: 0.6 + rng() * 0.4,
+  }))
+}
+
+export function cloudDriftHalfWidth(layout: GeneratedKingdom): number {
+  return layout.worldSize[0] * 0.75
+}
+
+/** Vertical extent of a cloud of `scale` (the three dodecahedra at y offsets −0.1…0.2, radii ≤ 1, squashed 0.55). */
+export function cloudHalfHeight(scale: number): number {
+  return (0.2 + 0.55) * scale
 }
 
 export function residentSeats(layout: GeneratedKingdom, progress: DistrictProgress, count: number, seed: number): ResidentSeat[] {

@@ -6,7 +6,12 @@ import { emit } from "@/lib/audio/events";
 import { useSpaceTheme } from "@/lib/space-theme";
 import type { CourseGlobeCourse, ScreenPoint } from "./globe-types";
 
-const CourseGlobeCanvas = dynamic(() => import("./CourseGlobeCanvas"), { ssr: false });
+/**
+ * The globe, drawn by the persistent stage canvas (S2-2, the only globe path
+ * since gate 1 on 2026-10-13 retired its own `<Canvas>`): the page renders the
+ * input host and slots the scene into the stage.
+ */
+const CourseGlobeStageHost = dynamic(() => import("./CourseGlobeStageHost"), { ssr: false });
 
 export interface CourseGlobeProps {
   courses: CourseGlobeCourse[];
@@ -15,10 +20,10 @@ export interface CourseGlobeProps {
   onActiveCourseChange?: (courseId: string) => void;
   onCourseTownOpen?: (courseId: string, anchor: ScreenPoint) => void;
   onLandmarkAnchor?: (anchor: ScreenPoint | null) => void;
+  /** The landmark under the pointer (null when none): the page prefetches that course's land. */
+  onHoverCourse?: (courseId: string | null) => void;
+  /** The page's cold-load entrance; false when the planet arrives by the stage camera. */
   arriving?: boolean;
-  diving?: boolean;
-  rising?: boolean;
-  diveAnchor?: ScreenPoint | null;
   decorative?: boolean;
   playMusic?: boolean;
   className?: string;
@@ -45,10 +50,8 @@ export function CourseGlobe({
   onActiveCourseChange,
   onCourseTownOpen,
   onLandmarkAnchor,
+  onHoverCourse,
   arriving = true,
-  diving = false,
-  rising = false,
-  diveAnchor = null,
   decorative = false,
   playMusic = false,
   className,
@@ -70,14 +73,11 @@ export function CourseGlobe({
   }, [playMusic]);
 
   const globe = (
-    <CourseGlobeCanvas
+    <CourseGlobeStageHost
       courses={courses}
       activeCourseId={focusedId}
       theme={theme}
-      arriving={arriving && !diving && !rising}
-      diving={diving}
-      rising={rising && !diving}
-      diveAnchor={diveAnchor}
+      arriving={arriving}
       reducedMotion={reducedMotion}
       onActiveCourseChange={(courseId) => {
         setFocusedId(courseId);
@@ -92,6 +92,7 @@ export function CourseGlobe({
         onSelect?.(courseId);
       }}
       onLandmarkAnchor={decorative ? undefined : onLandmarkAnchor}
+      onHoverCourse={decorative ? undefined : onHoverCourse}
     />
   );
 

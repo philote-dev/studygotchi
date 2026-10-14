@@ -2,8 +2,9 @@ import { PHASE_SECONDS, type CatastrophePhase } from '../state'
 
 /**
  * biome-world-structure.md §8.4: blizzard 2 s → residents fall apart 0.6 s → ruin (held) →
- * recovery 3 s → calm. The demo theater only says "fail" / "pass" / "idle"; this turns that into
- * the timed phase list the scene plays.
+ * recovery 3 s → calm. The land only hears "fail" / "pass" / "idle" (the latest result that landed
+ * on the course, see `lib/world/land-outcome.ts`); this turns that into the timed phase list the
+ * scene plays.
  */
 export type CatastropheEvent = 'idle' | 'fail' | 'pass'
 

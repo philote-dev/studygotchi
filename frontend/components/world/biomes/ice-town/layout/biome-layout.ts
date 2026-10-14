@@ -743,7 +743,11 @@ export function skylineBandFor(layout: BiomeLayout, fraction: number): SkylineBa
 
 /** Plan §3: the mountain range is the only elevation that grows, by course fraction. */
 export function mountainProfile(fraction: number): MountainProfile {
-  const band = bandForProgress(fraction)
+  return mountainProfileForBand(bandForProgress(fraction))
+}
+
+/** The profile of a growth band (0–4) directly: the cache key of a terrain build is the band. */
+export function mountainProfileForBand(band: number): MountainProfile {
   return {
     band,
     peaks: [3, 5, 6, 8, 9][band],

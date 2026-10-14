@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { emit } from "@/lib/audio/events";
@@ -14,6 +14,7 @@ import { GlbCreature, preloadRoster, type CreatureRequests } from "@/components/
 import { courseMarkerState, sampleTerrain } from "./globe-spec";
 import { GLOBE_BUDDY_SCALE, globeBuddyPoint } from "./globe-parade";
 import { GLOBE_RADIUS } from "./globe-materials";
+import { townPropsEqual } from "./GlobeTown";
 import type { CourseGlobeCourse, UnitDirection } from "./globe-types";
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -100,7 +101,8 @@ interface TownWalkersProps {
   reducedMotion: boolean;
 }
 
-function TownWalkers({
+/** A town's walkers (memoised like `GlobeTown`: a settle elsewhere leaves this subtree alone). */
+const TownWalkers = memo(function TownWalkers({
   course,
   direction,
   courses,
@@ -144,7 +146,7 @@ function TownWalkers({
       ))}
     </group>
   );
-}
+}, townPropsEqual);
 
 interface GlobeCreaturesProps {
   courses: CourseGlobeCourse[];

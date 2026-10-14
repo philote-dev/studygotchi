@@ -91,7 +91,7 @@ export function BiomeScene({ layout, state, onDiveEnd, onPickDistrict, hoveredId
 
       <StormWindProvider storm={storm} reducedMotion={reducedMotion}>
       <ColliderProvider>
-      {edge ? <edge.Scene layout={layout} night={night} storm={storm} seed={state.seed} reducedMotion={reducedMotion} /> : null}
+      {edge ? <edge.Scene layout={layout} night={night} storm={storm} seed={state.seed} reducedMotion={reducedMotion} profile={world ? undefined : profile} /> : null}
       {world ? (
         <WorldScene layout={layout} world={world} progress={state.progress} seed={state.seed} night={night} darkDistrict={darkDistrict} />
       ) : (

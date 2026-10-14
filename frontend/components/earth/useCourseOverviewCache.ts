@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { api, mockWorldForCourse } from "@/lib/api";
 import { isSandboxCatalogId } from "@/lib/world/sandbox-courses";
 import { ingestionResourcesForCourse } from "@/lib/world/sandbox-roster";
@@ -128,33 +128,52 @@ export function createCourseOverviewCache(
   return cache;
 }
 
+/**
+ * One cache per student, shared by every hook instance (the earth page, the
+ * stage's planet stand-in, the galaxy rung). A per-instance cache made the
+ * earth page rebuild every course overview (the sandbox worlds are generated
+ * synchronously) on each mount, ~75 ms of timers landing on one frame while
+ * the stage was still moving (S4-2 stall diagnosis); the records are the same
+ * for every reader. The loader reads the course list the latest render gave.
+ */
+const SHARED_CACHES = new Map<string, { cache: CourseOverviewCache; courses: { current: readonly CourseSummary[] } }>();
+
+function sharedCache(studentId: string): { cache: CourseOverviewCache; courses: { current: readonly CourseSummary[] } } {
+  let entry = SHARED_CACHES.get(studentId);
+  if (entry) return entry;
+  const courses = { current: [] as readonly CourseSummary[] };
+  const cache = createCourseOverviewCache(studentId, async (_studentId, courseId) => {
+    const course = courses.current.find((candidate) => candidate.id === courseId);
+    if (!course) throw new Error("This course is no longer available.");
+
+    const ingested = ingestionResourcesForCourse(courseId);
+    if (isSandboxCatalogId(courseId)) {
+      return buildCourseOverview(course, mockWorldForCourse(courseId), ingested);
+    }
+    const [world, resources] = await Promise.all([
+      api.getWorldForCourse(courseId),
+      api.listResourcesForCourse(courseId).catch(() => []),
+    ]);
+    const merged = resources.length > 0 ? resources : ingested;
+    return buildCourseOverview(course, world, merged);
+  });
+  entry = { cache, courses };
+  SHARED_CACHES.set(studentId, entry);
+  return entry;
+}
+
+/** Tests: forget every shared cache. */
+export function resetCourseOverviewCaches(): void {
+  SHARED_CACHES.clear();
+}
+
 export function useCourseOverviewCache(
   studentId: string,
   courses: readonly CourseSummary[],
 ): CourseOverviewCacheResult {
-  const coursesRef = useRef(courses);
-  coursesRef.current = courses;
-
-  const cacheRef = useRef<CourseOverviewCache | null>(null);
-  if (!cacheRef.current || cacheRef.current.studentId !== studentId) {
-    cacheRef.current = createCourseOverviewCache(studentId, async (_studentId, courseId) => {
-      const course = coursesRef.current.find((candidate) => candidate.id === courseId);
-      if (!course) throw new Error("This course is no longer available.");
-
-      const ingested = ingestionResourcesForCourse(courseId);
-      if (isSandboxCatalogId(courseId)) {
-        return buildCourseOverview(course, mockWorldForCourse(courseId), ingested);
-      }
-      const [world, resources] = await Promise.all([
-        api.getWorldForCourse(courseId),
-        api.listResourcesForCourse(courseId).catch(() => []),
-      ]);
-      const merged = resources.length > 0 ? resources : ingested;
-      return buildCourseOverview(course, world, merged);
-    });
-  }
-
-  const cache = cacheRef.current;
+  const entry = sharedCache(studentId);
+  entry.courses.current = courses;
+  const cache = entry.cache;
   const records = useSyncExternalStore(
     cache.subscribe,
     cache.getSnapshot,

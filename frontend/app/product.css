@@ -680,18 +680,6 @@ h3 {
   }
 }
 
-@keyframes sg-from-right {
-  from {
-    opacity: 0;
-    transform: translateX(6%);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @keyframes sg-from-left {
   from {
     opacity: 0;
@@ -701,30 +689,6 @@ h3 {
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes sg-to-right {
-  from {
-    opacity: 1;
-    transform: none;
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(6%);
-  }
-}
-
-@keyframes sg-to-left {
-  from {
-    opacity: 1;
-    transform: none;
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(-24px);
   }
 }
 
@@ -757,50 +721,7 @@ h3 {
   font-family: var(--a-ui);
 }
 
-.sg-field {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* Original generated spiral — a small sky object above the star canvas and
-   below constellation edges. Square slot so the tilted disc never clips as
-   pixels orbit the disk axis. The spiral's own pixels are pale, so on the
-   light sky the arms are darkened with a filter (no background plate). */
-.sg-sky-spiral {
-  --sg-sky-spiral-opacity: 0.8;
-  --sg-sky-spiral-filter: brightness(0.56) saturate(1.45) contrast(1.08);
-  position: absolute;
-  top: 9%;
-  right: 7%;
-  z-index: 1;
-  width: clamp(56px, 14vmin, 112px);
-  height: clamp(56px, 14vmin, 112px);
-  pointer-events: none;
-  opacity: var(--sg-sky-spiral-opacity);
-  filter: var(--sg-sky-spiral-filter);
-}
-
-:root[data-space-theme="dark"] .sg-sky-spiral {
-  --sg-sky-spiral-opacity: 0.68;
-  --sg-sky-spiral-filter: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-space-theme]) .sg-sky-spiral {
-    --sg-sky-spiral-opacity: 0.68;
-    --sg-sky-spiral-filter: none;
-  }
-}
-
-.sg-sky-spiral .sg-pixel-spiral {
-  width: 100%;
-  height: 100%;
-}
+/* The sky itself is the stage canvas (.sg-stage, components/stage/stage.css). */
 
 .sg-page {
   position: absolute;
@@ -1330,11 +1251,6 @@ h3 {
 .sg-page .earth-stage {
   inset: 0;
   left: 0;
-  animation: sg-from-right var(--a-t-aperture) var(--a-ease-aperture) both;
-}
-
-.sg-page .earth-stage > * {
-  animation: sg-fade var(--a-t-view) var(--a-ease-out-quad) both;
 }
 
 .sg-page .earth-panel {
@@ -1461,87 +1377,14 @@ h3 {
   background: var(--a-ink);
 }
 
-@keyframes sg-planet-to-galaxy {
-  to {
-    opacity: 0.12;
-    transform: translate3d(22%, 8%, 0) scale(0.38);
-  }
-}
-
-@keyframes sg-galaxy-arrive {
-  from {
-    opacity: 0;
-    transform: translate3d(-8%, -4%, 0) scale(1.16);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes sg-galaxy-leave {
-  from {
-    opacity: 1;
-    transform: none;
-  }
-
-  to {
-    opacity: 0;
-    transform: translate3d(-8%, -4%, 0) scale(1.16);
-  }
-}
-
-@keyframes sg-land-rise {
-  to {
-    transform: scale(0.48);
-  }
-}
-
-/* Rise only when leaving a biome for Information. Never on biome → planet. */
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .earth-stage,
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .course-globe-overview {
-  animation: none;
-}
-
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .biome-land-stage {
-  transform-origin: 72% 56%;
-  animation: sg-land-rise var(--a-t-aperture) var(--a-ease-aperture) both;
-}
-
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .earth-panel,
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .concept-rail {
-  animation: sg-to-left var(--a-t-aperture) var(--a-ease-aperture) both;
-}
-
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .course-navigator,
-.sg-page[data-leaving][data-leave-to="information"][data-leave-phase="rise"] .landmark-flag {
-  animation: none;
-}
-
-/* Leave: planet exits right while the sky claims the frame from the left.
-   Only Information hops — biome → planet is an in-world rise on the globe. */
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .earth-stage,
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-globe-overview,
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-globe-stage {
-  transform-origin: 78% 58%;
-  animation: sg-planet-to-galaxy var(--a-t-aperture) var(--a-ease-aperture) both;
-}
-
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .earth-panel,
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .course-navigator,
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .landmark-flag,
-.sg-page[data-leaving][data-leave-to="information"]:not([data-leave-phase="rise"]) .concept-rail {
-  animation: sg-to-left var(--a-t-aperture) var(--a-ease-aperture) both;
-}
-
 /* ---------- Space: the constellation dashboard ---------------------------- */
 
+/* No entrance keyframe: the twin blooms out of the planet point on the spring and the hop driver
+   writes this chrome's opacity per frame (`twinCurvesAt().chrome`). */
 .sg-constellation {
   position: absolute;
   inset: 0;
   color: var(--a-ink);
-  animation: sg-galaxy-arrive var(--a-t-aperture) var(--a-ease-aperture) both;
 }
 
 /* Earth leftovers (view-transition snapshots or a stuck navigator) must not sit on the sky. */
@@ -1552,10 +1395,6 @@ h3 {
 .sg-page:has(.sg-constellation) .earth-panel,
 .sg-page:has(.sg-constellation) .concept-rail {
   display: none;
-}
-
-.sg-page[data-leaving] .sg-constellation {
-  animation: sg-galaxy-leave var(--a-t-aperture) var(--a-ease-aperture) both;
 }
 
 .sg-constellation-canvas {
@@ -1760,7 +1599,7 @@ h3 {
 }
 
 /* Sound chip: bottom right of the shell on every product view. The left edge belongs to
-   the navigator, flag and legend; the demo theater sits centre. Panel opens upward. */
+   the navigator, flag and legend. Panel opens upward. */
 .sg-sound {
   position: absolute;
   right: var(--sg-gutter);
@@ -1768,8 +1607,8 @@ h3 {
   z-index: 26;
 }
 
-.sg-sound .audio-chrome-mute,
-.sg-sound .audio-chrome-chip {
+.sg-sound .audio-chrome-toggle,
+.sg-sound .audio-chrome-pill {
   height: 28px;
   border: 0;
   background: var(--a-sheet);
@@ -1777,13 +1616,45 @@ h3 {
   color: var(--a-ink);
 }
 
-.sg-sound .audio-chrome-mute {
+.sg-sound .audio-chrome-toggle {
   width: 28px;
 }
 
+.sg-sound .audio-chrome-toggle[data-locked="true"]::after {
+  inset: 0;
+  border-color: var(--a-ink-55);
+}
+
+.sg-sound .audio-chrome-action {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: var(--a-ink-75);
+}
+
+.sg-sound .audio-chrome-action:last-child {
+  margin-right: 3px;
+}
+
+.sg-sound .audio-chrome-action:hover,
+.sg-sound .audio-chrome-action:focus-visible {
+  background: var(--a-ink-7);
+  color: var(--a-ink);
+}
+
+/* Muted reads as ink-on-sheet inverted, on the ♪ button and on the pressed mute action alike. */
+.sg-sound .audio-chrome-toggle[data-muted="true"],
 .sg-sound .audio-chrome-mute[aria-pressed="true"] {
   background: var(--a-ink);
   color: var(--a-sheet);
+}
+
+/* The global focus ring squares corners; these stay round. */
+.sg-sound .audio-chrome-toggle:focus-visible,
+.sg-sound .audio-chrome-chip:focus-visible,
+.sg-sound .audio-chrome-action:focus-visible {
+  border-radius: 999px;
 }
 
 .sg-sound .audio-chrome-mark {
@@ -1809,9 +1680,10 @@ h3 {
   color: var(--a-ink);
 }
 
+/* The pill is opt-in now, so on narrow screens it only gets shorter instead of vanishing. */
 @media (max-width: 899px) {
   .sg-sound .audio-chrome-chip {
-    display: none;
+    max-width: 9rem;
   }
 }
 
@@ -2208,29 +2080,8 @@ h3 {
   .sg-dock,
   .sg-dialog,
   .sg-hero,
-  .sg-page .earth-stage,
-  .sg-page .earth-panel,
-  .sg-page .course-navigator,
-  .sg-page .landmark-flag,
-  .sg-page[data-leaving] .earth-stage,
-  .sg-page[data-leaving] .course-globe-overview,
-  .sg-page[data-leaving] .course-globe-stage,
-  .sg-page[data-leaving] .biome-land-stage,
-  .sg-page[data-leaving] .earth-panel,
-  .sg-page[data-leaving] .course-navigator,
-  .sg-page[data-leaving] .landmark-flag,
-  .sg-page[data-leaving] .concept-rail,
-  .sg-constellation {
+  .sg-page .earth-panel {
     animation: sg-fade var(--a-t-quick) linear both;
-  }
-
-  .sg-page[data-leaving] .earth-stage,
-  .sg-page[data-leaving] .earth-panel,
-  .sg-page[data-leaving] .course-navigator,
-  .sg-page[data-leaving] .landmark-flag,
-  .sg-page[data-leaving] .concept-rail,
-  .sg-page[data-leaving] .sg-constellation {
-    animation: sg-out var(--a-t-quick) linear both;
   }
 
   .sg-lamp-blink,

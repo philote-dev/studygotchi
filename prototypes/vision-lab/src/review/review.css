@@ -1,0 +1,443 @@
+/* Review page: shares the lab's field, ink, kickers and hard offset shadows (app.css). */
+
+.review {
+  gap: 22px;
+  align-content: start;
+}
+
+.review a {
+  color: var(--ink);
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.review-nav {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.segmented button[aria-selected='true'] {
+  background: var(--ink);
+  color: #fff;
+}
+
+.back-link {
+  font-size: 13px;
+}
+
+.review-panel {
+  display: grid;
+  gap: 26px;
+}
+
+/* Sticky toolbar: bleeds to the page edge so it reads as one bar. */
+.review-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: center;
+  margin: 0 -20px;
+  padding: 10px 20px;
+  background: rgba(216, 233, 244, 0.94);
+  border-bottom: 1px solid var(--ink);
+  backdrop-filter: blur(4px);
+}
+
+.review-toolbar[data-mode='night'] {
+  background: rgba(52, 45, 69, 0.94);
+  color: #f3eefa;
+  border-bottom-color: #f3eefa;
+}
+
+.review-toolbar[data-mode='night'] .segmented button {
+  background: #f3eefa;
+  border-color: #f3eefa;
+  color: var(--ink);
+}
+
+.review-toolbar[data-mode='night'] .segmented button[aria-pressed='true'] {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px #f3eefa;
+}
+
+.review-toolbar[data-mode='night'] a {
+  color: inherit;
+}
+
+.picks-summary {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 0 auto;
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.picks-part[data-decided='true'] strong {
+  color: var(--signal);
+}
+
+.review-toolbar[data-mode='night'] .picks-part[data-decided='true'] strong {
+  color: #ffb4ab;
+}
+
+/* One land. */
+.land {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: 70px;
+}
+
+.land-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.land-header h2 {
+  margin: 2px 0 0;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.pick > .kicker {
+  margin-right: 6px;
+}
+
+.pick label {
+  position: relative;
+  padding: 6px 10px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.pick label[data-checked='true'] {
+  background: var(--ink);
+  color: #fff;
+}
+
+.pick label:has(input:focus-visible) {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.pick input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Three columns; subgrid keeps name / lineage / pitch / notes / frames / links on shared rows. */
+.directions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.direction {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 6;
+  row-gap: 10px;
+  align-content: start;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(52, 45, 69, 0.28);
+  background: rgba(247, 251, 253, 0.82);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.direction[data-picked] {
+  border-color: var(--ink);
+  box-shadow: 5px 5px 0 rgba(52, 45, 69, 0.18);
+}
+
+.direction h3 {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.dir-id {
+  flex: none;
+  min-width: 26px;
+  padding: 3px 0;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.direction[data-picked] .dir-id {
+  background: var(--ink);
+  color: #fff;
+}
+
+.direction .lineage {
+  margin: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--signal);
+}
+
+.direction .pitch {
+  margin: 0;
+  color: var(--ink);
+}
+
+.notes {
+  border-top: 1px solid rgba(52, 45, 69, 0.18);
+  border-bottom: 1px solid rgba(52, 45, 69, 0.18);
+  padding: 6px 0;
+}
+
+.notes summary {
+  cursor: pointer;
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.notes h4 {
+  margin: 10px 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.notes ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.notes li + li {
+  margin-top: 3px;
+}
+
+/* Frames stack in a fixed 16:9 box each so the layout never jumps while images stream in. */
+.frames {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.frame {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.frame figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(52, 45, 69, 0.45);
+  background: #e8e2f2;
+  box-shadow: 4px 4px 0 rgba(52, 45, 69, 0.14);
+}
+
+a.shot:hover,
+a.shot:focus-visible {
+  border-color: var(--ink);
+  box-shadow: 4px 4px 0 var(--signal);
+  outline: none;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shot-missing {
+  display: grid;
+  gap: 6px;
+  place-content: center;
+  text-align: center;
+  color: var(--muted);
+  background:
+    repeating-linear-gradient(45deg, rgba(52, 45, 69, 0.07) 0 6px, transparent 6px 14px),
+    #edf2f6;
+}
+
+.shot-missing code {
+  font-size: 11px;
+}
+
+.direction-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Harness tab. */
+.harness-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 10px 28px;
+}
+
+.legend-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.tag {
+  display: inline-block;
+  min-width: 58px;
+  padding: 4px 7px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tag[data-how='test'] {
+  background: var(--ink);
+  color: #fff;
+}
+
+.tag[data-how='brief'] {
+  border-style: dotted;
+  background: transparent;
+  color: var(--muted);
+}
+
+.harness-section {
+  display: grid;
+  gap: 10px;
+  scroll-margin-top: 70px;
+}
+
+.harness-section header {
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.harness-section h2 {
+  margin: 2px 0 0;
+  font-size: clamp(20px, 2.6vw, 30px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.harness-section .story {
+  max-width: 90ch;
+}
+
+.rules {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) minmax(220px, 0.5fr);
+  gap: 6px 16px;
+  align-items: start;
+  padding: 10px 14px;
+  border: 1px solid rgba(52, 45, 69, 0.28);
+  background: rgba(247, 251, 253, 0.82);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.rule[data-how='brief'] {
+  background: rgba(247, 251, 253, 0.5);
+}
+
+.rule p {
+  margin: 0;
+}
+
+.rule .source {
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .directions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .direction {
+    grid-row: auto;
+    grid-template-rows: none;
+  }
+
+  .rule {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .rule .source {
+    grid-column: 2;
+  }
+
+  .picks-summary {
+    margin-left: 0;
+    text-align: left;
+  }
+}

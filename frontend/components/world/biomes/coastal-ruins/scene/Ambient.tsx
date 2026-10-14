@@ -5,7 +5,7 @@ import { COASTAL_PALETTE as P, type BiomeLayout, seeded } from '../layout/biome-
 import { Surf } from '../render/materials'
 import { SmallBoat } from './Props'
 
-export function Clouds({ layout, night }: { layout: BiomeLayout; night: boolean }) {
+export function Clouds({ layout, night, still = false }: { layout: BiomeLayout; night: boolean; still?: boolean }) {
   const group = useRef<THREE.Group>(null)
   const clouds = useMemo(() => {
     const rng = seeded(91)
@@ -19,7 +19,7 @@ export function Clouds({ layout, night }: { layout: BiomeLayout; night: boolean 
   }, [layout.frameRadius])
 
   useFrame((_, delta) => {
-    if (!group.current) return
+    if (!group.current || still) return
     group.current.children.forEach((child, index) => {
       child.position.x += clouds[index].speed * delta
       if (child.position.x > layout.frameRadius * 1.8) child.position.x = -layout.frameRadius * 1.8

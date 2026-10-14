@@ -2,7 +2,11 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ICE_TOWN_PALETTE as P, type BiomeLayout, type MountainProfile } from '../layout/biome-layout'
-import { ambientScatter, fbm, floePositions, forestPines, harbourShoreMask, mountainPeaks, sampleTerrain, type GroundMaterial, type Sample } from '../layout/terrain'
+import { ambientScatter, floePositions, forestPines, sampleTerrain } from '../layout/terrain'
+import { type TerrainMesh } from '../layout/terrain-build'
+import { useTerrainMesh } from '@/lib/world/land-build-hooks'
+import { ICE_LAND_SEED, terrainKey, type LandLayoutId } from '@/lib/world/land-build'
+import { landSpan } from '@/lib/world/land-marks'
 import { Surf, toonRamp } from '../render/materials'
 import { IceArch, IceCave, Pine } from './Props'
 import { useStormWind } from './StormWind'
@@ -10,60 +14,9 @@ import { treeSwayPose } from './storm-weather'
 import { useCollider } from '../../collision/ColliderRegistry'
 import { forestColliders, landformColliders, scatterColliders } from '../../collision/ice-town-footprints'
 
-/** Generic-world materials never occur on the Ice terrain; the world terrain mesh colours them from its palette. */
-const WORLD_UNUSED = { ground: P.snow, groundAlt: P.snowShadow, lawn: P.snow, paving: P.paleIce, water: P.openWater, bank: P.riverBank, shore: P.rock, plinth: P.paleIce } as const
-
-/** Plan §6: fewer, paler ground colours. Snow, pale ice, lavender rock, dark water; the river is the one teal. */
-const GROUND: Record<GroundMaterial, string> = {
-  sea: '#2a5474',
-  snow: P.snow,
-  ice: P.paleIce,
-  lake: '#cfe3f1',
-  openWater: P.openWater,
-  rock: P.rock,
-  mountain: P.snow,
-  river: P.river,
-  riverBank: P.riverBank,
-  ...WORLD_UNUSED,
-}
-
-/** Steep faces: ice-blue at the coasts, lavender rock on the mountains and the outcrop. */
-const STEEP: Record<GroundMaterial, string> = {
-  sea: '#2a5474',
-  snow: P.cliffIce,
-  ice: P.cliffIce,
-  lake: P.cliffIce,
-  openWater: P.openWater,
-  rock: P.rockDeep,
-  mountain: P.rock,
-  river: P.river,
-  riverBank: P.riverBank,
-  ...WORLD_UNUSED,
-}
-/** The harbour beach: a sloped shore keeps its snow instead of turning into cliff ice. */
-const BEACH = '#e3ebf0'
-/** Damp snow at the harbour waterline; the beach lerps toward it as it nears the sea. */
-const WET_SNOW = new THREE.Color('#b9c9d6')
-
-const SEGMENTS = 340
-/** Cool blue-lavender for the range faces (ice-arch-horizon ref); caps stay snow. */
-const MOUNTAIN_FACE = '#a3adca'
-/** Shelf seams near the mainland read as a lighter crack, not a shadow. */
-const SEAM_LIGHT = '#f7fafc'
-/**
- * Facet shading baked into the range's vertex colours: the pale snow palette blows out under the
- * key light and the toon ramp, so the lit / half / shade steps are written into the albedo where
- * the fog and tone mapping cannot flatten them. Back rows are hazed toward the sky per row.
- */
-const FACET_STEPS: [number, number, number] = [1, 0.86, 0.7]
-const ROW_HAZE = [0, 0, 0.22, 0.42]
-const DAY_LIGHT = new THREE.Vector3(60, 90, 70).normalize()
-const NIGHT_LIGHT = new THREE.Vector3(-40, 60, 30).normalize()
-
-function facetStep(nx: number, ny: number, nz: number, light: THREE.Vector3): number {
-  const ndl = nx * light.x + ny * light.y + nz * light.z
-  return ndl > 0.62 ? FACET_STEPS[0] : ndl > 0.3 ? FACET_STEPS[1] : FACET_STEPS[2]
-}
+// The plate's heightfield and colour pass live in `layout/terrain-build.ts` (pure, shared with the
+// land build Worker); the colour helpers keep their home here for the modules that import them.
+export { NORTH_FRINGE_BAND, STEEP_NY, backColourBehind, backColourZone, cliffAmount, cliffFace } from '../layout/terrain-build'
 
 interface TerrainProps {
   layout: BiomeLayout
@@ -71,80 +24,61 @@ interface TerrainProps {
   night: boolean
 }
 
+/**
+ * Geometries by (plate, night), kept across mounts: R3F does not dispose a `geometry=` prop, and
+ * the plate is static per band, so a land that mounts again (the dive after a rise) reuses the
+ * same GPU buffers instead of uploading 116 k vertices. A few at most.
+ */
+const geometries = new Map<string, THREE.BufferGeometry>()
+
+/** The plate's mesh from a build: positions and normals shared across day and night, the colours by `night`. */
+export function terrainGeometry(mesh: TerrainMesh, key: string): THREE.BufferGeometry {
+  const hit = geometries.get(key)
+  if (hit) return hit
+  const geo = new THREE.BufferGeometry()
+  geo.setIndex(new THREE.BufferAttribute(mesh.grid.index, 1))
+  geo.setAttribute('position', new THREE.BufferAttribute(mesh.grid.position, 3))
+  geo.setAttribute('normal', new THREE.BufferAttribute(mesh.grid.normal, 3))
+  geo.setAttribute('color', new THREE.BufferAttribute(key.endsWith(':night') ? mesh.night : mesh.day, 3))
+  geometries.set(key, geo)
+  while (geometries.size > 4) {
+    const oldest = geometries.keys().next().value!
+    geometries.get(oldest)?.dispose()
+    geometries.delete(oldest)
+  }
+  return geo
+}
+
+/**
+ * The authored plate. Its heightfield, normals and colours are a pure build of (layout, growth
+ * band) that the land build Worker runs during the planet approach (`lib/world/land-build.ts`);
+ * here the mesh is only assembled from the buffers. Until a plate for this band exists the
+ * previous one stays (or nothing, on the very first mount of a cold load). Geometry depends only
+ * on the mountain band: clusters never move the ground (plan §3).
+ */
 export function Terrain({ layout, profile, night }: TerrainProps) {
-  const extent = layout.worldExtent
-  // Geometry depends only on the mountain band: clusters never move the ground (plan §3).
-  const built = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(extent * 2, extent * 2, SEGMENTS, SEGMENTS)
-    geo.rotateX(-Math.PI / 2)
-    const pos = geo.attributes.position as THREE.BufferAttribute
-    const samples: Sample[] = Array.from({ length: pos.count })
-    const peaks = mountainPeaks(layout, profile)
-    for (let i = 0; i < pos.count; i++) {
-      const s = sampleTerrain(layout, pos.getX(i), pos.getZ(i), profile, peaks)
-      pos.setY(i, s.height)
-      samples[i] = s
-    }
-    geo.computeVertexNormals()
-    return { geo, samples }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layout, profile.band, extent])
-
-  const geometry = useMemo(() => {
-    const { geo, samples } = built
-    const pos = geo.attributes.position as THREE.BufferAttribute
-    const normals = geo.attributes.normal as THREE.BufferAttribute
-    const colors = new Float32Array(pos.count * 3)
-    const c = new THREE.Color()
-    const haze = new THREE.Color(night ? P.skyNight : P.sky)
-    const light = night ? NIGHT_LIGHT : DAY_LIGHT
-    for (let i = 0; i < pos.count; i++) {
-      const s = samples[i]
-      const x = pos.getX(i)
-      const z = pos.getZ(i)
-      const ny = normals.getY(i)
-      const steep = ny < 0.8
-      if (s.material === 'mountain') {
-        const cap = s.peakFrac >= profile.snowLine
-        c.set(cap ? P.snow : steep ? MOUNTAIN_FACE : P.snowShadow)
-        const step = facetStep(normals.getX(i), ny, normals.getZ(i), light)
-        // Caps keep more of their white on the shade side; rock faces take the full step.
-        c.multiplyScalar(cap ? 0.55 + 0.45 * step : step)
-        c.lerp(haze, ROW_HAZE[s.mountainRow])
-      } else if (s.material === 'ice' && !steep && s.height < layout.shelfHeight - 0.2) {
-        c.set(SEAM_LIGHT)
-      } else if (steep && s.material === 'snow' && s.height > layout.seaLevel && harbourShoreMask(layout, x, z) > 0.5) {
-        c.set(BEACH)
-      } else {
-        c.set(steep ? STEEP[s.material] : GROUND[s.material])
-      }
-      // Ground variation (grammar §g): a few percent of lightness, never hue.
-      const l = s.material === 'sea' || s.material === 'openWater' ? 0 : 0.02 * fbm(x * 0.08, z * 0.08) + 0.01 * fbm(x * 0.5, z * 0.5)
-      c.offsetHSL(0, 0, l)
-      // Harbour beach: a wet blue-grey gradient from the waterline up the incline, so the slope
-      // reads even on flat-lit snow (fishing-village ref: darker, damp shore under the stilts).
-      if (s.material === 'snow' && !steep) {
-        const shore = harbourShoreMask(layout, x, z)
-        if (shore > 0) {
-          const wet = (1 - Math.min(1, Math.max(0, (s.height - layout.seaLevel) / 3.6))) * shore
-          c.lerp(WET_SNOW, wet * 0.55)
-        }
-      }
-      if (night && s.material !== 'mountain') c.offsetHSL(0.03, 0.05, -0.16)
-      else if (night) c.offsetHSL(0.03, 0.05, -0.1)
-      colors[i * 3] = c.r
-      colors[i * 3 + 1] = c.g
-      colors[i * 3 + 2] = c.b
-    }
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    return geo
-  }, [built, night, profile.snowLine, layout.shelfHeight])
-
+  // The plate depends on the band alone (`terrainKey` carries no seed); the seed is the land's so the params match the prefetch's.
+  const params = useMemo(() => ({ layoutId: layout.id as LandLayoutId, seed: ICE_LAND_SEED, band: profile.band }), [layout.id, profile.band])
+  const mesh = useTerrainMesh(params)
+  const key = `${terrainKey(params)}:${night ? 'night' : 'day'}`
+  const geometry = useMemo(() => (mesh ? landSpan('terrain-geometry', () => terrainGeometry(mesh, key)) : null), [mesh, key])
+  if (!geometry) return null
+  // Named and tagged with its profile so outer-world techniques can sample their seam with the
+  // same mountain rows the plate was built with (the back rows' skirts cross the plate edge).
   return (
-    <mesh geometry={geometry} receiveShadow castShadow>
+    <mesh name={TERRAIN_MESH_NAME} userData={{ mountainProfile: profile }} geometry={geometry} receiveShadow castShadow>
       <Surf color="#ffffff" vertexColors />
     </mesh>
   )
+}
+
+export const TERRAIN_MESH_NAME = 'ice-terrain'
+
+/** The profile the mounted authored plate was built with, read back from the scene graph; null until it has mounted. */
+export function authoredMountainProfile(scene: THREE.Object3D): MountainProfile | null {
+  const mesh = scene.getObjectByName(TERRAIN_MESH_NAME)
+  const profile = mesh?.userData?.mountainProfile as MountainProfile | undefined
+  return profile && typeof profile.band === 'number' ? profile : null
 }
 
 export function Water({ layout, night }: { layout: BiomeLayout; night: boolean }) {
@@ -157,7 +91,7 @@ export function Water({ layout, night }: { layout: BiomeLayout; night: boolean }
 }
 
 export function Floes({ layout, seed, night }: { layout: BiomeLayout; seed: number; night: boolean }) {
-  const floes = useMemo(() => floePositions(layout, seed), [layout, seed])
+  const floes = useMemo(() => landSpan('floes', () => floePositions(layout, seed)), [layout, seed])
   return (
     <group>
       {floes.map(([x, z, r, yaw], i) => (
@@ -194,7 +128,7 @@ const FOREST_TIERS: Array<{ color: string; y: number; r: number; h: number }> = 
  * cost nothing. Ambient: present at 0 %.
  */
 export function Forest({ layout, seed, night }: { layout: BiomeLayout; seed: number; night: boolean }) {
-  const trees = useMemo(() => forestPines(layout, seed), [layout, seed])
+  const trees = useMemo(() => landSpan('pines', () => forestPines(layout, seed)), [layout, seed])
   // One trunk circle per instanced pine (bulk registration; the spatial hash takes the hundreds).
   useCollider(useMemo(() => forestColliders(trees), [trees]))
   const trunk = useRef<THREE.InstancedMesh>(null)
@@ -264,7 +198,7 @@ export function Forest({ layout, seed, night }: { layout: BiomeLayout; seed: num
 
 /** Ambient scatter in the empty snow: pine groves and lavender rock outcrops. Never progress. */
 export function Scatter({ layout, seed }: { layout: BiomeLayout; seed: number }) {
-  const items = useMemo(() => ambientScatter(layout, seed), [layout, seed])
+  const items = useMemo(() => landSpan('scatter', () => ambientScatter(layout, seed)), [layout, seed])
   useCollider(useMemo(() => scatterColliders(items), [items]))
   return (
     <group>

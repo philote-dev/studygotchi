@@ -1,0 +1,300 @@
+{
+ "version": 1,
+ "generatedAt": "2026-10-14T03:28:35.054Z",
+ "baseUrl": "http://localhost:3000",
+ "stage": "nosky,twin",
+ "candidate": "twin",
+ "target": ".sg-twin",
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "dprs": [
+  1,
+  2
+ ],
+ "themes": [
+  "dark",
+  "light"
+ ],
+ "frozenMs": 100000,
+ "popPhase": 0.4,
+ "states": [
+  {
+   "id": "zoomed-out",
+   "title": "Zoomed out: cluster names, nebula dust, backbone edges",
+   "steps": [
+    {
+     "fit": true
+    }
+   ]
+  },
+  {
+   "id": "zoomed-in",
+   "title": "Zoomed in on the hover anchor at k = 2: node labels at the 22-char budget",
+   "steps": [
+    {
+     "camera": {
+      "at": "hover",
+      "k": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "hover",
+   "title": "Hover on the anchor at k = 1.6: focus set lit, rest at 0.14, tooltip",
+   "steps": [
+    {
+     "camera": {
+      "at": "hover",
+      "k": 1.6
+     }
+    },
+    {
+     "hover": "hover"
+    }
+   ]
+  },
+  {
+   "id": "selected",
+   "title": "Selected node on the fitted sky: ring glyph, forced label, concept panel",
+   "steps": [
+    {
+     "fit": true
+    },
+    {
+     "select": "select"
+    }
+   ]
+  },
+  {
+   "id": "weak-areas",
+   "title": "Weak Areas lens: dashed [5, 9] traces at rest, weak dock",
+   "steps": [
+    {
+     "lens": "weak"
+    },
+    {
+     "fit": true
+    }
+   ]
+  },
+  {
+   "id": "files",
+   "title": "Files pill on: the files dock over the fitted sky (canvas unchanged)",
+   "steps": [
+    {
+     "files": true
+    },
+    {
+     "fit": true
+    }
+   ]
+  },
+  {
+   "id": "route",
+   "title": "Route arriving: lit path of 4-5 concepts, last two popping at phase 0.4",
+   "steps": [
+    {
+     "route": true
+    },
+    {
+     "fit": true
+    }
+   ]
+  }
+ ],
+ "courses": {
+  "8.223": {
+   "id": "2a9366df-b7c1-45df-8666-3f14219b7a2f",
+   "name": "Classical Mechanics II",
+   "graphHash": "0b652e13",
+   "nodes": 205,
+   "links": 343,
+   "clusters": [
+    {
+     "id": "family:Constrained motion",
+     "label": "Constrained motion",
+     "count": 37
+    },
+    {
+     "id": "family:Hamiltonian mechanics",
+     "label": "Hamiltonian mechanics",
+     "count": 33
+    },
+    {
+     "id": "family:Lagrangian mechanics",
+     "label": "Lagrangian mechanics",
+     "count": 32
+    },
+    {
+     "id": "family:Oscillations",
+     "label": "Oscillations",
+     "count": 23
+    },
+    {
+     "id": "family:Orbital motion",
+     "label": "Orbital motion",
+     "count": 20
+    },
+    {
+     "id": "family:Conserved quantities",
+     "label": "Conserved quantities",
+     "count": 17
+    },
+    {
+     "id": "family:Rigid body motion",
+     "label": "Rigid body motion",
+     "count": 16
+    },
+    {
+     "id": "family:Electromagnetism",
+     "label": "Electromagnetism",
+     "count": 8
+    }
+   ],
+   "anchors": {
+    "hover": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+    "select": "085699dc-1387-441b-87ae-78f0951e3757",
+    "route": [
+     "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+     "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+     "085699dc-1387-441b-87ae-78f0951e3757",
+     "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+    ],
+    "arriving": [
+     "085699dc-1387-441b-87ae-78f0951e3757",
+     "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+    ]
+   },
+   "states": {
+    "zoomed-out": {
+     "camera": {
+      "x": 1.5610567079311295,
+      "y": -65.408665115551,
+      "k": 0.31169780713658707
+     },
+     "labelLayer": "clusters",
+     "hovered": null,
+     "selected": null,
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": false
+    },
+    "zoomed-in": {
+     "camera": {
+      "x": 549.5203099929662,
+      "y": 498.41207769041335,
+      "k": 2
+     },
+     "labelLayer": "nodes",
+     "hovered": null,
+     "selected": null,
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": false
+    },
+    "hover": {
+     "camera": {
+      "x": 549.5203099929662,
+      "y": 498.41207769041335,
+      "k": 1.6
+     },
+     "labelLayer": "nodes",
+     "hovered": "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+     "selected": null,
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": false
+    },
+    "selected": {
+     "camera": {
+      "x": 1.5610567079311295,
+      "y": -65.408665115551,
+      "k": 0.31169780713658707
+     },
+     "labelLayer": "clusters",
+     "hovered": null,
+     "selected": "085699dc-1387-441b-87ae-78f0951e3757",
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": false
+    },
+    "weak-areas": {
+     "camera": {
+      "x": 1.5610567079311295,
+      "y": -65.408665115551,
+      "k": 0.31169780713658707
+     },
+     "labelLayer": "clusters",
+     "hovered": null,
+     "selected": null,
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [
+      "c:f3d0a8c8-3afc-488c-a773-3b19ed1efc36->2b387e0f-9f35-4d8e-9227-b03217e5b66c",
+      "c:551029d9-fbe1-4c8f-bf3c-6f5aee129470->f3d0a8c8-3afc-488c-a773-3b19ed1efc36",
+      "c:1d47e643-f2c4-44e0-969f-1cf94cbe7752->4cd672ef-76c9-444f-aec6-5485eb900cf1",
+      "c:8e644dc9-0e4b-4b55-a968-f6c565c22f2e->6068a5ef-fb29-4c0d-b2d7-5266178033cd",
+      "c:8e644dc9-0e4b-4b55-a968-f6c565c22f2e->c99b9e30-0b1e-47ba-972d-df0f9e8a3858",
+      "c:cd9d6a4e-0266-43db-a0fc-94742c79b347->6f4bffe5-863a-4b99-893e-86568318c7a9",
+      "c:1642f502-f226-460d-8c3e-0b619f7b3317->dba33af5-547f-4ed0-8354-bfbc2a948f16",
+      "c:955f4773-38a1-4d33-950d-ed6594fc6e9d->dba33af5-547f-4ed0-8354-bfbc2a948f16",
+      "c:317fe1ea-2df6-47d9-bb05-9426d5f1a474->955f4773-38a1-4d33-950d-ed6594fc6e9d",
+      "c:1fff1bcf-ed3a-4e1d-b544-871b6d4ba9df->8f0692ad-dc93-4075-af7f-2c6f56ba1097",
+      "c:317fe1ea-2df6-47d9-bb05-9426d5f1a474->8f0692ad-dc93-4075-af7f-2c6f56ba1097"
+     ],
+     "lens": "weak",
+     "filesOpen": false
+    },
+    "files": {
+     "camera": {
+      "x": 1.5610567079311295,
+      "y": -65.408665115551,
+      "k": 0.31169780713658707
+     },
+     "labelLayer": "clusters",
+     "hovered": null,
+     "selected": null,
+     "routeIds": [],
+     "arrivingIds": [],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": true
+    },
+    "route": {
+     "camera": {
+      "x": 1.5610567079311295,
+      "y": -65.408665115551,
+      "k": 0.31169780713658707
+     },
+     "labelLayer": "clusters",
+     "hovered": null,
+     "selected": null,
+     "routeIds": [
+      "0240617f-dc4b-4c3f-8107-8c9eb5143998",
+      "9953f723-14f2-40c6-b5c8-d54c8e1c3cc3",
+      "085699dc-1387-441b-87ae-78f0951e3757",
+      "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+     ],
+     "arrivingIds": [
+      "085699dc-1387-441b-87ae-78f0951e3757",
+      "1fb35d8d-8921-4f3f-8d2e-a0282052886d"
+     ],
+     "weakTraceIds": [],
+     "lens": "all",
+     "filesOpen": false
+    }
+   }
+  }
+ }
+}
